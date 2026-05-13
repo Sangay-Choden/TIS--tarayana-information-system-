@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ✔ Tick drawing animation */
+.tick-path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: drawTick 0.6s ease forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes drawTick {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ✔ Circle pop effect */
+@keyframes pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-pop {
+  animation: pop 0.4s ease forwards;
+}
+
+/* ✔ Popup card animation */
+@keyframes popup {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-popup {
+  animation: popup 0.3s ease forwards;
+}
+
