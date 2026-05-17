@@ -535,7 +535,7 @@ setTimeout(() => {
           {/* BUTTONS */}
           <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
             <button
-              onClick={() => navigate("/reports")}
+              onClick={() => navigate(`/${rootPath}/reports`)}
               className="px-5 py-2 border rounded-lg"
             >
               Cancel

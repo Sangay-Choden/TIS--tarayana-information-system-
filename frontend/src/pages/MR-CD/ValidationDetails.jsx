@@ -232,8 +232,8 @@ const handleSendAlert = async () => {
                   <th className="px-4 pb-4">Location</th>
                   <th className="px-4 pb-4">Activity Name</th>
                   <th className="px-4 pb-4">Specifications</th>
-                  <th className="px-4 pb-4 text-center">Plan Total</th>
-                  <th className="px-4 pb-4 text-center">Actual (val)</th>
+                  <th className="px-4 pb-4 text-center">Actual Value</th>
+                  <th className="px-4 pb-4 text-center">Actual Total(After Validation)</th>
                 </tr>
               </thead>
               <tbody className="text-sm font-medium">
@@ -438,7 +438,7 @@ const handleSendAlert = async () => {
 
     {/* Popup Card */}
  {/* Popup Card */}
-    <div className="relative bg-white rounded-2xl shadow-2xl px-10 py-10 text-center w-[90%] max-w-md animate-popup">
+ <div className="relative bg-white rounded-xl shadow-2xl px-6 sm:px-10 py-8 sm:py-10 text-center w-full max-w-xl animate-popup">
 
       {/* Circle + Tick */}
       <div className="flex items-center justify-center mb-6">

@@ -65,9 +65,9 @@ const CdDashboard = () => {
   <div className="space-y-8 p-4 w-full max-w-full overflow-hidden animate-in fade-in duration-500">
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 capitalize">{view} Overview</h1>
-          <p className="text-sm text-gray-500">Analytics for <b>{user?.email}</b></p>
+    <div>
+          <h1 className="text-xl font-bold text-gray-900 capitalize">{view} Overview</h1>
+          <p className="text-sm text-gray-500">Track and manage all project activities</p>
         </div>
         
     <div className="w-full sm:w-auto flex p-1 bg-gray-100 rounded-xl border border-gray-200 overflow-hidden">

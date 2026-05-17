@@ -639,7 +639,7 @@ setTimeout(() => {
                     </th>
                   ))}
 
-                  <th className="px-4 py-3 text-center w-32">ACTION</th>
+                  <th className="px-4 py-3 text-center w-32">Actions</th>
                 </tr>
               </thead>
 
@@ -903,10 +903,10 @@ const validate = () => {
       newErrors[f.fieldName] = "Cannot be zero";
     }
 
-    // ✅ CID validation (13 digits)
+    // ✅ CID validation (11 digits)
     if (f.fieldName.toLowerCase().includes("cid")) {
-      if (!/^\d{12}$/.test(value || "")) {
-        newErrors[f.fieldName] = "CID must be exactly 12 digits";
+      if (!/^\d{11}$/.test(value || "")) {
+        newErrors[f.fieldName] = "CID must be exactly 11 digits";
       }
     }
   });
@@ -923,8 +923,8 @@ const validate = () => {
   // ✅ Citizen CID validation (nested)
   if (formData.citizen_details) {
     formData.citizen_details.forEach((c, i) => {
-      if (!/^\d{12}$/.test(c.cid || "")) {
-        newErrors[`cid_${i}`] = "CID must be 12 digits";
+      if (!/^\d{11}$/.test(c.cid || "")) {
+        newErrors[`cid_${i}`] = "CID must be 11 digits";
       }
     });
   }
@@ -975,9 +975,9 @@ const validate = () => {
       error = "Cannot be zero";
     } else if (
       f.fieldName.toLowerCase().includes("cid") &&
-      !/^\d{12}$/.test(value)
+      !/^\d{11}$/.test(value)
     ) {
-      error = "CID must be exactly 12 digits";
+      error = "CID must be exactly 11 digits";
     }
 
     if (error) {
@@ -1013,8 +1013,8 @@ const validate = () => {
   setErrors((prev) => {
     const updated = { ...prev };
 
-    if (!/^\d{12}$/.test(value)) {
-      updated[`cid_${idx}`] = "CID must be 12 digits";
+    if (!/^\d{11}$/.test(value)) {
+      updated[`cid_${idx}`] = "CID must be 11 digits";
     } else {
       delete updated[`cid_${idx}`];
     }
@@ -1144,9 +1144,9 @@ const validate = () => {
       error = "Cannot be zero";
     } else if (
       f.fieldName.toLowerCase().includes("cid") &&
-      !/^\d{12}$/.test(value)
+      !/^\d{11}$/.test(value)
     ) {
-      error = "CID must be exactly 12 digits";
+      error = "CID must be exactly 11 digits";
     }
 
     if (error) {

@@ -126,12 +126,12 @@ const DetailEvent = () => {
                  <div className="grid grid-cols-2 text-sm mb-2">
 
                       <span className="font-bold text-gray-800 underline">Name</span>
-                      <span className="font-bold text-gray-800 underline">Amount</span>
+                      <span className="font-bold text-gray-800 underline">Amount(Nu.)</span>
                     </div>
                   {data["sponsor_list"].map((sponsor, idx) => (
                       <div key={idx} className="grid grid-cols-2 py-1 text-gray-600 italic">
                       <span>{sponsor.name}</span>
-                  <span>Nu. {sponsor.amount}</span>
+                  <span>{sponsor.amount}</span>
                       
                       </div>
                     ))}

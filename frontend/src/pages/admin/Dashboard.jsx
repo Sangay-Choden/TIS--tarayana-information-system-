@@ -302,22 +302,7 @@ const programmePieData = (charts?.beneficiaries?.programme || []).map(
           <p className="text-sm text-gray-500">Track and manage all project activities</p>
         </div>
         
-        {/* <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200">
-          <button 
-            onClick={() => setView('projects')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${view === 'projects' ? 'bg-white shadow text-[#3498db]' : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            <Layers size={18} /> Projects
-          </button>
-          <button 
-            onClick={() => setView('interventions')}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${view === 'interventions' ? 'bg-white shadow text-[#3498db]' : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            <Activity size={18} /> Interventions
-          </button>
-        </div> */}
-
-        <div className="w-full sm:w-auto flex p-1 bg-gray-100 rounded-xl border border-gray-200 overflow-hidden">
+          <div className="w-full sm:w-auto flex p-1 bg-gray-100 rounded-xl border border-gray-200 overflow-hidden">
 
   <button 
     onClick={() => setView('projects')}

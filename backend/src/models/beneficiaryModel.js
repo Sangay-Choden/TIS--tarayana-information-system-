@@ -5,7 +5,7 @@ const beneficiarySchema = new mongoose.Schema({
   year: { type: Number, required: true },
   gender: { 
     type: String, 
-    enum: { values: ['M', 'F'], message: '{VALUE} is not supported' }, 
+    enum: { values: ['M', 'F','Others'], message: '{VALUE} is not supported' }, 
     required: true 
   },
   cid: { 
