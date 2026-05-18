@@ -119,6 +119,7 @@ const AppRoutes = () => {
         <Route path="programmes" element={<POProgrammes />} />
         <Route path="beneficiaries" element={<POBeneficiaries />} />
         <Route path="beneficiaries/register" element={<PORegisterBeneficiary />} />
+
         <Route path="reports" element={<POReports />} />
         <Route path="reports/generate" element={< POGenerateReport />} />
         <Route path="programmes/add" element={<POAddNewProject />} />
@@ -164,8 +165,8 @@ const AppRoutes = () => {
         <Route index element={<Navigate to="/mgmt/dashboard" replace />} />
         <Route path="dashboard" element={<ManagementDashboard />} />
         <Route path="programmes" element={<ManagementProgrammes />} />
-        <Route path="programmes/:programmeName" element={<ManagementProgrammeDetail />} />
-        <Route path="programmes/:programmeName/projects/:id" element={<ManagementProjectDetail />} />
+        <Route path="programmes/:id" element={<ManagementProgrammeDetail />} />
+        <Route path="programmes/projects/:id" element={<ManagementProjectDetail />} />
         <Route path="reports" element={<ManagementReports />} />
         <Route path="reports/generate" element={<ManagementGenerateReport />} />
         <Route path="annual-events" element={<AdminAnnualEvents />} />

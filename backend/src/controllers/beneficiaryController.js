@@ -2,7 +2,7 @@ const Beneficiary = require("../models/beneficiaryModel");
 const Project = require("../models/projectModel");
 
 /**
- * @desc    Create a new beneficiary with project-based Dzongkhag validation
+ * @desc    Create / register batch beneficiaries for an intervention
  * @route   POST /api/beneficiaries
  */
 exports.createBeneficiary = async (req, res) => {
@@ -10,80 +10,91 @@ exports.createBeneficiary = async (req, res) => {
     const {
       projectId,
       year,
-      gender,
-      cid,
-      name,
       dzongkhag,
-      village,
       gewog,
-      houseNo,
-      thramNo,
-      indirectBeneficiaries,
-      keyActivities
+      village,
+      keyActivities, 
+      beneficiaries  
     } = req.body;
 
-    // 1. Basic Field Validation (Requirement: all except indirectBeneficiaries)
-    if (!projectId || !year || !gender || !cid || !name || !dzongkhag || !village || !gewog || !houseNo || !thramNo) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required except indirect beneficiaries."
-      });
+    // 1. Core Validations
+    if (!projectId || !year || !dzongkhag || !gewog || !village) {
+      return res.status(400).json({ success: false, message: "Missing location or project header data." });
+    }
+    if (!keyActivities || !Array.isArray(keyActivities) || keyActivities.length === 0) {
+      return res.status(400).json({ success: false, message: "At least one key activity or training must be specified." });
+    }
+    if (!beneficiaries || !Array.isArray(beneficiaries) || beneficiaries.length === 0) {
+      return res.status(400).json({ success: false, message: "Please provide at least one beneficiary to register." });
     }
 
-    // 2. Fetch the project to validate Dzongkhag
+    // 2. Validate Project Existence & Jurisdiction
     const project = await Project.findById(projectId);
     if (!project) {
-      return res.status(404).json({ success: false, message: "Project not found" });
+      return res.status(404).json({ success: false, message: "Associated project context not found." });
     }
 
-    // 3. Dzongkhag validation (Must match project's selected dzongkhags)
-    const allowedDzongkhags = project.dzongkhag.map(d => d.toLowerCase());
-    if (!allowedDzongkhags.includes(dzongkhag.toLowerCase())) {
+    const allowedDzongkhags = project.dzongkhag.map(d => d.toLowerCase().trim());
+    if (!allowedDzongkhags.includes(dzongkhag.toLowerCase().trim())) {
       return res.status(400).json({
         success: false,
-        message: `Invalid Dzongkhag. This project only operates in: ${project.dzongkhag.join(", ")}`
+        message: `Invalid region. This project only operates within: ${project.dzongkhag.join(", ")}`
       });
     }
 
-    // 4. Check if Beneficiary with this CID already exists in THIS project
-    const existingBeneficiary = await Beneficiary.findOne({ cid, projectId });
-    if (existingBeneficiary) {
-      return res.status(400).json({
-        success: false,
-        message: "A beneficiary with this CID is already registered to this project."
-      });
-    }
+    // 3. FIXED: Scoped Uniqueness Validation Check
+    // Extract target activity identifiers for composite uniqueness evaluation
+    const targetActivityName = keyActivities[0].activityName?.trim();
+    const incomingCids = beneficiaries.map(p => p.cid.trim());
 
-    // 5. Create the Beneficiary
-    const newBeneficiary = await Beneficiary.create({
-      projectId,
-      year,
-      gender,
-      cid,
-      name,
-      dzongkhag,
-      village,
-      gewog,
-      houseNo,
-      thramNo,
-      indirectBeneficiaries,
-      keyActivities
+    // Search for a document containing BOTH: matching CID AND the exact same activity name
+    const duplicateIntervention = await Beneficiary.findOne({
+      projectId: projectId,
+      cid: { $in: incomingCids },
+      "keyActivities.activityName": { $regex: new RegExp(`^${targetActivityName}$`, "i") }
     });
+
+    if (duplicateIntervention) {
+      return res.status(400).json({
+        success: false,
+        message: `Beneficiary with CID ${duplicateIntervention.cid} is already registered under the '${targetActivityName}' intervention for this project.`
+      });
+    }
+
+    // 4. Map and batch save if all checks pass smoothly
+    const documentsToInsert = beneficiaries.map(person => {
+      return {
+        projectId,
+        year,
+        dzongkhag,
+        gewog,
+        village,
+        name: person.name,
+        cid: person.cid.trim(),
+        gender: person.gender,
+        houseNo: person.houseNo,
+        thramNo: person.thramNo,
+        indirectBeneficiaries: person.indirectBeneficiaries || { male: 0, female: 0 },
+        keyActivities: keyActivities
+      };
+    });
+
+    const savedBeneficiaries = await Beneficiary.insertMany(documentsToInsert);
 
     res.status(201).json({
       success: true,
-      message: "Beneficiary registered successfully",
-      data: newBeneficiary
+      message: `${savedBeneficiaries.length} beneficiary records generated and saved successfully.`,
+      data: savedBeneficiaries
     });
 
   } catch (error) {
-    // This catches CID 11-digit validation or Gender enum errors from the model
     res.status(400).json({
       success: false,
       message: error.message
     });
   }
 };
+
 
 /**
  * @desc    Get all beneficiaries for a specific project
@@ -161,19 +172,21 @@ exports.getAllBeneficiaries = async (req, res) => {
 
 
 exports.getAllBeneficiariesbyDzongkhag = async (req, res) => {
-    try {
-
+  try {
     const beneficiaries = await Beneficiary.find();
-
     const dzongkhagActivitySummary = {};
+    
+    // Tracks uniquely logged individual intervention configurations
+    const deduplicationTracker = new Set();
 
     beneficiaries.forEach((beneficiary) => {
+      const dzongkhag = beneficiary.dzongkhag?.toLowerCase()?.trim();
+      const gewog = beneficiary.gewog?.toLowerCase()?.trim();
+      const village = beneficiary.village?.toLowerCase()?.trim();
+      const cid = beneficiary.cid?.toLowerCase()?.trim();
 
-      const dzongkhag = beneficiary.dzongkhag?.toLowerCase();
+      if (!dzongkhag || !gewog || !village || !cid) return;
 
-      if (!dzongkhag) return;
-
-      // CREATE DZONGKHAG OBJECT
       if (!dzongkhagActivitySummary[dzongkhag]) {
         dzongkhagActivitySummary[dzongkhag] = {
           totalActivities: 0,
@@ -181,25 +194,24 @@ exports.getAllBeneficiariesbyDzongkhag = async (req, res) => {
         };
       }
 
-      // LOOP ACTIVITIES
       beneficiary.keyActivities?.forEach((activity) => {
-
-        const activityName = activity.activityName?.toLowerCase();
-
+        const activityName = activity.activityName?.toLowerCase()?.trim();
         if (!activityName) return;
 
-        // TOTAL COUNT
+        // Compound Key Signature to isolate records based on CID instead of Household Number
+        const trackingKey = `${dzongkhag}-${gewog}-${village}-${cid}-${activityName}`;
+
+        // Skip calculations if this exact person has already logged this activity at this location
+        if (deduplicationTracker.has(trackingKey)) return;
+        deduplicationTracker.add(trackingKey);
+
         dzongkhagActivitySummary[dzongkhag].totalActivities += 1;
 
-        // ACTIVITY COUNT
         if (!dzongkhagActivitySummary[dzongkhag].activities[activityName]) {
           dzongkhagActivitySummary[dzongkhag].activities[activityName] = 0;
         }
-
         dzongkhagActivitySummary[dzongkhag].activities[activityName] += 1;
-
       });
-
     });
 
     res.status(200).json({
@@ -208,70 +220,113 @@ exports.getAllBeneficiariesbyDzongkhag = async (req, res) => {
     });
 
   } catch (error) {
-
     res.status(500).json({
       success: false,
       message: "Server Error",
       error: error.message
     });
-
   }
 };
 
+
 /**
- * @desc    Update an existing beneficiary
+ * @desc    Update an existing beneficiary (Aligned with Batch Create Architecture)
  * @route   PUT /api/beneficiaries/:id
  */
 exports.updateBeneficiary = async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
+    const { 
+      projectId, 
+      year, 
+      dzongkhag, 
+      gewog, 
+      village, 
+      keyActivities, 
+      beneficiaries 
+    } = req.body;
 
-    // 1. Find the existing beneficiary
+    // 1. Locate the master record targeted for configuration updates
     const beneficiary = await Beneficiary.findById(id);
     if (!beneficiary) {
-      return res.status(404).json({ success: false, message: "Beneficiary not found" });
+      return res.status(404).json({ success: false, message: "Beneficiary profile not found" });
     }
 
-    // 2. If Dzongkhag is being updated, validate it against the Project
-    if (updateData.dzongkhag) {
-      const project = await Project.findById(beneficiary.projectId);
+    // Determine target project identity context dynamically
+    const finalProjectId = projectId || beneficiary.projectId;
+
+    // 2. Extract and format individual profile data safely from batch array structure
+    let individualProfile = {};
+    if (beneficiaries && Array.isArray(beneficiaries) && beneficiaries.length > 0) {
+      // Pick the first array entry to update this singular specific beneficiary document
+      individualProfile = beneficiaries[0];
+    } else if (req.body.name || req.body.cid) {
+      // Fallback in case raw parameters are provided on the root level
+      individualProfile = req.body;
+    }
+
+    // 3. Location & Dzongkhag Matrix Validation against the project profile
+    const targetDzongkhag = dzongkhag || individualProfile.dzongkhag || beneficiary.dzongkhag;
+    if (targetDzongkhag) {
+      const project = await Project.findById(finalProjectId);
+      if (!project) {
+        return res.status(404).json({ success: false, message: "Associated project assignment not found." });
+      }
+
       const allowedDzongkhags = project.dzongkhag.map(d => d.toLowerCase());
-      
-      if (!allowedDzongkhags.includes(updateData.dzongkhag.toLowerCase())) {
+      if (!allowedDzongkhags.includes(targetDzongkhag.toLowerCase())) {
         return res.status(400).json({
           success: false,
-          message: `Invalid Dzongkhag. This project only operates in: ${project.dzongkhag.join(", ")}`
+          message: `Invalid Dzongkhag constraint selection. This project only operates in: ${project.dzongkhag.join(", ")}`
         });
       }
     }
 
-    // 3. If CID is being updated, check for duplicates within the same project
-    if (updateData.cid && updateData.cid !== beneficiary.cid) {
+    // 4. Validate CID duplicate tracking restrictions across project registries
+    const targetCid = individualProfile.cid;
+    if (targetCid && targetCid !== beneficiary.cid) {
       const cidExists = await Beneficiary.findOne({ 
-        cid: updateData.cid, 
-        projectId: beneficiary.projectId,
-        _id: { $ne: id } // Ensure we aren't checking the current record itself
+        cid: targetCid, 
+        projectId: finalProjectId,
+        _id: { $ne: id } // Exclude current record scope lookup check
       });
 
       if (cidExists) {
         return res.status(400).json({
           success: false,
-          message: "A beneficiary with this new CID is already registered to this project."
+          message: "A beneficiary with this structural CID configuration already exists in this target project."
         });
       }
     }
 
-    // 4. Perform the update
+    // 5. Build unified tracking record state payload object mappings
+    const consolidatedUpdatePayload = {
+      ...(projectId && { projectId }),
+      ...(year && { year: parseInt(year) }),
+      ...(dzongkhag && { dzongkhag }),
+      ...(gewog && { gewog }),
+      ...(village && { village }),
+      ...(keyActivities && { keyActivities }),
+      
+      // Inject nested individual profile assignments if explicitly mapped
+      ...(individualProfile.name && { name: individualProfile.name }),
+      ...(individualProfile.cid && { cid: individualProfile.cid }),
+      ...(individualProfile.gender && { gender: individualProfile.gender }),
+      ...(individualProfile.houseNo && { houseNo: individualProfile.houseNo }),
+      ...(individualProfile.thramNo && { thramNo: individualProfile.thramNo }),
+      ...(individualProfile.indirectBeneficiaries && { indirectBeneficiaries: individualProfile.indirectBeneficiaries })
+    };
+
+    // 6. Execute updates to the targeted database profile
     const updatedBeneficiary = await Beneficiary.findByIdAndUpdate(
       id,
-      { $set: updateData },
-      { new: true, runValidators: true } // runValidators ensures CID length and Enums are checked
+      { $set: consolidatedUpdatePayload },
+      { new: true, runValidators: true }
     );
 
     res.status(200).json({
       success: true,
-      message: "Beneficiary updated successfully",
+      message: "Beneficiary document parameter updates completed successfully.",
       data: updatedBeneficiary
     });
 
@@ -282,7 +337,6 @@ exports.updateBeneficiary = async (req, res) => {
     });
   }
 };
-
 
 /**
  * @desc    Get a single beneficiary by ID

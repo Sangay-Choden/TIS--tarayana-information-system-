@@ -173,7 +173,9 @@ const ResetPassword = () => {
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
 
-          <div className="relative bg-white rounded-2xl shadow-2xl px-10 py-10 text-center w-[90%] max-w-md">
+          {/* <div className="relative bg-white rounded-2xl shadow-2xl px-10 py-10 text-center w-[90%] max-w-md"> */}
+<div className="relative bg-white rounded-xl shadow-2xl px-4 sm:px-10 py-6 sm:py-10 text-center w-[92%] sm:w-full max-w-md sm:max-w-xl animate-popup">
+
             <div className="flex justify-center mb-5">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
                 <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">

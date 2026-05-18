@@ -197,7 +197,7 @@ const [error, setError] = useState("");
 
       {/* SUCCESS */}
 {showSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Background overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
@@ -243,7 +243,7 @@ const [error, setError] = useState("");
 )}
 
 {showErrorPopup && (
-  <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
+  <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
 
     {/* Overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
@@ -293,7 +293,7 @@ const [error, setError] = useState("");
    
     {/* MODAL */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50  ">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[100]  ">
           <div className="bg-white w-full max-w-2xl rounded-xl p-6 relative shadow-lg">
             <button
               onClick={() => setShowModal(false)}

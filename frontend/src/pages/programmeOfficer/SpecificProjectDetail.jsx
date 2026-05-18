@@ -145,7 +145,35 @@ const SpecificProjectDetail = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <InfoCard icon={FileText} label="Programme" value={project.programme?.map(p => p.programmeName).join(', ')} />
           <InfoCard icon={Users} label="Direct Beneficiaries" value={`${projectSummary.totalDirect}`} />
-          <InfoCard icon={Users} label="Indirect Total" value={`${indirectTotal} (M:${projectSummary.totalIndirectMale} F:${projectSummary.totalIndirectFemale})`} />
+          <InfoCard icon={Users} label="Indirect Beneficiaries" value={`${indirectTotal} (M:${projectSummary.totalIndirectMale} F:${projectSummary.totalIndirectFemale})`} />
+
+          <InfoCard 
+  icon={Calendar} 
+  label="Start Date" 
+  value={
+    project.startDate
+      ? new Date(project.startDate).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+      : "N/A"
+  } 
+/>
+
+<InfoCard 
+  icon={Calendar} 
+  label="End Date" 
+  value={
+    project.endDate
+      ? new Date(project.endDate).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+      : "N/A"
+  } 
+/>
           <InfoCard icon={Calendar} label="Duration" value={getDuration(project.startDate, project.endDate)} />
           <InfoCard icon={Globe} label="Donor" value={project.donor?.length > 0 ? project.donor.map(d => d.name).join(', ') : "None"} />
           <InfoCard icon={Globe} label="Partner" value={project.partner?.length > 0 ? project.partner.map(p => p.name).join(', ') : "None"} />
@@ -166,6 +194,8 @@ const SpecificProjectDetail = () => {
                 <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase">Activity Name</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase text-center">Total Quantity</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase text-center">Total Capacity</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase text-center">Total Beneficiary</th>
+
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -182,6 +212,7 @@ const SpecificProjectDetail = () => {
                     <td className="px-6 py-4 text-sm text-gray-800 font-medium">{act.activityName}</td>
                     <td className="px-6 py-4 text-sm text-gray-800 text-center">{act.displayTotal}</td>
                     <td className="px-6 py-4 text-sm text-gray-800 text-center">{act.totalCapacitySum || '-'} {act.unit}</td>
+                    <td className="px-6 py-4 text-sm text-gray-800 text-center">{act.directBeneficiariesCount}</td>
                   </tr>
                 );
               })}

@@ -1,305 +1,729 @@
+// import { useEffect, useState, useMemo } from "react";
+// import { useNavigate } from 'react-router-dom';
+// import { Search, User, Loader2, ChevronLeft, ChevronRight} from "lucide-react";
+// import { motion } from 'motion/react';
+// import axios from 'axios';
+
+// const Beneficiaries = () => {
+//     const navigate = useNavigate();
+//   const [collapsed, setCollapsed] = useState(false);
+  
+//   const [search, setSearch] = useState("");
+//     // 🔐 SESSION & AUTH
+//   const token = localStorage.getItem("token");
+//   const storedUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+
+
+//   // Data States
+//   const [beneficiaries, setBeneficiaries] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [searchTerm, setSearchTerm] = useState('');
+
+//   // 🔢 PAGINATION STATE
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const itemsPerPage = 10; // Fixed to 10 items as requested
+
+//   // Modal States
+//   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+//   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+//   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+//   const [successMessage, setSuccessMessage] = useState('');
+//   const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
+
+//     const [showErrorPopup, setShowErrorPopup] = useState(false);
+// const [errorMessage, setErrorMessage] = useState("");
+
+//   // 🛡️ AUTH GUARD
+//   useEffect(() => {
+//     if (!token || !storedUser) {
+//       navigate("auth/login", { replace: true });
+//     }
+//   }, [token, storedUser, navigate]);
+
+//   // 📡 FETCH DATA
+// const fetchBeneficiaries = async () => {
+//   if (!token) return;
+
+//   setLoading(true);
+
+//   try {
+//     const config = {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     };
+
+//     // ✅ Fetch ALL beneficiaries
+//     const response = await axios.get(
+//       "http://localhost:5000/api/beneficiaries",
+//       config
+//     );
+
+//     const allBeneficiaries = response.data.data || [];
+
+//     setBeneficiaries(allBeneficiaries);
+
+//     console.log(allBeneficiaries);
+
+//   } catch (err) {
+
+//     setErrorMessage(
+//       err.response?.data?.message ||
+//       "Failed to load beneficiaries"
+//     );
+
+//     setShowErrorPopup(true);
+
+//     setTimeout(() => {
+//       setShowErrorPopup(false);
+//     }, 2000);
+
+//     console.error("Fetch error:", err);
+
+//     if (err.response?.status === 401) {
+//       navigate("auth/login");
+//     }
+
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+// useEffect(() => {
+//   fetchBeneficiaries();
+// }, [token]);
+
+//   // 🗑️ DELETE LOGIC
+//   const handleDelete = async () => {
+//     try {
+//       await axios.delete(`http://localhost:5000/api/beneficiaries/${selectedBeneficiary._id}`, {
+//         headers: { Authorization: `Bearer ${token}` }
+//       });
+//       setIsDeleteModalOpen(false);
+//       setSuccessMessage('Beneficiary Deleted Successfully');
+//       setIsSuccessModalOpen(true);
+//       fetchBeneficiaries();
+
+//        // auto close success popup
+//     setTimeout(() => {
+//       setIsSuccessModalOpen(false);
+//     }, 2000);
+    
+//     } catch (err) {
+
+//   setErrorMessage(
+//     err.response?.data?.message ||
+//     "Failed to delete beneficiary"
+//   );
+
+//   setShowErrorPopup(true);
+
+//   setTimeout(() => {
+//     setShowErrorPopup(false);
+//   }, 2000);
+// }
+//   };
+
+//   // 🔍 FILTER & PAGINATION CALCULATION
+//   const filteredData = beneficiaries.filter(b => {
+//     const search = searchTerm.toLowerCase();
+//     return (
+//       b.name?.toLowerCase().includes(search) ||
+//       b.cid?.toString().includes(search) ||
+//       b.dzongkhag?.toLowerCase().includes(search) ||
+//       b.projectName?.toLowerCase().includes(search)
+//     );
+//   });
+
+//   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+//   const indexOfLastItem = currentPage * itemsPerPage;
+//   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+//   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+//   // Reset to page 1 on search
+//   useEffect(() => { setCurrentPage(1); }, [searchTerm]);
+
+//   if (!token || !storedUser) return null;
+
+//   return (
+// <div className="w-full px-2 sm:px-2 lg:px-2 pb-6 space-y-6 overflow-x-hidden">
+
+  
+
+//       {/* Main */}
+// <div className="w-full ">
+//   <div className="space-y-6">
+
+   
+
+//         {/* SEARCH */}
+//         <div className="mt-4 mb-6">
+//           <div className="relative w-full max-w-md">
+//             <Search
+//               size={16}
+//               className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+//             />
+//             <input
+//               type="text"
+//               placeholder="Search by CID"
+//               value={search}
+//               onChange={(e) => {
+//                 setSearch(e.target.value);
+//                 setCurrentPage(1);
+//               }}
+//               className="w-full pl-10 pr-4 py-3 rounded-xl border bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+//             />
+//           </div>
+//         </div>
+
+ 
+
+// <div className="bg-white rounded-2xl shadow-sm border border-gray-100 w-full max-w-full">
+//    <div className="w-full overflow-x-auto rounded-b-2xl">
+// <table className="min-w-[1400px] w-full text-left border-collapse">
+//             <thead>
+//               <tr className="bg-gray-50 border-b border-gray-100">
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">CID</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Name</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Dzongkhag</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Project</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Gender</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">House No</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Thram No</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Village</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Gewog</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Year</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Indirect Beneficiary</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Intervention</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Nos</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Acres</th>
+//                 <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Capacity</th>
+
+//               </tr>
+//             </thead>
+
+//             <tbody className="divide-y divide-gray-50">
+//               {loading ? (
+//                 <tr>
+//                   <td colSpan="16" className="p-20 text-center">
+//                     <Loader2 className="animate-spin mx-auto text-[#3498db]" size={32} />
+//                     <p className="mt-2 text-sm text-gray-400">Loading beneficiaries...</p>
+//                   </td>
+//                 </tr>
+//               ) : currentItems.length === 0 ? (
+//                 <tr>
+//                   <td colSpan="16" className="p-20 text-center text-gray-500">
+//                     <Users2 className="mx-auto text-gray-200 mb-2" size={48} />
+//                     <p>No beneficiaries found.</p>
+//                   </td>
+//                 </tr>
+//               ) : (
+//                 currentItems.map((b) => (
+//                   <motion.tr
+//                     key={b._id}
+//                     initial={{ opacity: 0 }}
+//                     animate={{ opacity: 1 }}
+//                     className="hover:bg-blue-50/30 transition-colors"
+//                   >
+//                     <td className="px-6 py-4 text-sm text-gray-600 font-medium">{b.cid}</td>
+//                     <td className="px-6 py-4 text-sm text-gray-900 font-semibold">{b.name}</td>
+//                     <td className="px-6 py-4 text-sm text-gray-600">{b.dzongkhag}</td>
+//                     <td className="px-6 py-4 text-sm">
+//                       <span className="text-[#3498db] font-semibold uppercase tracking-tight">
+//                         {b.projectName}
+//                       </span>
+//                     </td>
+//                     <td className="px-6 py-4 text-sm text-gray-600">{b.gender}</td>
+//                     <td className="px-6 py-4 text-sm text-gray-600">{b.houseNo}</td>
+//                     <td className="px-6 py-4 text-sm text-gray-600">{b.thramNo}</td>
+//                     <td className="px-6 py-4 text-sm text-gray-600">{b.village}</td>
+//                     <td className="px-6 py-4 text-sm text-gray-600">{b.gewog}</td>
+//                     <td className="px-6 py-4 text-sm text-gray-600">{b.year}</td>
+
+//                     {/* 👥 Indirect Beneficiary [Total (M:X, F:Y)] */}
+//                     <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
+//                       {Number(b.indirectBeneficiaries?.male || 0) + Number(b.indirectBeneficiaries?.female || 0)} 
+//                       <span className="text-xs text-gray-400 ml-1">
+//                         [M:{b.indirectBeneficiaries?.male || 0}, F:{b.indirectBeneficiaries?.female || 0}]
+//                       </span>
+//                     </td>
+
+//                     {/* 🛠️ Intervention (Activity Name or Training) */}
+//                     <td className="px-6 py-4 text-sm text-gray-700">
+//                       {b.keyActivities?.map((act, i) => (
+//                         <div key={i} className={act.isTraining ? "text-orange-600 font-medium" : ""}>
+//                           {act.isTraining ? `${act.activityName}` : act.activityName}
+//                         </div>
+//                       ))}
+//                     </td>
+
+//                     {/* 🔢 Nos Column (Training always 1, or if unit is Nos) */}
+//                     <td className="px-6 py-4 text-sm text-gray-600">
+//                       {b.keyActivities?.map((act, i) => (
+//                         <div key={i}>
+//                           {act.isTraining ? "1" : (act.unit?.toLowerCase() === 'nos' ? act.specifications?.join(", ") || act.totalQuantity : "-")}
+//                         </div>
+//                       ))}
+//                     </td>
+
+//                     {/* 🌿 Acres Column */}
+//                     <td className="px-6 py-4 text-sm text-gray-600">
+//                       {b.keyActivities?.map((act, i) => (
+//                         <div key={i}>
+//                           {!act.isTraining && act.unit?.toLowerCase() === 'acres' ? act.specifications?.join(", ") : "-"}
+//                         </div>
+//                       ))}
+//                     </td>
+
+//                     {/* 💧 Litres Column */}
+//                     <td className="px-6 py-4 text-sm text-gray-600">
+//                       {b.keyActivities?.map((act, i) => (
+//                         <div key={i}>
+//                           {!act.isTraining && act.unit?.toLowerCase() === 'litres' ? act.specifications?.join(", ") : "-"}
+//                         </div>
+//                       ))}
+//                     </td>
+
+//                              </motion.tr>
+//                 ))
+//               )}
+//             </tbody>         
+//           </table>
+//         </div>
+
+//         {/* 🔢 PAGINATION FOOTER */}
+//         {!loading && filteredData.length > 0 && (
+//          <div className="px-4 sm:px-6 py-4 bg-white border-t border-gray-100 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+//             <div className="text-sm text-gray-500 font-medium">
+//               Page <span className="text-[#3498db] font-bold">{currentPage}</span> / {totalPages || 1}
+//             </div>
+            
+//             {/* <div className="flex items-center gap-2"> */}
+//             <div className="flex items-center justify-center gap-1 sm:gap-2">
+//               <button
+//                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+//                 disabled={currentPage === 1}
+//                 className={`p-2 rounded-lg border border-gray-200 transition-all ${
+//                   currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-50 text-gray-600'
+//                 }`}
+//               >
+//                 <ChevronLeft size={18} />
+//               </button>
+              
+//               {/* Desktop Page Numbers */}
+//               <div className="hidden sm:flex gap-1">
+//                 {[...Array(totalPages)].map((_, i) => (
+//                   <button
+//                     key={i + 1}
+//                     onClick={() => setCurrentPage(i + 1)}
+//                     className={`w-9 h-9 items-center justify-center rounded-lg text-xs font-bold transition-all ${
+//                       currentPage === i + 1 
+//                         ? 'bg-[#3498db] text-white shadow-md shadow-blue-200 scale-105' 
+//                         : 'text-gray-500 hover:bg-gray-50 border border-transparent'
+//                     }`}
+//                   >
+//                     {i + 1}
+//                   </button>
+//                 ))}
+//               </div>
+
+//               <button
+//                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+//                 disabled={currentPage === totalPages || totalPages === 0}
+//                 className={`p-2 rounded-lg border border-gray-200 transition-all ${
+//                   currentPage === totalPages ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-50 text-gray-600'
+//                 }`}
+//               >
+//                 <ChevronRight size={18} />
+//               </button>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//       </div>
+//     </div>
+//   </div>
+// );
+// };
+
+// export default Beneficiaries;
+
+
+
 import { useEffect, useState, useMemo } from "react";
-import { Search, User } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { Search, Loader2, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { motion } from 'motion/react';
+import axios from 'axios';
 
 const Beneficiaries = () => {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-const [beneficiaries, setBeneficiaries] = useState([]);
-  const itemsPerPage = 10;
-useEffect(() => {
-  fetchAllBeneficiaries();
-}, []);
   
-const filteredData = useMemo(() => {
-  return beneficiaries.filter((item) =>
-    item.cid.toLowerCase().includes(search.toLowerCase())
-  );
-}, [search, beneficiaries]);
+  // 🔐 SESSION & AUTH
+  const token = localStorage.getItem("token");
+  const storedUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+
+  // Data States
+  const [beneficiaries, setBeneficiaries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // 🔍 INTERVENTION FILTER STATE
+  const [selectedIntervention, setSelectedIntervention] = useState("All");
+
+  // 🔢 PAGINATION STATE
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; 
+
+  // Modal States
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
+
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // 🛡️ AUTH GUARD
+  useEffect(() => {
+    if (!token || !storedUser) {
+      navigate("auth/login", { replace: true });
+    }
+  }, [token, storedUser, navigate]);
+
+  // 📡 FETCH DATA
+  const fetchBeneficiaries = async () => {
+    if (!token) return;
+
+    setLoading(true);
+
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.get(
+        "http://localhost:5000/api/beneficiaries",
+        config
+      );
+
+      const allBeneficiaries = response.data.data || [];
+      setBeneficiaries(allBeneficiaries);
+
+    } catch (err) {
+      setErrorMessage(
+        err.response?.data?.message ||
+        "Failed to load beneficiaries"
+      );
+
+      setShowErrorPopup(true);
+
+      setTimeout(() => {
+        setShowErrorPopup(false);
+      }, 2000);
+
+      console.error("Fetch error:", err);
+
+      if (err.response?.status === 401) {
+        navigate("auth/login");
+      }
+
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
-const indexOfLast = currentPage * itemsPerPage;
-const indexOfFirst = indexOfLast - itemsPerPage;
+  useEffect(() => {
+    fetchBeneficiaries();
+  }, [token]);
+    console.log(beneficiaries)
 
-const currentData = useMemo(() => {
-  return filteredData.slice(indexOfFirst, indexOfLast);
-}, [currentPage, filteredData]);
+  // 🗑️ DELETE LOGIC
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:5000/api/beneficiaries/${selectedBeneficiary._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setIsDeleteModalOpen(false);
+      setSuccessMessage('Beneficiary Deleted Successfully');
+      setIsSuccessModalOpen(true);
+      fetchBeneficiaries();
 
+      setTimeout(() => {
+        setIsSuccessModalOpen(false);
+      }, 2000);
+      
+    } catch (err) {
+      setErrorMessage(
+        err.response?.data?.message ||
+        "Failed to delete beneficiary"
+      );
+      setShowErrorPopup(true);
+      setTimeout(() => {
+        setShowErrorPopup(false);
+      }, 2000);
+    }
+  };
 
-
-  const fetchAllBeneficiaries = async () => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch("http://localhost:5000/api/beneficiaries", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  // 🧪 DYNAMICALLY EXTRACT UNIQUE INTERVENTIONS
+  const uniqueInterventions = useMemo(() => {
+    const interventionsSet = new Set();
+    beneficiaries.forEach((b) => {
+      b.keyActivities?.forEach((act) => {
+        if (act.activityName) {
+          interventionsSet.add(act.activityName.trim());
+        }
+      });
     });
+    return Array.from(interventionsSet).sort();
+  }, [beneficiaries]);
 
-    const data = await res.json();
+  // 🔍 FILTER & PAGINATION CALCULATION
+  const filteredData = useMemo(() => {
+    return beneficiaries.filter((b) => {
+      const search = searchTerm.toLowerCase();
 
-    if (!res.ok) return;
+      // 1. Check textual search term
+      const matchesSearch = 
+        String(b.name || "").toLowerCase().includes(search) ||
+        String(b.cid || "").toLowerCase().includes(search) ||
+        String(b.dzongkhag || "").toLowerCase().includes(search) ||
+      String(b.projectId?.projectName || "")
+      .toLowerCase()
+      .includes(search)
+  
 
-    setBeneficiaries(data.data);
+      // 2. Check selected Intervention category dropdown
+      const matchesIntervention = 
+        selectedIntervention === "All" ||
+        (b.keyActivities && b.keyActivities.some(act => act.activityName?.trim() === selectedIntervention));
 
-  } catch (err) {
-    console.error(err);
-  }
-};
+      return matchesSearch && matchesIntervention;
+    });
+  }, [beneficiaries, searchTerm, selectedIntervention]);
 
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Reset to page 1 on filter or search parameters switching
+  useEffect(() => { 
+    setCurrentPage(1); 
+  }, [searchTerm, selectedIntervention]);
+
+  if (!token || !storedUser) return null;
 
   return (
-<div className="w-full px-2 sm:px-2 lg:px-2 pb-6 space-y-6 overflow-x-hidden">
-
-  
-
+    <div className="w-full px-2 sm:px-2 lg:px-2 pb-6 space-y-6 overflow-x-hidden">
       {/* Main */}
-<div className="w-full ">
-  <div className="space-y-6">
+      <div className="w-full ">
+        <div className="space-y-6">
 
-        {/* HEADER */}
-        {/* <div className="mb-6">
-          <h1 className="text-lg sm:text-xl font-semibold text-gray-800">
-            Beneficiaries
-          </h1>
-          <p className="text-sm text-gray-500">
-            Beneficiary records & households
-          </p>
-        </div> */}
+         {/* CONTROLS: SEARCH & UNIQUE INTERVENTION FILTER */}
+<div className="mt-4 mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+  {/* SEARCH BOX */}
+  <div className="relative w-full max-w-md">
+    <Search
+      size={16}
+      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+    />
+    <input
+      type="text"
+      placeholder="Search by Name, CID, Dzongkhag, or Project"
+      className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#3498db] text-sm transition-all"
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+  </div>
 
-        {/* SEARCH */}
-        <div className="mt-4 mb-6">
-          <div className="relative w-full max-w-md">
-            <Search
-              size={16}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              type="text"
-              placeholder="Search by CID"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full pl-10 pr-4 py-3 rounded-xl border bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
+  {/* INTERVENTION FILTER DROPDOWN */}
+  <div className="relative w-full sm:w-72">
+    <select
+      value={selectedIntervention}
+      onChange={(e) => setSelectedIntervention(e.target.value)}
+      className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#3498db] text-sm transition-all appearance-none cursor-pointer text-gray-700 font-medium"
+    >
+      <option value="All">All Interventions</option>
+      {uniqueInterventions.map((intervention, index) => (
+        <option key={index} value={intervention}>
+          {intervention}
+        </option>
+      ))}
+    </select>
+    <Filter 
+      size={16} 
+      className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" 
+    />
+  </div>
+</div>
 
-        {/* ================= MOBILE VIEW ================= */}
-        <div className="sm:hidden space-y-4">
-          {currentData.map((item) => (
-            <div key={item._id} className="bg-white rounded-2xl shadow-sm p-4">
+          {/* TABLE CONTAINER */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 w-full max-w-full">
+            <div className="w-full overflow-x-auto rounded-b-2xl">
+              <table className="min-w-[1400px] w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-100">
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">CID</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Name</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Dzongkhag</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Project</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Gender</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">House No</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Thram No</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Village</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Gewog</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Year</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Indirect Beneficiary</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Intervention</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Nos</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Acres</th>
+                    <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Capacity</th>
+                  </tr>
+                </thead>
 
-              <p className="text-blue-600 font-semibold">{item.cid}</p>
-              <h2 className="text-gray-800 font-medium">{item.name}</h2>
+                <tbody className="divide-y divide-gray-50">
+                  {loading ? (
+                    <tr>
+                      <td colSpan="16" className="p-20 text-center">
+                        <Loader2 className="animate-spin mx-auto text-[#3498db]" size={32} />
+                        <p className="mt-2 text-sm text-gray-400">Loading beneficiaries...</p>
+                      </td>
+                    </tr>
+                  ) : currentItems.length === 0 ? (
+                    <tr>
+                      <td colSpan="16" className="p-20 text-center text-gray-500">
+                        <p className="font-medium text-base">No beneficiaries found matching current criteria.</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    currentItems.map((b) => (
+                      <motion.tr
+                        key={b._id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="hover:bg-blue-50/30 transition-colors"
+                      >
+                        <td className="px-6 py-4 text-sm text-gray-600 font-medium">{b.cid}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900 font-semibold">{b.name}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{b.dzongkhag}</td>
+                        <td className="px-6 py-4 text-sm">
+                          <span className="text-[#3498db] font-semibold uppercase tracking-tight">
+                          {b.projectId?.projectName}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{b.gender}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{b.houseNo}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{b.thramNo}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{b.village}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{b.gewog}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{b.year}</td>
 
-              <div className="text-sm text-gray-500 mt-2 space-y-1">
+                        {/* 👥 Indirect Beneficiary */}
+                        <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
+                          {Number(b.indirectBeneficiaries?.male || 0) + Number(b.indirectBeneficiaries?.female || 0)} 
+                          <span className="text-xs text-gray-400 ml-1">
+                            [M:{b.indirectBeneficiaries?.male || 0}, F:{b.indirectBeneficiaries?.female || 0}]
+                          </span>
+                        </td>
 
-                <p>Year: {item.year}</p>
-<p>
- {item.gender === "M" 
-    ? "Male" 
-    : item.gender === "F" 
-      ? "Female" 
-      : "N/A"}
-</p>
-
-                <p>
-                  Location: {item.dzongkhag}, {item.gewog}, {item.village}
-                </p>
-
-                <p>
-                  House: {item.houseNo} | Thram: {item.thramNo}
-                </p>
-
-                <p>
-                  Project: {item.projectId?.projectName || "N/A"}
-                </p>
-
-                <p>
-                  Indirect: M({item.indirectBeneficiaries?.male ?? 0}) 
-                  F({item.indirectBeneficiaries?.female ?? 0})
-                </p>
-
-                <p className="italic">
-                  Activities:{" "}
-                  {item.keyActivities?.map((a) => a.activityName).join(", ") || "N/A"}
-                </p>
-
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* ================= DESKTOP TABLE ================= */}
-        <div className="hidden sm:block bg-white rounded-xl shadow overflow-x-auto">
-
-          <div className="min-w-[1200px]">
-
-            {/* HEADER */}
-            <div className="grid grid-cols-[1.2fr_1.5fr_0.8fr_1.2fr_1fr_1fr_0.8fr_0.8fr_1.3fr_1fr_1fr_1.5fr] gap-x-6 px-6 py-4 text-sm font-bold text-gray-700 border-b">
-
-
-              <span>CID</span>
-              <span>Name</span>
-              <span>Year</span>
-              <span>Dzongkhag</span>
-              <span>Gewog</span>
-              <span>Village</span>
-              <span>House</span>
-              <span>Thram</span>
-              <span>Project</span>
-              <span>Gender</span>
-              <span>Indirect</span>
-              <span>Activities</span>
-            </div>
-
-            {/* ROWS */}
-            <div className="divide-y">
-              {currentData.map((item) => (
-                <div
-                  key={item._id}
-                  // className="grid grid-cols-12 px-6 py-4 text-sm items-center hover:bg-gray-50"
-                  className="grid grid-cols-[1.2fr_1.5fr_0.8fr_1.2fr_1fr_1fr_0.8fr_0.8fr_1.3fr_1fr_1fr_1.5fr] gap-x-6 px-6 py-4 text-sm items-center hover:bg-blue-50/40 transition duration-200 group"
-                >
-
-                  <span className="text-blue-600 font-medium">
-                    {item.cid}
-                  </span>
-
-                  {/* <span className="flex items-center gap-2">
-                     <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 shrink-0">
-                              <User size={14}/>
+                        {/* 🛠️ Intervention */}
+                        <td className="px-6 py-4 text-sm text-gray-700">
+                          {b.keyActivities?.map((act, i) => (
+                            <div key={i} className={act.isTraining ? "text-orange-600 font-medium" : ""}>
+                              {act.activityName}
                             </div>
-                    {item.name}
-                  </span> */}
-                  <span className="flex items-center gap-3">
-  <div className="w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-200 rounded-full flex items-center justify-center text-blue-600">
-    <User size={14}/>
-  </div>
+                          ))}
+                        </td>
 
-  <div className="flex flex-col">
-    <span className="font-medium text-gray-800">{item.name}</span>
-    {/* <span className="text-xs text-gray-400">ID: {item.cid.slice(-4)}</span> */}
-  </div>
-</span>
+                        {/* 🔢 Nos Column */}
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {b.keyActivities?.map((act, i) => (
+                            <div key={i}>
+                              {act.isTraining ? "1" : (act.unit?.toLowerCase() === 'nos' ? act.specifications?.join(", ") || act.totalQuantity : "-")}
+                            </div>
+                          ))}
+                        </td>
 
-                  <span>{item.year}</span>
-                  <span>{item.dzongkhag}</span>
-                  <span>{item.gewog}</span>
-                  <span>{item.village}</span>
-                  <span>{item.houseNo}</span>
-                  <span>{item.thramNo}</span>
+                        {/* 🌿 Acres Column */}
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {b.keyActivities?.map((act, i) => (
+                            <div key={i}>
+                              {!act.isTraining && act.unit?.toLowerCase() === 'acres' ? act.specifications?.join(", ") : "-"}
+                            </div>
+                          ))}
+                        </td>
 
-                  <span>
-                    {item.projectId?.projectName || "N/A"}
-                  </span>
-
-{/* <p>
-  {item.gender === "M" 
-    ? "Male" 
-    : item.gender === "F" 
-      ? "Female" 
-      : "N/A"}
-</p> */}
-<span
-  className={`inline-flex items-center justify-center px-3 py-1.5 text-xs rounded-full font-medium whitespace-nowrap ${
-    item.gender === "M"
-      ? "bg-blue-100 text-blue-600"
-      : item.gender === "F"
-      ? "bg-pink-100 text-pink-600"
-      : "bg-gray-100 text-gray-500"
-  }`}
->
-  {item.gender === "M"
-    ? "Male"
-    : item.gender === "F"
-    ? "Female"
-    : "N/A"}
-</span>
-
-                  {/* <span>
-                    M:{item.indirectBeneficiaries?.male ?? 0}{" "}
-                    F:{item.indirectBeneficiaries?.female ?? 0}
-                  </span> */}
-                  <span className="text-xs font-medium">
-  <span className="text-blue-600">
-    M:{item.indirectBeneficiaries?.male ?? 0}
-  </span>{" "}
-  <span className="text-pink-600">
-    F:{item.indirectBeneficiaries?.female ?? 0}
-  </span>
-</span>
-
-                  <span className="truncate">
-                    {item.keyActivities?.map((a) => a.activityName).join(", ") || "N/A"}
-                  </span>
-
-                </div>
-              ))}
+                        {/* 💧 Litres Column */}
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {b.keyActivities?.map((act, i) => (
+                            <div key={i}>
+                              {!act.isTraining && act.unit?.toLowerCase() === 'litres' ? act.specifications?.join(", ") : "-"}
+                            </div>
+                          ))}
+                        </td>
+                      </motion.tr>
+                    ))
+                  )}
+                </tbody>         
+              </table>
             </div>
 
-        
+            {/* 🔢 PAGINATION FOOTER */}
+            {!loading && filteredData.length > 0 && (
+              <div className="px-4 sm:px-6 py-4 bg-white border-t border-gray-100 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+                <div className="text-sm text-gray-500 font-medium">
+                  Page <span className="text-[#3498db] font-bold">{currentPage}</span> / {totalPages || 1}
+                </div>
+                
+                <div className="flex items-center justify-center gap-1 sm:gap-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className={`p-2 rounded-lg border border-gray-200 transition-all ${
+                      currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-50 text-gray-600'
+                    }`}
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  
+                  {/* Desktop Page Numbers */}
+                  <div className="hidden sm:flex gap-1">
+                    {[...Array(totalPages)].map((_, i) => (
+                      <button
+                        key={i + 1}
+                        onClick={() => setCurrentPage(i + 1)}
+                        className={`w-9 h-9 items-center justify-center rounded-lg text-xs font-bold transition-all ${
+                          currentPage === i + 1 
+                            ? 'bg-[#3498db] text-white shadow-md shadow-blue-200 scale-105' 
+                            : 'text-gray-500 hover:bg-gray-50 border border-transparent'
+                        }`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                  </div>
 
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                    className={`p-2 rounded-lg border border-gray-200 transition-all ${
+                      currentPage === totalPages ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-50 text-gray-600'
+                    }`}
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-
-{/* PAGINATION */}
-{filteredData.length > itemsPerPage && (
-  <div className="flex flex-col items-left gap-2 ml-4 mt-4 mb-4">
-
-    {/* TEXT */}
-    <p className="text-xs text-gray-500">
-      {indexOfFirst + 1}–
-      {Math.min(indexOfLast, filteredData.length)} of {filteredData.length}
-    </p>
-
-    {/* BUTTONS */}
-    <div className="flex items-center gap-2">
-
-      {/* PREV */}
-      <button
-        onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-        disabled={currentPage === 1}
-        className="px-3 py-1 text-xs border rounded-lg disabled:opacity-40"
-      >
-        Prev
-      </button>
-
-      {/* CURRENT PAGE */}
-      <span className="text-sm font-medium text-gray-700">
-        {currentPage} / {Math.ceil(filteredData.length / itemsPerPage)}
-      </span>
-
-      {/* NEXT */}
-      <button
-        onClick={() =>
-          setCurrentPage((p) =>
-            Math.min(
-              p + 1,
-              Math.ceil(filteredData.length / itemsPerPage)
-            )
-          )
-        }
-        disabled={
-          currentPage ===
-          Math.ceil(filteredData.length / itemsPerPage)
-        }
-        className="px-3 py-1 text-xs border rounded-lg disabled:opacity-40"
-      >
-        Next
-      </button>
-
-    </div>
-  </div>
-)}
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default Beneficiaries;

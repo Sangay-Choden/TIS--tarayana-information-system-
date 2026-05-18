@@ -159,8 +159,8 @@ const handleSendAlert = async () => {
   if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin text-blue-500" size={32} /></div>;
 
   return (
-    // <div className="relative min-h-screen p-4 sm:p-6">
-    <div className="relative min-h-screen p-4 sm:p-6 w-full max-w-none flex-1">
+    <>
+    <div className="space-y-6">
       <div className={`space-y-6 w-full min-w-0 flex-1 transition-all duration-500 ${showSuccess || showModal || showRemark ? " pointer-events-none" : ""}`}>
         
         {/* HEADER AREA */}
@@ -178,9 +178,19 @@ const handleSendAlert = async () => {
                   <AlertTriangle size={16} /> Report Discrepancy
                 </button>
               )}
-              <button onClick={handleMarkComplete} className="w-full sm:w-auto justify-center flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tight shadow-lg shadow-green-100 hover:bg-green-600 transition-all">
-                <CheckCircle2 size={16} /> Mark as complete
-              </button>
+            <button
+  onClick={handleMarkComplete}
+  disabled={hasDiscrepancy}
+  className={`w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-tight transition-all
+    ${
+      hasDiscrepancy
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : "bg-green-500 text-white shadow-lg shadow-green-100 hover:bg-green-600"
+    }`}
+>
+  <CheckCircle2 size={16} />
+  Mark as complete
+</button>
             </div>
           )}
         </div>
@@ -191,7 +201,7 @@ const handleSendAlert = async () => {
             <div className="flex items-center gap-4">
               <div className="p-4 bg-blue-50 text-[#2EA1F2] rounded-2xl"><FileText size={24}/></div>
               <div>
-                <h2 className="text-xl font-black text-gray-700 tracking-tight">{projectData?.projectName}</h2>
+                <h2 className="text-lg font-bold text-gray-700 tracking-tight">{projectData?.projectName}</h2>
                 <div className="flex gap-2 mt-1.5">
                   {/* <span className="px-2 py-0.5 bg-[#D7FFD3] text-green-500 text-[10px] font-bold rounded-xl uppercase tracking-wider">{projectData?.status}</span> */}
                   <span
@@ -283,9 +293,11 @@ const handleSendAlert = async () => {
         </div>
       </div>
 
+
+</div>
       {/* EDIT MODAL */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 " onClick={() => setShowModal(false)}></div>
         <div className="relative bg-white w-full max-w-lg rounded-xl p-6 sm:p-10 ">
             <h3 className="text-xl font-black text-gray-700 mb-6">Synchronize Actuals</h3>
@@ -318,7 +330,7 @@ const handleSendAlert = async () => {
 
       {/* REMARK MODAL (With Officer Details) */}
       {showRemark && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
            <div className="absolute inset-0 bg-black/40 " onClick={() => setShowRemark(false)}></div>
     <div className="relative bg-white w-full max-w-lg rounded-2xl p-6 sm:p-10 shadow-xl">
               <div className="flex items-center gap-3 mb-4">
@@ -431,7 +443,7 @@ const handleSendAlert = async () => {
 
  {/* SUCCESS */}
 {showSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Background overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
@@ -477,7 +489,7 @@ const handleSendAlert = async () => {
   </div>
 )}
 
-    </div>
+    </>
   );
 };
 

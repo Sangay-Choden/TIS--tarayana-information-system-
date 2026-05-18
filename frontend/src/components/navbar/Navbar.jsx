@@ -286,7 +286,7 @@ const handleSignOut = () => {
             <motion.div 
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50"
+              className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-[100]"
             >
                  <div className="px-4 py-3 border-b border-gray-50 mb-1">
   {/* NAME */}
@@ -326,7 +326,7 @@ const handleSignOut = () => {
       </div>
   {/* MODAL & FORM */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 px-3">
+        <div className="fixed inset-0 flex items-center justify-center z-[100] px-3">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowModal(false)}></div>
           <div className="relative bg-white rounded-xl shadow-2xl w-full md:max-w-3xl px-6 py-8 text-center">
             <img src={logo} className="w-20 mx-auto mb-3" alt="Logo" />
@@ -405,7 +405,7 @@ const handleSignOut = () => {
 
 
 {showSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Background overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
@@ -452,7 +452,7 @@ const handleSignOut = () => {
 
       {/* ERROR POPUP */}
 {showError && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>

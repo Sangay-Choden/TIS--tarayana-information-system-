@@ -345,35 +345,40 @@ const [errorMessage, setErrorMessage] = useState("");
                 <div 
                   key={item.name}
                   onClick={() => handleBoxClick(item.name)}
-                  className="bg-white p-6 rounded-xl border  shadow-sm flex items-center justify-between group hover:border-blue-200 cursor-pointer transition-all"
+                    className="bg-white p-4 sm:p-5 rounded-xl shadow-sm border hover:border-blue-200 transition-all cursor-pointer group"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-[#2EA1F2] group-hover:text-white transition-all">
-                      <FileText size={18} />
-                    </div>
-                    <h5 className="font-bold text-gray-900">{item.name}</h5>
-                  </div>
-                 <span
-  className="
-    min-w-[64px]
-    sm:min-w-[72px]
-    text-center
-    text-[10px]
-    font-semibold
-    text-gray-400
-    bg-gray-50
-    px-2
-    sm:px-2.5
-    py-1
-    rounded-full
-    border
-    shrink-0
-    leading-tight
-  "
+                  <div className="flex justify-between items-center mb-4">
+                  <div className="p-2 sm:p-2.5 bg-blue-50 rounded-lg text-blue-500 group-hover:bg-[#2EA1F2] group-hover:text-white transition-colors">
+                     <FileText />
+                   </div>
+                                    <span
+className="text-[9px] sm:text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded-md uppercase tracking-tightext-xs bg-gray-100 px-2 py-1 rounded"
 >
   {item.count} {item.count === 1 ? "project" : "projects"}
 </span>
-                </div>
+                  </div>
+
+                    <h3 className="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors break-words">{item.name}</h3>
+                  </div>
+
+
+
+
+
+//        <div className="flex justify-between items-center mb-4">
+//                   <div className="p-2 sm:p-2.5 bg-blue-50 rounded-lg text-blue-500 group-hover:bg-[#2EA1F2] group-hover:text-white transition-colors">
+//                     <FileText />
+//                   </div>
+//                   <span className="text-[9px] sm:text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded-md uppercase tracking-tightext-xs bg-gray-100 px-2 py-1 rounded">
+//   {prog.projectCount || 0} projects
+// </span>
+//                 </div>
+
+//                 <h3 className="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors break-words">
+//                   {prog.programmeName}
+//                 </h3>
+
+
               ))}
             </motion.div>
           )}
@@ -399,7 +404,7 @@ const [errorMessage, setErrorMessage] = useState("");
 
 
 {isDeleteModalOpen && (
-  <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+  <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[100]">
     <div className="bg-white rounded-xl p-6 w-full max-w-xl shadow">
       
       <h2 className="text-lg font-semibold mb-2">
@@ -440,7 +445,7 @@ const [errorMessage, setErrorMessage] = useState("");
 
 {/* SUCCESS */}
 {isSuccessModalOpen && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Background overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>

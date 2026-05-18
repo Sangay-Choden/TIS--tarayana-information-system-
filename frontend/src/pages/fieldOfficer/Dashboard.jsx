@@ -118,10 +118,14 @@ const Dashboard = () => {
               icon={TrendingUp} 
               colorClass="bg-blue-50 text-blue-500"
               subValue={
-                <div className="flex gap-2 mt-3 text-[11px] font-semibold">
-                  <span className="text-green-600">Done: {summary.completed}</span>
-                  <span className="text-blue-400">Live: {summary.ongoing}</span>
-                </div>
+             <div className="flex flex-col gap-1 mt-3 text-[10px] font-medium leading-tight">
+  <span className="flex items-center gap-1 text-green-600">
+    ● Completed: {summary.completed}
+  </span>
+  <span className="flex items-center gap-1 text-blue-400">
+    ● Ongoing: {summary.ongoing}
+  </span>
+</div>
               }
             />
             <StatCard label="Direct Beneficiaries" value={summary.totalDirect} icon={Users} colorClass="bg-indigo-50 text-indigo-500" />

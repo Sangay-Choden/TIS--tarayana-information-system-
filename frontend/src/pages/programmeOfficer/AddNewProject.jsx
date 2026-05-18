@@ -317,7 +317,7 @@ const handleAddNewSubmit = async () => {
 
             <div className="flex justify-end gap-4 pt-4">
               <button type="button" onClick={() => navigate('/po/programmes')} className="px-4 py-2 border rounded-lg">Cancel</button>
-              <button type="submit" className="bg-[#2EA1F2] text-white px-5 py-2 shadow font-bold text-md rounded-lg flex items-center gap-2 hover:bg-[#298CD2] transition-color">+  Next Step</button>
+              <button type="submit" className="bg-[#2EA1F2] text-white px-5 py-2 shadow font-bold text-md rounded-lg flex items-center gap-2 hover:bg-[#298CD2] transition-color"> Next Step</button>
             </div>
           </form>
         </motion.div>

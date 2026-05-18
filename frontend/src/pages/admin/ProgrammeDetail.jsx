@@ -181,8 +181,6 @@
 
 import { useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-// import Sidebar from "../../components/Sidebar";
-// import Navbar from "../../components/Navbar";
 import { ChevronLeft,Users, FileText, MapPin, BarChart3, Pencil, Trash2, X } from "lucide-react";
 import { useEffect } from "react";
 
@@ -599,7 +597,7 @@ setEditProgrammeDescription(programme?.programmeDescription || "");
 </div>
             {/* DELETE MODAL */}
       {deleteItem !== null && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[100]">
           <div className="bg-white rounded-xl p-6 w-full max-w-xl shadow">
             <h2 className="text-lg font-semibold mb-2">Delete Programme?</h2>
             <p className="text-gray-500 text-sm mb-6">
@@ -626,7 +624,7 @@ setEditProgrammeDescription(programme?.programmeDescription || "");
       )}
 
 {showDeleteSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
@@ -674,7 +672,7 @@ setEditProgrammeDescription(programme?.programmeDescription || "");
 
 
 {showEditModal && (
-  <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 px-3">
+  <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[100] px-3">
 
     <div className="bg-white rounded-xl p-6 w-full max-w-3xl shadow-2xl animate-popup">
     <button
@@ -745,7 +743,7 @@ setEditProgrammeDescription(programme?.programmeDescription || "");
 )}
 
 {showEditSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>

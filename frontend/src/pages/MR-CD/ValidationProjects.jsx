@@ -135,13 +135,13 @@ const ValidationProjects = () => {
       </button>
 
       {/* HEADER */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border shadow-sm flex items-start sm:items-center gap-3 sm:gap-4 mb-6">
-       
+    <div className="  flex items-start sm:items-center gap-3 sm:gap-4">
+      
 
         <div className="break-words">
-          <h2 className="text-sm sm:text-lg font-bold text-gray-800">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-800">
             {programme}
-          </h2>
+          </h1>
           <p className="text-[10px] sm:text-[11px] text-gray-500">
             {projects.length} Projects for Validation
           </p>
@@ -151,50 +151,38 @@ const ValidationProjects = () => {
     {/* PROJECT GRID */}
 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
   {projects.map((p, i) => (
-    <div
-      key={p.id}
-      onClick={() => navigate(`/${rootPath}/validation-queue/project/${p.id}`)}
-      className="bg-white p-5 rounded-xl border shadow-sm hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group"
-    >
+  <div
+  key={p.id}
+  onClick={() => navigate(`/${rootPath}/validation-queue/project/${p.id}`)}
+  className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all cursor-pointer flex flex-col justify-between min-h-[140px]"
+>
       {/* TOP */}
-      <div className="flex justify-between items-start mb-4">
-        <div
-          className="
-            w-12 h-12
-            bg-blue-50
-            text-[#2EA1F2]
-            rounded-xl
-            flex items-center justify-center
-            group-hover:bg-[#2EA1F2]
-            group-hover:text-white
-            transition-all
-            shrink-0
-          "
-        >
-          <FileText size={24} />
+  <div className="flex justify-between items-center">
+  <div className="w-11 h-11 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-[#2EA1F2] group-hover:text-white transition-all">
+          <FileText size={20} />
         </div>
 
-        <div className="text-right">
-          <h2 className="text-lg font-black text-gray-800 leading-none">
-            {p.count}
-          </h2>
-          <span className="text-[9px] font-bold text-gray-400 uppercase">
-            Beneficiaries
-          </span>
-        </div>
-      </div>
+  <div className="text-right leading-tight">
+    <h2 className="text-base font-bold text-gray-800">
+      {p.count}
+    </h2>
+    <span className="text-[10px] text-gray-400 uppercase tracking-wide">
+      Beneficiaries
+    </span>
+  </div>
+</div>
 
       {/* PROJECT NAME */}
-      <div className="mb-3">
-        <h3 className="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
-          {p.name}
-        </h3>
-      </div>
+   <div className="mt-3">
+  <h3 className="text-sm font-bold text-gray-800 group-hover:text-blue-600 line-clamp-2 leading-snug mb-1">
+    {p.name}
+  </h3>
+</div>
 
       {/* STATUS */}
-      <div className="mb-4">
+      <div className="mb-2">
         <span
-          className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+          className={`px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide ${
             p.status?.toLowerCase() === "ongoing"
               ? "bg-blue-100 text-blue-600"
               : "bg-[#D7FFD3] text-green-500"
@@ -204,24 +192,7 @@ const ValidationProjects = () => {
         </span>
       </div>
 
-      {/* OFFICERS */}
-      <div className="flex items-center gap-2">
-        <div className="flex -space-x-1.5">
-          <div className="w-5 h-5 rounded-full bg-gray-200 border flex items-center justify-center">
-            <User2 size={9} />
-          </div>
 
-          <div className="w-5 h-5 rounded-full bg-blue-100 border flex items-center justify-center">
-            <User2 size={9} />
-          </div>
-        </div>
-
-        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-tight flex flex-wrap gap-1">
-          <span>{p.po}</span>
-          <span>•</span>
-          <span>{p.fo}</span>
-        </p>
-      </div>
     </div>
   ))}
 </div>

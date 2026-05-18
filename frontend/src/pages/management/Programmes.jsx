@@ -83,6 +83,7 @@ const ManagementProgrammes = () => {
             ).length;
 
             return {
+                id: p._id, 
               name: p.programmeName,
               count: progProjectCount
             };
@@ -136,14 +137,14 @@ const ManagementProgrammes = () => {
         {filteredProgrammes.map((p, i) => (
           <div
             key={i}
-            onClick={() => navigate(`/mgmt/programmes/${p.name}`)}
+            onClick={() => navigate(`/mgmt/programmes/${p.id}`)}
             className="bg-white p-4 sm:p-5 rounded-xl shadow-sm border  hover:border-blue-200 transition-all cursor-pointer group"
           >
             <div className="flex justify-between items-start mb-4">
               <div className="p-2 sm:p-2.5 bg-blue-50 rounded-lg text-blue-500 group-hover:bg-[#2EA1F2] group-hover:text-white transition-colors">
                 <FileText size={18} />
               </div>
-              <span className="text-[9px] sm:text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded-md uppercase tracking-tight">
+              <span className="text-[9px] sm:text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded-md uppercase tracking-tightext-xs bg-gray-100 px-2 py-1 rounded">
                 {p.count} projects
               </span>
             </div>

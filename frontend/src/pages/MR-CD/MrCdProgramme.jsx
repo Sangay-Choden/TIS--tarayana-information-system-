@@ -149,11 +149,11 @@ const MrCdProgramme = ({ role }) => {
       </button>
 
       {/* HEADER */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border shadow-sm flex items-start sm:items-center gap-3 sm:gap-4">
+      <div className="  flex items-start sm:items-center gap-3 sm:gap-4">
       
 
         <div className="break-words">
-          <h1 className="text-sm sm:text-lg font-bold text-gray-800">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-800">
             {programmeName}
           </h1>
           <p className="text-[10px] sm:text-[11px] text-gray-500">

@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { FileText, Eye, Download, Sparkles,FileCheck } from "lucide-react";
+import { FileText, Eye, Download, Sparkles, FileCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import {  useEffect } from "react";
@@ -114,7 +113,7 @@ useEffect(() => {
                       {r.title}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {r.type} • {r.year}
+                      {r.fileUrl?.split(".").pop()?.toUpperCase()} • {r.year}
                     </p>
                   </div>
                 </div>

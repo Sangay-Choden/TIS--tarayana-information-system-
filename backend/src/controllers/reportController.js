@@ -212,7 +212,7 @@ end.setHours(23, 59, 59, 999);
     // =========================
     // BUILD REPORT DATA
     // =========================
-const { summary, groups, groupingMode, meta: serviceMeta } = await buildReportData({
+const { summary, groups, groupingMode, meta: serviceMeta={} } = await buildReportData({
   dateFilter,
   programmes,
   projects,

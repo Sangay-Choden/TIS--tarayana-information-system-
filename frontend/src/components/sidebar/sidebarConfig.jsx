@@ -19,20 +19,20 @@ export const menuConfigs = {
     { name: "Dashboard", path: "/fo/dashboard", icon: <LayoutGrid size={20} /> },
     { name: "Projects", path: "/fo/projects", icon: <FileText size={20} /> },
     { name: "Beneficiaries", path: "/fo/beneficiaries", icon: <Users size={20} /> },
-    { name: "Report & M&E", path: "/fo/reports", icon: <BarChart3 size={20} /> },
+    { name: "Reports", path: "/fo/reports", icon: <BarChart3 size={20} /> },
    
   ],
   'Programme Officer': [
     { name: "Dashboard", path: "/po/dashboard", icon: <LayoutGrid size={20} /> },
     { name: "Programmes", path: "/po/programmes", icon: <FileText size={20} /> },
     { name: "Beneficiaries", path: "/po/beneficiaries", icon: <Users size={20} /> },
-    { name: "Report & M&E", path: "/po/reports", icon: <BarChart3 size={20} /> },
+    { name: "Reports", path: "/po/reports", icon: <BarChart3 size={20} /> },
   ],
   'Admin': [
     { name: "Dashboard", path: "/admin/dashboard", icon: <LayoutGrid size={20} /> },
     { name: "Programmes", path: "/admin/programmes", icon: <FileText size={20} /> },
     { name: "Beneficiaries", path: "/admin/beneficiaries", icon: <Users size={20} /> },
-    { name: "Report & M&E", path: "/admin/reports", icon: <BarChart3 size={20} /> },
+    { name: "Reports", path: "/admin/reports", icon: <BarChart3 size={20} /> },
     { name: "Annual Events", path: "/admin/annual-events", icon: <Calendar size={20} /> },
     { name: "User Management", path: "/admin/users", icon: <UserCog size={20} /> },
     { name: "Settings", path: "/admin/settings", icon: <Settings size={20} /> },
@@ -41,7 +41,7 @@ export const menuConfigs = {
   'Management': [
     { name: "Dashboard", path: "/mgmt/dashboard", icon: <LayoutGrid size={20} /> },
     { name: "Programmes", path: "/mgmt/programmes", icon: <FileText size={20} /> },
-    { name: "Report", path: "/mgmt/reports", icon: <BarChart3 size={20} /> },
+    { name: "Reports", path: "/mgmt/reports", icon: <BarChart3 size={20} /> },
   ],
   'CD Officer': [
     { name: "Dashboard", path: "/cd/dashboard", icon: <LayoutGrid size={20} /> },

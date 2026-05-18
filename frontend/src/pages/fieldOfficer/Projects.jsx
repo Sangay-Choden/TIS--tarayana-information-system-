@@ -160,13 +160,13 @@ const Projects = () => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-gray-50/50 border-b">
-                      <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Project Name</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Dzongkhag</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Programme</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Field Officer</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-gray-700 uppercase tracking-wider">Project Name</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-gray-700 uppercase tracking-wider">Dzongkhag</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-gray-700 uppercase tracking-wider">Programme</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-gray-700 uppercase tracking-wider">Field Officer</th>
 
-                      <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-blue-600">Programme Officer</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">End Date</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-gray-700 uppercase tracking-wider text-blue-600">Programme Officer</th>
+                      {/* <th className="px-6 py-4 text-[10px] font-bold text-gray-700 uppercase tracking-wider">End Date</th> */}
                     </tr> 
                   </thead>
                   <tbody className="divide-y divide-gray-50 text-[13px]">
@@ -186,7 +186,7 @@ const Projects = () => {
                                 ? project.programmeOfficer.email 
                                 : `ID: ${project.programmeOfficer?.substring(0, 8)}...`}
                         </td>
-                        <td className="px-6 py-4 text-gray-600">{new Date(project.endDate).toLocaleDateString()}</td>
+                        {/* <td className="px-6 py-4 text-gray-600">{new Date(project.endDate).toLocaleDateString()}</td> */}
                       </tr>
                     ))}
                   </tbody>
@@ -207,18 +207,20 @@ const Projects = () => {
                   <div 
                     key={item.name}
                     onClick={() => handleBoxClick(item.name)}
-                    className="bg-white p-4 sm:p-5 rounded-xl shadow-sm border hover:border-blue-200 transition-all cursor-pointer group"
+                     className="bg-white p-4 sm:p-5 rounded-xl shadow-sm border hover:border-blue-200 transition-all cursor-pointer group"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 sm:p-2.5 bg-blue-50 rounded-lg text-blue-500 group-hover:bg-[#2EA1F2] group-hover:text-white transition-colors">
-                        <FileText size={18} />
-                      </div>
-                      <h5 className="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors break-words">{item.name}</h5>
-                    </div>
-                    <span className="text-[9px] sm:text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded-md uppercase tracking-tightext-xs bg-gray-100 px-2 py-1 rounded">
+                   <div className="flex justify-between items-center mb-4">
+                       <div className="p-2 sm:p-2.5 bg-blue-50 rounded-lg text-blue-500 group-hover:bg-[#2EA1F2] group-hover:text-white transition-colors">
+                      <FileText />
+                   </div>
+                        <span className="text-[9px] sm:text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-1 rounded-md uppercase tracking-tightext-xs bg-gray-100 px-2 py-1 rounded">
                       {item.count} project{item.count > 1 ? 's' : ''}
                     </span>
                   </div>
+                      <h3 className="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors break-words">{item.name}</h3>
+                    </div>
+
+
                 ))}
               </div>
             ) : (

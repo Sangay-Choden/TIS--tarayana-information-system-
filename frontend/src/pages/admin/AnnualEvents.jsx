@@ -232,7 +232,7 @@ const confirmDelete = async () => {
         </div>
 
      {showCreate && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-3 sm:px-4">
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[100] px-3 sm:px-4">
     
     <div className="bg-white w-full max-w-2xl rounded-2xl p-4 sm:p-6 space-y-5 shadow-lg relative max-h-[90vh] overflow-y-auto">
 
@@ -322,7 +322,7 @@ const confirmDelete = async () => {
 
       {/* DELETE CONFIRMATION */}
       {deleteEvent && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 px-4">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[100] px-4">
            <div className="bg-white rounded-xl p-6 w-full max-w-xl shadow">
 
             <h2 className="text-lg font-semibold">
@@ -355,7 +355,7 @@ const confirmDelete = async () => {
 
       {/* SUCCESS */}
 {showSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Background overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
@@ -405,7 +405,7 @@ const confirmDelete = async () => {
 
 
 {showErrorPopup && (
-  <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
+  <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
 
     {/* Overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>

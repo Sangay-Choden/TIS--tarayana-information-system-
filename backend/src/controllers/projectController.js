@@ -89,95 +89,123 @@ exports.getProjectView = async (req, res) => {
 
     const beneficiaries = await Beneficiary.find({ projectId: id });
 
-    // 1. Helper for parsing capacity (unchanged)
+    // 1. Helper to calculate capacity or area sum allocations accurately
     const parseSpecs = (specsArray) => {
       if (!specsArray || !Array.isArray(specsArray)) return 0;
-
-      return specsArray.reduce((total, num) => {
-        return total + Number(num || 0);
-      }, 0);
+      return specsArray.reduce((total, num) => total + Number(num || 0), 0);
     };
 
-    // 2. Summary (unchanged)
+    // 2. Comprehensive Demographics Summary Generation
     const summary = beneficiaries.reduce((acc, curr) => {
       acc.totalDirect += 1;
       acc.totalIndirectMale += curr.indirectBeneficiaries?.male || 0;
       acc.totalIndirectFemale += curr.indirectBeneficiaries?.female || 0;
-      if (curr.gender?.toLowerCase() === 'm') acc.directMale += 1;
-      if (curr.gender?.toLowerCase() === 'f') acc.directFemale += 1;
+      
+      const genderLower = curr.gender?.toLowerCase();
+      if (genderLower === 'm') acc.directMale += 1;
+      else if (genderLower === 'f') acc.directFemale += 1;
+      else if (genderLower === 'others') {
+        if (!acc.directOthers) acc.directOthers = 0;
+        acc.directOthers += 1;
+      }
       return acc;
-    }, { totalDirect: 0, directMale: 0, directFemale: 0, totalIndirectMale: 0, totalIndirectFemale: 0 });
+    }, { totalDirect: 0, directMale: 0, directFemale: 0, directOthers: 0, totalIndirectMale: 0, totalIndirectFemale: 0 });
 
-    // 3. UPDATED AGGREGATION: Include isTraining and trainingDetails
+    // 3. UPDATED AGGREGATION PIPELINE ENGINE
     const geoStats = await Beneficiary.aggregate([
       { $match: { projectId: new mongoose.Types.ObjectId(id) } },
       { $unwind: "$keyActivities" },
+      
+      // STAGE A: Group strictly by Location + Activity Type.
       {
         $group: {
           _id: {
             dzongkhag: "$dzongkhag",
             gewog: "$gewog",
             village: "$village",
-            // If it's training, we use the training type as the name if activityName is missing
             activity: { $ifNull: ["$keyActivities.activityName", "$keyActivities.trainingDetails.type"] },
             isTraining: "$keyActivities.isTraining"
           },
-          totalQty: { $sum: "$keyActivities.totalQuantity" },
-          attendeeCount: { $sum: 1 }, // Count how many people did this activity/training
+          // Keep the raw quantity entry value per location
+          totalQty: { $max: "$keyActivities.totalQuantity" },
           unit: { $first: "$keyActivities.unit" },
-          allSpecs: { $push: "$keyActivities.specifications" },
-          households: { $addToSet: "$houseNo" }
+          
+          // CRITICAL: Push all specifications arrays into an array-of-arrays matrix
+          allSpecsMatrix: { $push: "$keyActivities.specifications" },
+          
+          // Counts how many distinct citizen records are attached to this specific location match
+          directBeneficiaryCount: { $sum: 1 } 
         }
       }
     ]);
 
-    // 4. UPDATED GEOGRAPHIC BREAKDOWN FORMATTING
+    // 4. GEOGRAPHIC BREAKDOWN MATRIX FORMATTING (With Direct Counts added)
     const geographicBreakdown = geoStats.reduce((acc, curr) => {
       const locKey = `${curr._id.dzongkhag}-${curr._id.gewog}-${curr._id.village}`;
       if (!acc[locKey]) {
         acc[locKey] = {
-          location: { dzongkhag: curr._id.dzongkhag, gewog: curr._id.gewog, village: curr._id.village },
-          totalHouseholds: 0,
+          location: { 
+            dzongkhag: curr._id.dzongkhag, 
+            gewog: curr._id.gewog, 
+            village: curr._id.village 
+          },
+          // New Metric Field at the Location Tier
+          directBeneficiariesCount: 0, 
           activities: []
         };
       }
 
       const isTraining = curr._id.isTraining === true;
-      const flatSpecs = curr.allSpecs.flat();
+      
+      // Flatten the specs matrix matrix down and deduplicate if needed, 
+      // or keep flat to ensure [10, 2] reads as a single [10, 2] combination array instance.
+      // Using Set option here safely converts matrix elements or captures exact input values
+      const flatSpecs = Array.from(new Set(curr.allSpecsMatrix.flat()));
 
       acc[locKey].activities.push({
         activityName: curr._id.activity || "Unnamed Activity",
         isTraining: isTraining,
-        // For training, "Total Count" is attendeeCount; for activities, it's totalQuantity
-        displayTotal: isTraining ? curr.attendeeCount : curr.totalQty, 
+        displayTotal: isTraining ? curr.directBeneficiaryCount : curr.totalQty, 
         unit: isTraining ? "Participants" : curr.unit,
-        totalCapacitySum: isTraining ? 0 : parseSpecs(flatSpecs),
-        remarks: flatSpecs
-        // remarks: curr.allSpecs
+        totalCapacitySum: isTraining ? 0 : parseSpecs(flatSpecs), // Calculates 10 + 2 = 12 perfectly
+        remarks: flatSpecs,
+        directBeneficiariesCount: curr.directBeneficiaryCount
       });
 
-      acc[locKey].totalHouseholds = acc[locKey].totalHouseholds + curr.households.length;
+      // Accumulate direct counts globally across matching localized items
+      // acc[locKey].directBeneficiariesCount += curr.directBeneficiaryCount;
+
       return acc;
     }, {});
 
-    // 5. Global Activity Totals (Summary)
+    // 5. Global Activity Totals Summary Calculation
     const globalActivityTotals = geoStats.reduce((acc, curr) => {
       const name = curr._id.activity || "Unknown";
       if (!acc[name]) {
-        acc[name] = { quantity: 0, attendeeCount: 0, capacity: 0, unit: curr.unit, isTraining: curr._id.isTraining, realQuantity: 0, isConfirmed: false };
+        acc[name] = { 
+          quantity: 0, 
+          attendeeCount: 0, 
+          capacity: 0, 
+          unit: curr.unit, 
+          isTraining: curr._id.isTraining, 
+          realQuantity: 0, 
+          isConfirmed: false 
+        };
       }
+      
+      const flatSpecs = Array.from(new Set(curr.allSpecsMatrix.flat()));
+
       acc[name].quantity += curr.totalQty;
-      acc[name].attendeeCount += curr.attendeeCount;
-      acc[name].capacity += parseSpecs(curr.allSpecs.flat());
+      acc[name].attendeeCount += curr.directBeneficiaryCount;
+      acc[name].capacity += parseSpecs(flatSpecs);
       return acc;
     }, {});
 
-    // / NEW: Merge C&D Verification data into the totals
+    // 6. Cross-reference activity verification data keys
     if (project.keyActivityVerification && project.keyActivityVerification.length > 0) {
       project.keyActivityVerification.forEach(verification => {
         if (globalActivityTotals[verification.activityName]) {
           globalActivityTotals[verification.activityName].realQuantity = verification.realQuantity;
-          // Automatically flag as confirmed if the numbers match exactly
           globalActivityTotals[verification.activityName].isConfirmed = 
             globalActivityTotals[verification.activityName].quantity === verification.realQuantity;
         }
@@ -196,7 +224,6 @@ exports.getProjectView = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 
 
@@ -447,7 +474,7 @@ exports.getDashboardSummary = async (req, res) => {
       return res.status(400).json({ success: false, message: "roleName and userId are required" });
     }
 
-    // --- Helper for parsing capacity (from getProjectView) ---
+    // --- Helper for parsing capacity sums safely ---
     const parseSpecs = (specsArray) => {
       if (!specsArray || !Array.isArray(specsArray)) return 0;
       return specsArray.reduce((total, num) => total + Number(num || 0), 0);
@@ -456,7 +483,7 @@ exports.getDashboardSummary = async (req, res) => {
     let projectFilter = {};
     const userObjectId = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : null;
 
-    // 1. Role-based filtering
+    // 1. Role-based filtering configurations
     if (roleName === "FieldOfficer") {
       projectFilter = { $or: [{ fieldOfficer: userId }, ...(userObjectId ? [{ fieldOfficer: userObjectId }] : [])] };
     } else if (roleName === "ProgrammeOfficer") {
@@ -471,7 +498,7 @@ exports.getDashboardSummary = async (req, res) => {
     if (!projects.length) {
       return res.status(200).json({ 
         success: true, 
-        summary: { totalProjects: 0, totalDirect: 0, totalIndirect: 0, totalIndirectMale: 0, totalIndirectFemale: 0 }, 
+        summary: { totalProjects: 0, totalDirect: 0, totalIndirect: 0, totalIndirectMale: 0, totalIndirectFemale: 0, dzongkhags: 0, programmes: 0, activityTotals: {} }, 
         charts: {} 
       });
     }
@@ -495,6 +522,9 @@ exports.getDashboardSummary = async (req, res) => {
       projByYear: {}
     };
 
+    // Tracker sets to prevent duplicate counting of spatial data on the dashboard maps/metrics
+    const activityLocationTracker = new Map();
+
     // 3. Process Projects
     projects.forEach(p => {
       const year = p.startDate ? new Date(p.startDate).getFullYear().toString() : "N/A";
@@ -515,44 +545,81 @@ exports.getDashboardSummary = async (req, res) => {
     // 4. Process Beneficiaries
     beneficiaries.forEach(ben => {
       const year = ben.createdAt ? new Date(ben.createdAt).getFullYear().toString() : "N/A";
-      const dzong = ben.dzongkhag || "Unknown";
+      const dzong = ben.dzongkhag ? ben.dzongkhag.trim().toLowerCase() : "unknown";
+      const gewog = ben.gewog ? ben.gewog.trim().toLowerCase() : "unknown";
+      const village = ben.village ? ben.village.trim().toLowerCase() : "unknown";
       
       const parentProject = projects.find(p => p._id.toString() === ben.projectId.toString());
       const progName = parentProject?.programme?.[0]?.programmeName || "Unassigned";
 
+      // Count direct beneficiaries normally (demographics scale by head-count)
       stats.beneByYear[year] = (stats.beneByYear[year] || 0) + 1;
       stats.beneByDzong[dzong] = (stats.beneByDzong[dzong] || 0) + 1;
       stats.beneByProg[progName] = (stats.beneByProg[progName] || 0) + 1;
 
-      // Totals
+      // Accumulate indirect family beneficiary pools
       const m = ben.indirectBeneficiaries?.male || 0;
       const f = ben.indirectBeneficiaries?.female || 0;
       stats.totalIndirectMale += m;
       stats.totalIndirectFemale += f;
       stats.totalIndirect += (m + f);
 
-      // Activity processing with Capacity Sum
+      // 5. FIXED: Activity processing with location validation logic
       ben.keyActivities?.forEach(act => {
-        const name = act.activityName || "Unknown";
+        const rawName = act.activityName || act.trainingDetails?.type || "Unknown";
+        const name = rawName.trim().toLowerCase();
+        const isTraining = act.isTraining === true;
+
         if (!stats.activityTotals[name]) {
           stats.activityTotals[name] = { 
             count: 0, 
             isTraining: act.isTraining,
-            unit: act.unit || " ",
-            totalCapacity: 0 // Initialize capacity
+            unit: isTraining ? "Participants" : (act.unit || "Nos"),
+            totalCapacity: 0 
           };
         }
 
-        // Add to count/quantity
-        stats.activityTotals[name].count += act.isTraining ? 1 : (Number(act.totalQuantity) || 0);
-        
-        // Calculate and add capacity for this specific activity entry
-        const capacitySum = parseSpecs(act.specifications);
-        stats.activityTotals[name].totalCapacity += capacitySum;
+        // Unique signature string targeting specific regional spatial boundaries
+        const locationActivityKey = `${dzong}-${gewog}-${village}-${name}`;
+
+        if (isTraining) {
+          // Trainings scale incrementally based on total attendance counts
+          stats.activityTotals[name].count += 1;
+        } else {
+          // For physical infrastructure assets: only record values once per location
+          if (!activityLocationTracker.has(locationActivityKey)) {
+            // Store the initial quantity and specifications parsed for this location
+            const capacitySum = parseSpecs(act.specifications);
+            const quantity = Number(act.totalQuantity) || 0;
+
+            activityLocationTracker.set(locationActivityKey, { quantity, capacitySum });
+
+            stats.activityTotals[name].count += quantity;
+            stats.activityTotals[name].totalCapacity += capacitySum;
+          } else {
+            // Optional fallback: If a later entry has a larger value, adjust using the difference
+            const previous = activityLocationTracker.get(locationActivityKey);
+            const currentQty = Number(act.totalQuantity) || 0;
+            const currentCapacity = parseSpecs(act.specifications);
+
+            if (currentCapacity > previous.capacitySum) {
+              stats.activityTotals[name].totalCapacity += (currentCapacity - previous.capacitySum);
+              previous.capacitySum = currentCapacity;
+            }
+            if (currentQty > previous.quantity) {
+              stats.activityTotals[name].count += (currentQty - previous.quantity);
+              previous.quantity = currentQty;
+            }
+            activityLocationTracker.set(locationActivityKey, previous);
+          }
+        }
       });
     });
 
-    const formatForChart = (obj) => Object.entries(obj).map(([name, value]) => ({ name, value }));
+    const formatForChart = (obj) => Object.entries(obj).map(([name, value]) => ({ 
+      name: name.charAt(0).toUpperCase() + name.slice(1), 
+      value 
+    }));
 
     res.status(200).json({
       success: true,
@@ -587,7 +654,6 @@ exports.getDashboardSummary = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 
 exports.getProjectsByProgramme = async (req, res) => {

@@ -253,7 +253,7 @@ setTimeout(() => {
 
       {/* SUCCESS POPUP */}
       {showSuccess && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-[100]">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
 
           <div className="relative bg-white rounded-xl shadow-2xl px-6 sm:px-10 py-8 sm:py-10 text-center w-full max-w-xl animate-popup">
@@ -286,7 +286,7 @@ setTimeout(() => {
 
       {/* ERROR POPUP */}
 {showError && (
-  <div className="fixed inset-0 flex items-center justify-center z-50">
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
