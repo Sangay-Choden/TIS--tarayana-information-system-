@@ -211,7 +211,7 @@ if (!res.ok) {
 
   sessionStorage.clear();
 
-  navigate("/auth/login", { replace: true });
+  navigate(" ", { replace: true });
 
         // Optional: Logout user or redirect
       }, 2000);
