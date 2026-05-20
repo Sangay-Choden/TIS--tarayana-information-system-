@@ -23,7 +23,7 @@ const UpdateProjectModal = ({ isOpen, onClose, project, onUpdate }) => {
   const [tempSelections, setTempSelections] = useState({
     dzongkhag: '', programme: '', donor: '', partner: '', fieldOfficer: ''
   });
-
+const API_URL = import.meta.env.VITE_API_URL;
   const [options, setOptions] = useState({
     programmes: [], donors: [], partners: [], officers: [],
     dzongkhags: ["Bumthang", "Chukha", "Dagana", "Gasa", "Haa", "Lhuentse", 
@@ -37,9 +37,9 @@ const UpdateProjectModal = ({ isOpen, onClose, project, onUpdate }) => {
     console.log("🔍 Fetching options from APIs...");
     try {
       const [donPartRes, progRes, userRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/donor-partner/summary'),
-        axios.get('http://localhost:5000/api/programmes/'),
-        axios.get('http://localhost:5000/api/auth/users')
+        axios.get(`${API_URL}/api/donor-partner/summary`),
+        axios.get(`${API_URL}/api/programmes/`),
+        axios.get(`${API_URL}/api/auth/users`)
       ]);
       
       setOptions({
@@ -104,7 +104,7 @@ const UpdateProjectModal = ({ isOpen, onClose, project, onUpdate }) => {
   try {
     console.log("📡 Sending PUT request...");
     const res = await axios.put(
-      `http://localhost:5000/api/projects/update/${project._id}`,
+      `${API_URL}/api/projects/update/${project._id}`,
       finalData,
       { headers: { Authorization: `Bearer ${token}` } }
     );

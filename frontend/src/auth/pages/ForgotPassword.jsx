@@ -7,6 +7,7 @@ import hero from "../../assets/hero.png";
 import logo from "../../assets/logo.png";
 
 const ForgotPassword = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -16,7 +17,7 @@ const ForgotPassword = () => {
   useEffect(() => {
     const fetchBanner = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/banner");
+      const res = await fetch(`${API_URL}/api/banner`);
       const data = await res.json();
   
       console.log("BANNER API RESPONSE:", data);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 const BhutanMap = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   
 const [activityData, setActivityData] = useState({});
 const [selectedDzongkhag, setSelectedDzongkhag] = useState(null);
@@ -9,7 +10,7 @@ const [popupPosition, setPopupPosition] = useState({
   y: 0
 });
 useEffect(() => {
-  fetch("http://localhost:5000/api/beneficiaries/dzongkhag")
+  fetch(`${API_URL}/api/beneficiaries/dzongkhag`)
     .then((res) => res.json())
     .then((data) => {
       setActivityData(data.dzongkhagActivitySummary || {});

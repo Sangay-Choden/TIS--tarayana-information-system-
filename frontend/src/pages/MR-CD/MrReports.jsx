@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import {  useEffect } from "react";
 
 const Reports = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
@@ -26,7 +27,7 @@ const currentReports = reports.slice(
    
 
 useEffect(() => {
-  fetch("http://localhost:5000/api/report")
+  fetch(`${API_URL}/api/report`)
     .then((res) => res.json())
     .then((data) => {
       const list = Array.isArray(data)
@@ -44,12 +45,12 @@ useEffect(() => {
 }, []);
 
 const handleView = (report) => {
-  window.open(`http://localhost:5000${report.fileUrl}`, "_blank");
+  window.open(`${API_URL}${report.fileUrl}`, "_blank");
 };
 
 const handleDownload = (report) => {
   const link = document.createElement("a");
-  link.href = `http://localhost:5000${report.fileUrl}`;
+  link.href = `${API_URL}${report.fileUrl}`;
   link.download = report.title;
   link.click();
 };

@@ -6,6 +6,7 @@ import axios from 'axios';
 import { cn } from '../../lib/utils';
 
 const Projects = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
    const { pathname } = useLocation();
    const rootPath = pathname.split('/')[1];
@@ -34,7 +35,7 @@ const Projects = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:5000/api/projects/field-officer/${USER_ID}`,
+        `${API_URL}/api/projects/field-officer/${USER_ID}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setProjects(response.data.data || []);

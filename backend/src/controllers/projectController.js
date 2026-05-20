@@ -50,12 +50,13 @@ exports.createProject = async (req, res) => {
   }
 };
 
+
 // GET projects by Programme Officer ID
 exports.getProjectsByProgrammeOfficer = async (req, res) => {
   try {
     const { officerId } = req.params;
     const projects = await Project.find({ programmeOfficer: officerId })
-      .populate("programme donor partner fieldOfficer");
+.populate("programme donor partner fieldOfficer programmeOfficer");
     
     res.status(200).json({ success: true, data: projects });
   } catch (error) {
@@ -76,7 +77,6 @@ exports.getProjectsByFieldOfficer = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 
 
@@ -139,7 +139,27 @@ exports.getProjectView = async (req, res) => {
       }
     ]);
 
-    // 4. GEOGRAPHIC BREAKDOWN MATRIX FORMATTING (With Direct Counts added)
+    // Create a fast lookup map for verification data using a compound key: activity_dzongkhag_gewog_village
+   // Create a fast lookup map for verification data
+const verificationMap = {};
+
+    // CRITICAL SAFEGUARD: Ensure array is present and populated before iterating over elements
+    if (project.keyActivityVerification && Array.isArray(project.keyActivityVerification)) {
+      project.keyActivityVerification.forEach(v => {
+        const act = (v.activityName || "").toLowerCase().trim();
+        const dzo = (v.dzongkhag || "").toLowerCase().trim();
+        const gew = (v.gewog || "").toLowerCase().trim();
+        const vil = (v.village || "").toLowerCase().trim();
+        const lookupKey = `${act}_${dzo}_${gew}_${vil}`;
+        
+        verificationMap[lookupKey] = {
+          realQuantity: v.realQuantity || 0,
+          isConfirmed: v.isConfirmed || false
+        };
+      });
+    }
+
+    // 4. GEOGRAPHIC BREAKDOWN MATRIX FORMATTING (With Direct Counts and Real Quantities injected)
     const geographicBreakdown = geoStats.reduce((acc, curr) => {
       const locKey = `${curr._id.dzongkhag}-${curr._id.gewog}-${curr._id.village}`;
       if (!acc[locKey]) {
@@ -149,31 +169,31 @@ exports.getProjectView = async (req, res) => {
             gewog: curr._id.gewog, 
             village: curr._id.village 
           },
-          // New Metric Field at the Location Tier
           directBeneficiariesCount: 0, 
           activities: []
         };
       }
 
       const isTraining = curr._id.isTraining === true;
-      
-      // Flatten the specs matrix matrix down and deduplicate if needed, 
-      // or keep flat to ensure [10, 2] reads as a single [10, 2] combination array instance.
-      // Using Set option here safely converts matrix elements or captures exact input values
       const flatSpecs = Array.from(new Set(curr.allSpecsMatrix.flat()));
 
+      // Construct lookups to tie stored user modifications back to the breakdown data stream
+      const rawActName = curr._id.activity || "Unnamed Activity";
+      const searchKey = `${rawActName.toLowerCase().trim()}_${(curr._id.dzongkhag || "").toLowerCase().trim()}_${(curr._id.gewog || "").toLowerCase().trim()}_${(curr._id.village || "").toLowerCase().trim()}`;
+      
+      const savedVerification = verificationMap[searchKey] || { realQuantity: 0, isConfirmed: false };
+
       acc[locKey].activities.push({
-        activityName: curr._id.activity || "Unnamed Activity",
+        activityName: rawActName,
         isTraining: isTraining,
         displayTotal: isTraining ? curr.directBeneficiaryCount : curr.totalQty, 
+        realQuantity: savedVerification.realQuantity, // <-- Stored Real Quantity field is mapped here
+        isConfirmed: savedVerification.isConfirmed,   // <-- Match confirmation indicator flag mapped here
         unit: isTraining ? "Participants" : curr.unit,
-        totalCapacitySum: isTraining ? 0 : parseSpecs(flatSpecs), // Calculates 10 + 2 = 12 perfectly
+        totalCapacitySum: isTraining ? 0 : parseSpecs(flatSpecs), 
         remarks: flatSpecs,
         directBeneficiariesCount: curr.directBeneficiaryCount
       });
-
-      // Accumulate direct counts globally across matching localized items
-      // acc[locKey].directBeneficiariesCount += curr.directBeneficiaryCount;
 
       return acc;
     }, {});
@@ -201,16 +221,18 @@ exports.getProjectView = async (req, res) => {
       return acc;
     }, {});
 
-    // 6. Cross-reference activity verification data keys
+
+    // 6. Cross-reference activity verification data keys for Global Totals
     if (project.keyActivityVerification && project.keyActivityVerification.length > 0) {
       project.keyActivityVerification.forEach(verification => {
         if (globalActivityTotals[verification.activityName]) {
-          globalActivityTotals[verification.activityName].realQuantity = verification.realQuantity;
+          globalActivityTotals[verification.activityName].realQuantity += (verification.realQuantity || 0);
           globalActivityTotals[verification.activityName].isConfirmed = 
-            globalActivityTotals[verification.activityName].quantity === verification.realQuantity;
+            globalActivityTotals[verification.activityName].quantity === globalActivityTotals[verification.activityName].realQuantity;
         }
       });
     }
+    
 
     res.status(200).json({
       success: true,
@@ -224,7 +246,6 @@ exports.getProjectView = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 
 exports.getAllProjects = async (req, res) => {
@@ -318,51 +339,87 @@ exports.updateProject = async (req, res) => {
 
 
 
-
 exports.verifyProjectData = async (req, res) => {
   try {
     const { id } = req.params;
-    const { verifications } = req.body; // Expecting an array of { activityName, realQuantity }
+    // Expecting the frontend to send an array of locations, matching your breakdown structure:
+    // [ { location: { dzongkhag, gewog, village }, activities: [...] }, ... ]
+    const { bulkVerifications } = req.body; 
 
     const project = await Project.findById(id);
     if (!project) return res.status(404).json({ success: false, message: "Project not found" });
 
+    // CRITICAL BUG FIX: Ensure the array exists to prevent 'Cannot read properties of undefined (reading 'forEach')'
+    if (!project.keyActivityVerification) {
+      project.keyActivityVerification = [];
+    }
+
     const beneficiaries = await Beneficiary.find({ projectId: id });
 
-    // 1. Pre-calculate all beneficiary totals once for efficiency
+    // 1. Pre-calculate beneficiary totals using the compound key
     const beneficiaryTotals = {};
     beneficiaries.forEach(bene => {
+      const dzo = (bene.dzongkhag || "").toLowerCase().trim();
+      const gew = (bene.gewog || "").toLowerCase().trim();
+      const vil = (bene.village || "").toLowerCase().trim();
+
       bene.keyActivities.forEach(act => {
-        beneficiaryTotals[act.activityName] = (beneficiaryTotals[act.activityName] || 0) + (act.totalQuantity || 0);
+        const actName = (act.activityName || "").toLowerCase().trim();
+        const compoundKey = `${actName}_${dzo}_${gew}_${vil}`;
+        
+        beneficiaryTotals[compoundKey] = (beneficiaryTotals[compoundKey] || 0) + (act.totalQuantity || 0);
       });
     });
 
-    // 2. Process each verification sent in the request
-    verifications.forEach(item => {
-      const beneTotal = beneficiaryTotals[item.activityName] || 0;
-      const isMatched = Number(item.realQuantity) === beneTotal;
+    // 2. Process bulk structural inputs safely
+    if (bulkVerifications && Array.isArray(bulkVerifications)) {
+      bulkVerifications.forEach(block => {
+        const dzo = (block.location?.dzongkhag || "").toLowerCase().trim();
+        const gew = (block.location?.gewog || "").toLowerCase().trim();
+        const vil = (block.location?.village || "").toLowerCase().trim();
 
-      const recordIndex = project.keyActivityVerification.findIndex(v => v.activityName === item.activityName);
+        if (block.activities && Array.isArray(block.activities)) {
+          block.activities.forEach(item => {
+            const actName = (item.activityName || "").toLowerCase().trim();
+            const searchKey = `${actName}_${dzo}_${gew}_${vil}`;
 
-      if (recordIndex > -1) {
-        project.keyActivityVerification[recordIndex].realQuantity = item.realQuantity;
-        project.keyActivityVerification[recordIndex].isConfirmed = isMatched;
-      } else {
-        project.keyActivityVerification.push({ 
-          activityName: item.activityName, 
-          realQuantity: item.realQuantity, 
-          isConfirmed: isMatched 
-        });
-      }
-    });
+            const beneTotal = beneficiaryTotals[searchKey] || 0;
+            const isMatched = Number(item.realQuantity) === beneTotal;
 
+            // Look for existing saved item record in the subdocument database list
+            const recordIndex = project.keyActivityVerification.findIndex(v => 
+              (v.activityName || "").toLowerCase().trim() === actName &&
+              (v.dzongkhag || "").toLowerCase().trim() === dzo &&
+              (v.gewog || "").toLowerCase().trim() === gew &&
+              (v.village || "").toLowerCase().trim() === vil
+            );
+
+            if (recordIndex > -1) {
+              project.keyActivityVerification[recordIndex].realQuantity = Number(item.realQuantity);
+              project.keyActivityVerification[recordIndex].isConfirmed = isMatched;
+            } else {
+              project.keyActivityVerification.push({ 
+                activityName: item.activityName.trim(), 
+                dzongkhag: block.location.dzongkhag.trim(),
+                gewog: block.location.gewog.trim(),
+                village: block.location.village.trim(),
+                realQuantity: Number(item.realQuantity), 
+                isConfirmed: isMatched 
+              });
+            }
+          });
+        }
+      });
+    }
+
+    project.markModified('keyActivityVerification');
     await project.save();
-    res.status(200).json({ success: true, message: "All verifications processed", data: project });
+    
+    res.status(200).json({ success: true, message: "Bulk verifications processed successfully", data: project });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 // Mark Project as Completed
 exports.markAsComplete = async (req, res) => {
@@ -389,6 +446,7 @@ exports.sendDataAlert = async (req, res) => {
   try {
     const { id } = req.params;
     const { remark } = req.body;
+
     // 1. Fetch project and populate officers
     const project = await Project.findById(id)
       .populate("fieldOfficer")
@@ -396,25 +454,55 @@ exports.sendDataAlert = async (req, res) => {
 
     if (!project) return res.status(404).json({ success: false, message: "Project not found" });
 
-    // 2. Aggregate actual quantities from Beneficiaries (The "Truth")
+    // 2. Aggregate quantities from Beneficiaries with strict normalization
     const beneficiaries = await Beneficiary.find({ projectId: id });
     const actualTotals = {};
+
     beneficiaries.forEach(bene => {
+      const dzo = (bene.dzongkhag || "").toLowerCase().trim();
+      const gewog = (bene.gewog || "").toLowerCase().trim();
+      const village = (bene.village || "").toLowerCase().trim();
+
       bene.keyActivities.forEach(act => {
-        actualTotals[act.activityName] = (actualTotals[act.activityName] || 0) + (act.totalQuantity || 0);
+        const actName = (act.activityName || "").toLowerCase().trim();
+        
+        // Build specific location key
+        const compositeKey = `${actName}_${dzo}_${gewog}_${village}`;
+        actualTotals[compositeKey] = (actualTotals[compositeKey] || 0) + (act.totalQuantity || 0);
       });
     });
 
-    // 3. Build the Mismatch Report based on C&D verification array
+    // 3. Build the Mismatch Report matching locations exactly
     let mismatchReport = "";
+    
     project.keyActivityVerification.forEach(v => {
-      const currentActual = actualTotals[v.activityName] || 0;
+      if (!v.dzongkhag || !v.village) {
+        return; // Skip this legacy ghost entry
+      }
+
+
+      const vAct = (v.activityName || "").toLowerCase().trim();
+      const vDzo = (v.dzongkhag || "").toLowerCase().trim();
+      const vGewog = (v.gewog || "").toLowerCase().trim();
+      const vVillage = (v.village || "").toLowerCase().trim();
+      
+      const compositeKey = `${vAct}_${vDzo}_${vGewog}_${vVillage}`;
+      
+      // Look up specific location context from actual totals
+      const currentActual = actualTotals[compositeKey] || 0;
+      
       if (currentActual !== v.realQuantity) {
+        // Build clean string representations for the email preview
+        const displayDzo = v.dzongkhag ? v.dzongkhag.toUpperCase().trim() : "NOT SPECIFIED";
+        const displayGewog = v.gewog ? v.gewog.trim() : "NOT SPECIFIED";
+        const displayVillage = v.village ? v.village.trim() : "NOT SPECIFIED";
+
         mismatchReport += `
-        Activity: ${v.activityName}
-        - Reported in the project: ${currentActual}
-        - Verified in the feild: ${v.realQuantity}
-        -------------------------------------------`;
+Location: ${displayDzo} (Gewog: ${displayGewog}, Village: ${displayVillage})
+Activity: ${v.activityName}
+- Reported in the project : ${currentActual}
+- Verified in the Field : ${v.realQuantity}
+-----------------------------------------------------------`;
       }
     });
 
@@ -422,22 +510,19 @@ exports.sendDataAlert = async (req, res) => {
       return res.status(400).json({ success: false, message: "No mismatches detected." });
     }
 
-    // 4. DEFINE THE LIST (This fixes your error)
+    // 4. Define target recipient emails
     const recipientEmails = [];
 
-    // Add Field Officers if they exist
     if (project.fieldOfficer && project.fieldOfficer.length > 0) {
       project.fieldOfficer.forEach(off => {
         if (off.email) recipientEmails.push(off.email);
       });
     }
 
-    // Add Programme Officer if they exist
     if (project.programmeOfficer && project.programmeOfficer.email) {
       recipientEmails.push(project.programmeOfficer.email);
     }
 
-    // Remove duplicates
     const uniqueEmails = [...new Set(recipientEmails)];
 
     if (uniqueEmails.length === 0) {
@@ -445,7 +530,7 @@ exports.sendDataAlert = async (req, res) => {
     }
 
     // 5. Send the Alert
-    const { sendDataMismatchAlert } = require("../utils/email"); // Ensure path is correct
+    const { sendDataMismatchAlert } = require("../utils/email"); 
     
     await Promise.all(uniqueEmails.map(email => 
       sendDataMismatchAlert(email, project.projectName, mismatchReport, remark)
@@ -461,8 +546,6 @@ exports.sendDataAlert = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
-
 
 
 
@@ -525,12 +608,19 @@ exports.getDashboardSummary = async (req, res) => {
     // Tracker sets to prevent duplicate counting of spatial data on the dashboard maps/metrics
     const activityLocationTracker = new Map();
 
-    // 3. Process Projects
+    // 3. Process Projects (Aggregates projects by their operational Start Date)
     projects.forEach(p => {
-      const year = p.startDate ? new Date(p.startDate).getFullYear().toString() : "N/A";
+      let projectYear = "N/A";
+      if (p.startDate) {
+        const dateObj = new Date(p.startDate);
+        if (!isNaN(dateObj.getTime())) {
+          projectYear = dateObj.getFullYear().toString();
+        }
+      }
+      
       const progName = p.programme?.[0]?.programmeName || "Unassigned";
 
-      stats.projByYear[year] = (stats.projByYear[year] || 0) + 1;
+      stats.projByYear[projectYear] = (stats.projByYear[projectYear] || 0) + 1;
       stats.projByProg[progName] = (stats.projByProg[progName] || 0) + 1;
       
       p.dzongkhag?.forEach(dz => {
@@ -542,18 +632,34 @@ exports.getDashboardSummary = async (req, res) => {
       p.programme?.forEach(prog => stats.programmes.add(prog.programmeName));
     });
 
-    // 4. Process Beneficiaries
+    // 4. Process Beneficiaries (Aggregates beneficiaries by their OWN entry/creation year)
     beneficiaries.forEach(ben => {
-      const year = ben.createdAt ? new Date(ben.createdAt).getFullYear().toString() : "N/A";
+      const parentProject = projects.find(p => p._id.toString() === ben.projectId.toString());
+      const progName = parentProject?.programme?.[0]?.programmeName || "Unassigned";
+      
+      // LOOK HERE: Tries custom fields first, falls back to Mongoose createdAt tracking
+      const rawBeneficiaryDate = ben.year || ben.registrationDate || ben.createdAt || ben.date;
+      let beneficiaryYear = "N/A";
+
+      if (rawBeneficiaryDate) {
+        // If it's already a saved number or string year (e.g. 2024 or "2024"), use it directly
+        if (!isNaN(rawBeneficiaryDate) && rawBeneficiaryDate.toString().length === 4) {
+          beneficiaryYear = rawBeneficiaryDate.toString();
+        } else {
+          // Otherwise parse it cleanly as a standard timestamp Date object
+          const dateObj = new Date(rawBeneficiaryDate);
+          if (!isNaN(dateObj.getTime())) {
+            beneficiaryYear = dateObj.getFullYear().toString();
+          }
+        }
+      }
+
       const dzong = ben.dzongkhag ? ben.dzongkhag.trim().toLowerCase() : "unknown";
       const gewog = ben.gewog ? ben.gewog.trim().toLowerCase() : "unknown";
       const village = ben.village ? ben.village.trim().toLowerCase() : "unknown";
-      
-      const parentProject = projects.find(p => p._id.toString() === ben.projectId.toString());
-      const progName = parentProject?.programme?.[0]?.programmeName || "Unassigned";
 
-      // Count direct beneficiaries normally (demographics scale by head-count)
-      stats.beneByYear[year] = (stats.beneByYear[year] || 0) + 1;
+      // Count direct beneficiaries linked to their actual tracking year timeline
+      stats.beneByYear[beneficiaryYear] = (stats.beneByYear[beneficiaryYear] || 0) + 1;
       stats.beneByDzong[dzong] = (stats.beneByDzong[dzong] || 0) + 1;
       stats.beneByProg[progName] = (stats.beneByProg[progName] || 0) + 1;
 
@@ -564,7 +670,7 @@ exports.getDashboardSummary = async (req, res) => {
       stats.totalIndirectFemale += f;
       stats.totalIndirect += (m + f);
 
-      // 5. FIXED: Activity processing with location validation logic
+      // 5. Activity processing with location validation logic
       ben.keyActivities?.forEach(act => {
         const rawName = act.activityName || act.trainingDetails?.type || "Unknown";
         const name = rawName.trim().toLowerCase();
@@ -579,16 +685,12 @@ exports.getDashboardSummary = async (req, res) => {
           };
         }
 
-        // Unique signature string targeting specific regional spatial boundaries
         const locationActivityKey = `${dzong}-${gewog}-${village}-${name}`;
 
         if (isTraining) {
-          // Trainings scale incrementally based on total attendance counts
           stats.activityTotals[name].count += 1;
         } else {
-          // For physical infrastructure assets: only record values once per location
           if (!activityLocationTracker.has(locationActivityKey)) {
-            // Store the initial quantity and specifications parsed for this location
             const capacitySum = parseSpecs(act.specifications);
             const quantity = Number(act.totalQuantity) || 0;
 
@@ -597,7 +699,6 @@ exports.getDashboardSummary = async (req, res) => {
             stats.activityTotals[name].count += quantity;
             stats.activityTotals[name].totalCapacity += capacitySum;
           } else {
-            // Optional fallback: If a later entry has a larger value, adjust using the difference
             const previous = activityLocationTracker.get(locationActivityKey);
             const currentQty = Number(act.totalQuantity) || 0;
             const currentCapacity = parseSpecs(act.specifications);
@@ -616,10 +717,20 @@ exports.getDashboardSummary = async (req, res) => {
       });
     });
 
+    // Converts objects to standard formatted chart arrays
     const formatForChart = (obj) => Object.entries(obj).map(([name, value]) => ({ 
       name: name.charAt(0).toUpperCase() + name.slice(1), 
       value 
     }));
+
+    // Explicitly sorts temporal chart metrics chronologically so line-graphs render properly
+    const formatAndSortYears = (obj) => {
+      return formatForChart(obj).sort((a, b) => {
+        if (a.name === "N/A") return 1; 
+        if (b.name === "N/A") return -1;
+        return parseInt(a.name) - parseInt(b.name);
+      });
+    };
 
     res.status(200).json({
       success: true,
@@ -639,12 +750,12 @@ exports.getDashboardSummary = async (req, res) => {
         beneficiaries: {
           programme: formatForChart(stats.beneByProg),
           dzongkhag: formatForChart(stats.beneByDzong),
-          year: formatForChart(stats.beneByYear)
+          year: formatAndSortYears(stats.beneByYear) // Separated data flow
         },
         projects: {
           programme: formatForChart(stats.projByProg),
           dzongkhag: formatForChart(stats.projByDzong),
-          year: formatForChart(stats.projByYear)
+          year: formatAndSortYears(stats.projByYear) // Separated data flow
         }
       }
     });

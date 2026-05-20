@@ -9,6 +9,7 @@ import { Plus, CalendarDays, X , Trash2} from "lucide-react";
 import { useEffect } from "react";
 const AnnualEvents = () => {
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
   const [collapsed, setCollapsed] = useState(false);
 
       const { pathname } = useLocation();
@@ -52,7 +53,7 @@ const fetchEvents = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/annual-event", {
+    const res = await fetch(`${API_URL}/api/annual-event`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -77,7 +78,7 @@ const createEvent = async () => {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      "http://localhost:5000/api/annual-event/main-event",
+      `${API_URL}/api/annual-event/main-event`,
       {
         method: "POST",
         headers: {
@@ -127,7 +128,7 @@ const confirmDelete = async () => {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      `http://localhost:5000/api/annual-event/main-event/${deleteEvent._id}`,
+      `${API_URL}/api/annual-event/main-event/${deleteEvent._id}`,
       {
         method: "DELETE",
         headers: {

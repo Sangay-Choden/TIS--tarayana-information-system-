@@ -4,7 +4,10 @@ import bgImage from "../../assets/hero.png";
 import logo from "../../assets/logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 
+
 const Login = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
+  console.log(API_URL)
     const navigate = useNavigate();
        const { pathname } = useLocation();
    const rootPath = pathname.split('/')[1];
@@ -23,7 +26,7 @@ const [errorMessage, setErrorMessage] = useState("");
 useEffect(() => {
   const fetchBanner = async () => {
   try {
-    const res = await fetch("http://localhost:5000/api/banner");
+    const res = await fetch(`${API_URL}/api/banner`);
     const data = await res.json();
 
     console.log("BANNER API RESPONSE:", data);
@@ -71,7 +74,7 @@ const handleSubmit = async (e) => {
  setLoading(true); // 🔵 start loader
 
   try {
-    const response = await fetch("http://localhost:5000/api/auth/login", {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

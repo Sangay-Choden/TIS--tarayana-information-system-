@@ -1,411 +1,3 @@
-// import { useState } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// import { FileText } from "lucide-react";
-
-// const ProjectDetail = () => {
-//   const { id } = useParams();
-//   const navigate = useNavigate();
-
-//   const projectData = {
-//     1: {
-//       name: "Climate Resilient Housing Improvement",
-//       description:
-//         "Improving housing resilience against climate impacts in rural communities.",
-//       programme: "Social Development",
-//       dzongkhag: "Trashigang",
-//       duration: "1 year",
-//       endDate: "Dec 31, 2025",
-//       donor: "UNDP",
-//       budget: "Nu. 12,000",
-//     },
-//   };
-
-//   const project = projectData[id] || projectData[1];
-
-//   // ✅ UPDATED BENEFICIARY DATA
-//   const beneficiaries = [
-//     {
-//       cid: "11605003464",
-//       name: "Phuntsho Wangmo",
-//       dob: "1995-06-12",
-//       dzongkhag: "Thimphu",
-//       village: "Babesa",
-//       gewog: "Kawang",
-//       houseNo: "H12",
-//       thramNo: "T45",
-//       phone: "17123456",
-//       project: "Housing Improvement",
-//       indirect: "No",
-//       support: "Built water tank",
-//     },
-//     {
-//       cid: "11605003465",
-//       name: "Tempel Gyeltshen",
-//       dob: "1990-03-20",
-//       dzongkhag: "Paro",
-//       village: "Shaba",
-//       gewog: "Shaba",
-//       houseNo: "H8",
-//       thramNo: "T12",
-//       phone: "17654321",
-//       project: "Enterprise Dev",
-//       indirect: "Yes",
-//       support: "Enterprise training",
-//     },
-//   ];
-
-//   return (
-//     <div className="space-y-6">
-
-//           {/* BACK */}
-//           <button
-//             onClick={() => navigate(-1)}
-//             className="text-sm text-gray-500 hover:text-black"
-//           >
-//             ← Back to Programme
-//           </button>
-
-//           {/* TITLE */}
-//           <div className="bg-white rounded-xl p-5 shadow">
-//             <h2 className="text-lg md:text-xl font-semibold">
-//               {project.name}
-//             </h2>
-//             <p className="text-gray-500 text-sm mt-1">
-//               {project.description}
-//             </p>
-//           </div>
-
-//           {/* PROJECT INFO */}
-//           <div className="bg-white rounded-xl p-5 shadow">
-//             <h3 className="font-semibold text-gray-700 mb-4">
-//               Project information
-//             </h3>
-
-//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-//               {[
-//                 { label: "Programme", value: project.programme },
-//                 { label: "Dzongkhag", value: project.dzongkhag },
-//                 { label: "Duration", value: project.duration },
-//                 { label: "End Date", value: project.endDate },
-//                 { label: "Donor", value: project.donor },
-//                 { label: "Budget", value: project.budget },
-//               ].map((item, i) => (
-//                 <div
-//                   key={i}
-//                   className="flex items-center gap-3 bg-gray-50 p-4 rounded-lg border"
-//                 >
-//                   <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-//                     <FileText size={18} />
-//                   </div>
-
-//                   <div>
-//                     <p className="text-xs text-gray-500">{item.label}</p>
-//                     <p className="text-sm font-medium">{item.value}</p>
-//                   </div>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* ✅ UPDATED BENEFICIARIES TABLE */}
-//           <div className="bg-white rounded-xl shadow p-5">
-//             <h3 className="font-semibold text-gray-700 mb-4">
-//               Beneficiaries
-//             </h3>
-
-//             <div className="overflow-x-auto">
-//               <table className="w-full text-sm min-w-[1100px]">
-
-//                 <thead>
-//                   <tr className="text-gray-500 border-b text-left">
-//                     <th className="py-3 px-3">CID</th>
-//                     <th className="px-3">Name</th>
-//                     <th className="px-3">DOB</th>
-//                     <th className="px-3">Dzongkhag</th>
-//                     <th className="px-3">Village</th>
-//                     <th className="px-3">Gewog</th>
-//                     <th className="px-3">House No</th>
-//                     <th className="px-3">Thram No</th>
-//                     <th className="px-3">Phone</th>
-//                     <th className="px-3">Project</th>
-//                     <th className="px-3">Indirect</th>
-//                     <th className="px-3">Support</th>
-//                   </tr>
-//                 </thead>
-
-//                 <tbody>
-//                   {beneficiaries.map((b, index) => (
-//                     <tr
-//                       key={index}
-//                       className="border-b hover:bg-gray-50 transition"
-//                     >
-//                       <td className="py-3 px-3">{b.cid}</td>
-//                       <td className="px-3 font-medium whitespace-nowrap">{b.name}</td>
-//                       <td className="px-3 whitespace-nowrap">{b.dob}</td>
-//                       <td className="px-3">{b.dzongkhag}</td>
-//                       <td className="px-3">{b.village}</td>
-//                       <td className="px-3">{b.gewog}</td>
-//                       <td className="px-3">{b.houseNo}</td>
-//                       <td className="px-3">{b.thramNo}</td>
-//                       <td className="px-3">{b.phone}</td>
-//                       <td className="px-3">{b.project}</td>
-//                       <td className="px-3">{b.indirect}</td>
-//                       <td className="px-3">{b.support}</td>
-//                     </tr>
-//                   ))}
-//                 </tbody>
-
-//               </table>
-//             </div>
-//           </div>
-
-//     </div>
-//   );
-// };
-
-// export default ProjectDetail;
-
-
-
-
-
-
-// import { useEffect, useState } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// // import Sidebar from "../../components/Sidebar";
-// // import Navbar from "../../components/Navbar";
-// import {ChevronLeft, FileText , User} from "lucide-react";
-
-// const ProjectDetail = () => {
-//   const [collapsed, setCollapsed] = useState(false);
-//   const { id } = useParams();
-//   const navigate = useNavigate();
-
-//   const [project, setProject] = useState(null);
-//   const [beneficiaries, setBeneficiaries] = useState([]);
-//   const [loading, setLoading] = useState(true);
-
-//   // =========================
-//   // FETCH PROJECT
-//   // =========================
-//   useEffect(() => {
-//     const fetchProject = async () => {
-//       try {
-//         const token = localStorage.getItem("token");
-
-//         const res = await fetch(
-//           `http://localhost:5000/api/projects/summary/${id}`,
-//           {
-//             headers: { Authorization: `Bearer ${token}` },
-//           }
-//         );
-
-//         const data = await res.json();
-//         console.log(data)
-
-//         if (!res.ok) {
-//           console.error(data.message);
-//           return;
-//         }
-
-//         setProject(data.project);
-//         setBeneficiaries(data.beneficiaryList || []);
-//       } catch (err) {
-//         console.error(err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchProject();
-//   }, [id]);
-
-//   // =========================
-//   // FETCH BENEFICIARIES
-//   // =========================
-//   useEffect(() => {
-//     const fetchBeneficiaries = async () => {
-//       try {
-//         const token = localStorage.getItem("token");
-
-//         const res = await fetch(
-//           `http://localhost:5000/api/beneficiaries/project/${id}`,
-//           {
-//             headers: { Authorization: `Bearer ${token}` },
-//           }
-//         );
-
-//         const data = await res.json();
-//   console.log(data)
-//         if (!res.ok) return;
-
-//         setBeneficiaries(data.data || []);
-//       } catch (err) {
-//         console.error(err);
-//       }
-//     };
-
-//     fetchBeneficiaries();
-//   }, [id]);
-
-//   // =========================
-//   // PROJECT INFO STRUCTURE
-//   // =========================
-// const projectInfo = [
-//   { label: "Programme", value: project?.programme?.programmeName },
-//   { label: "Project Name", value: project?.projectName },
-//   { label: "Field Officer", value: project?.fieldOfficer?.email },
-//   { label: "Start Date", value: project?.startDate },
-//   { label: "End Date", value: project?.endDate },
-//   { label: "Donor", value: project?.donor?.map(d => d.name).join(", ") },
-//   { label: "Partner", value: project?.partner?.map(p => p.name).join(", ") },
-//   { label: "Dzongkhag", value: project?.dzongkhag?.join(", ") },
-// ];
-
-//   return (
-// <div className="w-full px-2 sm:px-2 lg:px-2 pb-6 space-y-6 overflow-x-hidden">
-
-  
-
-//       {/* Main */}
-// <div className="w-full ">
-//   <div className="space-y-6">
-
-//           {/* BACK BUTTON */}
-//           <button
-//             onClick={() => navigate(-1)}
-//         className="flex items-center text-gray-400 mb-6 text-sm hover:text-blue-500 transition-colors"
-//           >
-//        <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-//              Back to Programme
-//           </button>
-
-//           {/* PROJECT HEADER */}
-//           <div className="bg-white rounded-xl p-5 shadow">
-//             <h2 className="text-lg md:text-xl font-semibold">
-//               {project?.projectName }
-//             </h2>
-//             <p className="text-gray-500 text-sm mt-1">
-//               {project?.description }
-//             </p>
-//           </div>
-
-//           {/* PROJECT INFO */}
-//           <div className="bg-white rounded-xl p-5 shadow">
-//             <h3 className="font-semibold text-gray-700 mb-4">
-//               Project information
-//             </h3>
-
-//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-//               {projectInfo.map((item, i) => (
-//                 <div
-//                   key={i}
-//                   className="flex items-center gap-3 bg-gray-50 p-4 rounded-lg border"
-//                 >
-//                   <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-//                     <FileText size={18} />
-//                   </div>
-
-//                   <div>
-//                     <p className="text-xs text-gray-500">{item.label}</p>
-//                     <p className="text-sm font-medium">
-//                       {item.value ?? "-"}
-//                     </p>
-//                   </div>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-
-//     {/* BENEFICIARIES TABLE */}
-// <div className="bg-white rounded-xl shadow p-5">
-//   <h3 className="font-semibold text-gray-700 mb-4">
-//     Beneficiaries
-//   </h3>
-
-//   <div className="overflow-x-auto">
-//     <table className="w-full text-sm min-w-[1100px] border-separate border-spacing-y-2">
-
-//       {/* HEADER */}
-//       <thead>
-//         <tr className="text-gray-500 text-xs uppercase tracking-wide">
-//           <th className="px-3 text-left">CID</th>
-//           <th className="px-3 text-left">Name</th>
-//           <th className="px-3 text-left">Gender</th>
-//           <th className="px-3 text-left">Dzongkhag</th>
-//           <th className="px-3 text-left">Village</th>
-//           <th className="px-3 text-left">Gewog</th>
-//           <th className="px-3 text-left">House No</th>
-//           <th className="px-3 text-left">Thram No</th>
-//           <th className="px-3 text-left">Indirect</th>
-//         </tr>
-//       </thead>
-
-//       {/* BODY */}
-//       <tbody>
-//         {beneficiaries.map((b, index) => (
-//           <tr
-//             key={index}
-//             className="bg-gray-50 hover:bg-gray-100 transition rounded-xl"
-//           >
-
-//             {/* CID */}
-//             <td className="px-3 py-3 text-blue-600 font-medium">
-//               {b.cid}
-//             </td>
-
-//             {/* NAME + ICON */}
-//             <td className="px-3 py-3">
-//               <div className="flex items-center gap-2">
-//                <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 shrink-0">
-//                               <User size={14}/>
-//                             </div>
-//                 {b.name}
-//               </div>
-//             </td>
-
-//             {/* GENDER */}
-//             <td className="px-3 py-3">
-//               <span className="px-2 py-1 text-xs rounded-full bg-gray-200">
-//                 {b.gender === "M" ? "Male" : "Female"}
-
-//               </span>
-//             </td>
-
-//             {/* LOCATION */}
-//             <td className="px-3 py-3">{b.dzongkhag}</td>
-//             <td className="px-3 py-3">{b.village}</td>
-//             <td className="px-3 py-3">{b.gewog}</td>
-
-//             {/* HOUSE / THRAM */}
-//             <td className="px-3 py-3">{b.houseNo}</td>
-//             <td className="px-3 py-3">{b.thramNo}</td>
-
-//             {/* INDIRECT */}
-//             <td className="px-3 py-3 text-gray-600">
-//               M: {b.indirectBeneficiaries?.male ?? 0}{" "}
-//               F: {b.indirectBeneficiaries?.female ?? 0}
-//             </td>
-
-//           </tr>
-//         ))}
-//       </tbody>
-
-//     </table>
-//   </div>
-// </div>
-
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ProjectDetail;
-
-
-
-
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
@@ -462,6 +54,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 };
 
 const ProjectDetail = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
@@ -482,7 +75,7 @@ const ProjectDetail = () => {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/projects/summary/${id}`);
+        const response = await axios.get(`${API_URL}/api/projects/summary/${id}`);
         setData(response.data);
         console.log(response.data)
       } catch (error) {
@@ -520,6 +113,15 @@ const ProjectDetail = () => {
   // --- Logic for Beneficiary Table ---
   const totalBenPages = Math.ceil(beneficiaryList.length / itemsPerPage);
   const currentBens = beneficiaryList.slice((benPage - 1) * itemsPerPage, benPage * itemsPerPage);
+
+
+// CHANGE HERE: Safely extract singular or plural officer structures
+const programmeOfficersList = project.programme?.flatMap(prog => {
+  // Try retrieving from the project scope first (since console shows it directly inside project)
+  const officers = project.programmeOfficer || prog.programmeOfficer || prog.programmeOfficers || [];
+  return Array.isArray(officers) ? officers : [officers];
+}).filter(Boolean) || [];
+
 
   return (
     <div className="space-y-8 pb-10">
@@ -594,6 +196,63 @@ const ProjectDetail = () => {
           <InfoCard icon={Calendar} label="Duration" value={getDuration(project.startDate, project.endDate)} />
           <InfoCard icon={Globe} label="Donor" value={project.donor?.length > 0 ? project.donor.map(d => d.name).join(', ') : "None"} />
           <InfoCard icon={Globe} label="Partner" value={project.partner?.length > 0 ? project.partner.map(p => p.name).join(', ') : "None"} />
+
+{/* Programme Officers Card */}
+<div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 shrink-0">
+    <Users size={24} />
+  </div>
+  <div className="flex-1 min-w-0">
+    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Programme Officers</p>
+    
+    {/* CHANGED HERE: Now checks the length of our flattened variable */}
+    {programmeOfficersList.length > 0 ? (
+      <div className="flex flex-wrap gap-1.5 max-h-[76px] overflow-y-auto pr-1 scrollbar-hide">
+        {/* CHANGED HERE: Maps over the clean list of extracted objects */}
+        {programmeOfficersList.map((po, idx) => (
+          <span 
+            key={idx} 
+            className="inline-flex items-center bg-gray-50 text-gray-700 text-[12px] font-bold px-2 py-1 rounded-lg border border-gray-100 tracking-tight"
+            title={po.email}
+          >
+            {po.email ? po.email.split("@")[0] : "Unknown"}
+          </span>
+        ))}
+      </div>
+    ) : (
+      <p className="text-xs font-semibold text-gray-400 italic">Not Assigned</p>
+    )}
+  </div>
+</div>
+
+            {/* REPLACE THE OLD FIELD OFFICERS INFOCARD WITH THIS INLINE VERSION */}
+                <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 shrink-0">
+                    <Users size={24} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Field Officers</p>
+                    
+                    {project.fieldOfficer && project.fieldOfficer.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5 max-h-[76px] overflow-y-auto pr-1 scrollbar-hide">
+                        {project.fieldOfficer.map((fo, idx) => (
+                          <span 
+                            key={idx} 
+                            className="inline-flex items-center bg-gray-50 text-gray-700 text-[12px] font-bold px-2 py-1 rounded-lg border border-gray-100 tracking-tight"
+                            title={fo.email}
+                          >
+                            {fo.email.split("@")[0]}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs font-semibold text-gray-400 italic">Not Assigned</p>
+                    )}
+                  </div>
+                </div>
+                {/* END OF REPLACEMENT */}
+
+
         </div>
       </div>
 
@@ -603,7 +262,7 @@ const ProjectDetail = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[1200px]">
-            <thead className="bg-gray-50/50">
+            <thead className="bg-gray-200/50">
               <tr>
                 <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase">Dzongkhag</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase">Gewog</th>
@@ -647,7 +306,7 @@ const ProjectDetail = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[1200px]">
-              <thead className="bg-gray-50/50">
+              <thead className="bg-gray-200/50">
                 <tr>
                   <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">CID</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Name</th>

@@ -48,7 +48,8 @@ const beneficiarySchema = new mongoose.Schema({
     isTraining: { type: Boolean, default: false },
     // FIXED: Changed from String to an Object structure
     trainingDetails: {
-      date: { type: Date },
+      startDate: { type: Date }, 
+      endDate: { type: Date },
       type: { type: String, lowercase: true }
     }
   }]

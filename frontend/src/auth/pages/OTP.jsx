@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 const OTP = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [error, setError] = useState("");
@@ -21,7 +22,7 @@ const [canResend, setCanResend] = useState(false);
 useEffect(() => {
   const fetchBanner = async () => {
   try {
-    const res = await fetch("http://localhost:5000/api/banner");
+    const res = await fetch(`${API_URL}/api/banner`);
     const data = await res.json();
 
     console.log("BANNER API RESPONSE:", data);
@@ -121,7 +122,7 @@ const handleResend = async () => {
   const email = localStorage.getItem("resetEmail");
 
   try {
-    await fetch("http://localhost:5000/api/auth/forgot-password", {
+    await fetch(`${API_URL}/api/auth/forgot-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

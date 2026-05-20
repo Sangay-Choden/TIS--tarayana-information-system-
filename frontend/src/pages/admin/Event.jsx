@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const Event = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -42,7 +43,7 @@ useEffect(() => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:5000/api/annual-event/main-event/${id}`,
+        `${API_URL}/api/annual-event/main-event/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +71,7 @@ useEffect(() => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:5000/api/annual-event/events/${id}`,
+        `${API_URL}/api/annual-event/events/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -107,7 +108,7 @@ const handleSave = async () => {
     payload.data[f.fieldName] = value;
   });
 
-  const res = await fetch("http://localhost:5000/api/annual-event/event", {
+  const res = await fetch(`${API_URL}/api/annual-event/event`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -136,47 +137,8 @@ if (!res.ok) {
   setShowForm(false);
   setFormData({});
 };
-  // EDIT
-//  const handleEditSave = async () => {
-//   const entryId = entries[editIndex]._id;
+  
 
-//   const payload = {
-//     data: {},
-//   };
-
-//   event.fields.forEach((f) => {
-//     let value = formData[f.fieldName];
-
-//     if (f.fieldType === "number") value = Number(value);
-//     if (f.fieldType === "boolean") value = value === "true" || value === true;
-
-//     payload.data[f.fieldName] = value;
-//   });
-
-//   const res = await fetch(
-//     `http://localhost:5000/api/annual-event/event/${entryId}`,
-//     {
-//       method: "PUT",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${localStorage.getItem("token")}`,
-//       },
-//       body: JSON.stringify(payload),
-//     }
-//   );
-
-//   const result = await res.json();
-
-//   if (!res.ok) return alert(result.message);
-
-//   // ✅ update UI instantly
-//   setEntries((prev) =>
-//     prev.map((e, i) => (i === editIndex ? result.data : e))
-//   );
-
-//   setShowEdit(false);
-//   setFormData({});
-// };
 const handleEditSave = async () => {
   const entryId = entries[editIndex]._id;
 
@@ -204,7 +166,7 @@ const handleEditSave = async () => {
   }
 
   const res = await fetch(
-    `http://localhost:5000/api/annual-event/event/${entryId}`,
+    `${API_URL}/api/annual-event/event/${entryId}`,
     {
       method: "PUT",
       headers: {
@@ -242,7 +204,7 @@ if (!res.ok) {
   const entryId = entries[deleteIndex]._id;
 
   const res = await fetch(
-    `http://localhost:5000/api/annual-event/event/${entryId}`,
+    `${API_URL}/api/annual-event/event/${entryId}`,
     {
       method: "DELETE",
       headers: {
@@ -283,7 +245,7 @@ const confirmDelete = async () => {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      `http://localhost:5000/api/annual-event/main-event/${deleteEvent._id}`,
+      `${API_URL}/api/annual-event/main-event/${deleteEvent._id}`,
       {
         method: "DELETE",
         headers: {

@@ -5,6 +5,7 @@ import axios from 'axios';
 import SuccessModal from '../../components/modals/SuccessModal';
 
 const RegisterBeneficiary = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
@@ -52,7 +53,7 @@ const RegisterBeneficiary = () => {
     const fetchProjects = async () => {
       if (!PO_ID || !token) return;
       try {
-        const res = await axios.get(`http://localhost:5000/api/projects/programme-officer/${PO_ID}`, {
+        const res = await axios.get(`${API_URL}/api/projects/programme-officer/${PO_ID}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProjects(res.data.data || []);
@@ -259,7 +260,7 @@ const handleActivityChange = (idx, field, value) => {
         beneficiaries: formattedBeneficiaries
       };
 
-      await axios.post("http://localhost:5000/api/beneficiaries", finalPayload, {
+      await axios.post(`${API_URL}/api/beneficiaries`, finalPayload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

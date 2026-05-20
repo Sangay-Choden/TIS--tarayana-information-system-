@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ChevronLeft, FileText, User2, Loader2 } from "lucide-react";
 const MrCdProgramme = ({ role }) => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const { programmeName } = useParams();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -19,7 +20,7 @@ const MrCdProgramme = ({ role }) => {
       // Guard: Check if token exists
       if (!token) {
         console.error("No authentication token found");
-        navigate('/login');
+        navigate('auth/login');
         return;
       }
 
@@ -37,8 +38,8 @@ const MrCdProgramme = ({ role }) => {
       try {
         // 1. Fetch Officer lists
         const [fieldOffRes, progOffRes] = await Promise.all([
-          fetch("http://localhost:5000/api/auth/feild-officers", fetchOptions),
-          fetch("http://localhost:5000/api/auth/programme-officers", fetchOptions)
+          fetch(`${API_URL}/api/auth/feild-officers`, fetchOptions),
+          fetch(`${API_URL}/api/auth/programme-officers`, fetchOptions)
         ]);
 
         // Check for session expiry (401)
@@ -56,9 +57,9 @@ const MrCdProgramme = ({ role }) => {
           const results = await Promise.all(
             (officers || []).map(async (off) => {
               const endpoint = type === "Field" 
-                ? `http://localhost:5000/api/projects/field-officer/${off._id}`
-                : `http://localhost:5000/api/projects/programme-officer/${off._id}`;
-              
+                ? `${API_URL}/api/projects/field-officer/${off._id}`
+                : `${API_URL}/api/projects/programme-officer/${off._id}`;
+
               const res = await fetch(endpoint, fetchOptions);
               const json = await res.json();
               return json.data || [];
@@ -90,21 +91,40 @@ const MrCdProgramme = ({ role }) => {
           uniqueFiltered.map(async (proj) => {
             try {
               const summaryRes = await fetch(
-                `http://localhost:5000/api/projects/summary/${proj._id}`,
+                `${API_URL}/api/projects/summary/${proj._id}`,
                 fetchOptions
               );
               const summaryData = await summaryRes.json();
 
+              // return {
+              //   id: proj._id,
+              //   name: proj.projectName,              
+              //   fo: proj.fieldOfficer?.[0]?.email
+              //     ? `FO ${proj.fieldOfficer[0].email.split("@")[0]}` // Corrected Label to FO
+              //     : "FO Not Assigned",
+              //   count: summaryData?.beneficiaryList?.length?.toLocaleString() || "0",
+              //   originalPo: proj.programmeOfficer?.email?.split("@")[0] || "",
+              //   originalFo: proj.fieldOfficer?.[0]?.email?.split("@")[0] || "",
+              // };
               return {
-                id: proj._id,
-                name: proj.projectName,              
-                fo: proj.fieldOfficer?.[0]?.email
-                  ? `FO ${proj.fieldOfficer[0].email.split("@")[0]}` // Corrected Label to FO
-                  : "FO Not Assigned",
-                count: summaryData?.beneficiaryList?.length?.toLocaleString() || "0",
-                originalPo: proj.programmeOfficer?.email?.split("@")[0] || "",
-                originalFo: proj.fieldOfficer?.[0]?.email?.split("@")[0] || "",
-              };
+  id: proj._id,
+  name: proj.projectName,
+
+  // Programme Officer
+ Po: proj.programmeOfficer?.email
+    ? `PO • ${proj.programmeOfficer.email.split("@")[0]}`
+    : "PO • Not Assigned",
+
+  // Field Officer
+  fo: proj.fieldOfficer?.[0]?.email
+    ? `FO • ${proj.fieldOfficer[0].email.split("@")[0]}`
+    : "FO • Not Assigned",
+
+  count: summaryData?.beneficiaryList?.length?.toLocaleString() || "0",
+
+originalPo: proj.programmeOfficer?._id || "",
+  originalFo: proj.fieldOfficer?.[0]?.email?.split("@")[0] || "",
+};
             } catch (err) {
               console.error("Error fetching project summary:", proj._id, err);
               return {
@@ -200,9 +220,9 @@ const MrCdProgramme = ({ role }) => {
       {/* OFFICERS */}
       <div className="flex items-center gap-2 mt-4 flex-wrap">
         <div className="flex -space-x-1.5">
-          <div className="w-5 h-5 rounded-full bg-gray-200 border flex items-center justify-center">
+          {/* <div className="w-5 h-5 rounded-full bg-gray-200 border flex items-center justify-center">
             <User2 size={9} />
-          </div>
+          </div> */}
 
           <div className="w-5 h-5 rounded-full bg-blue-100 border flex items-center justify-center">
             <User2 size={9} />
@@ -213,24 +233,29 @@ const MrCdProgramme = ({ role }) => {
           <span
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`${archivesPath}/officer/${proj.originalPo}`);
+             navigate(`${archivesPath}/officer/${proj.originalPo}`, {
+  state: {
+    officerName: proj.Po
+  }
+});
             }}
             className="hover:text-blue-600 cursor-pointer"
           >
-            {proj.originalPo || "PO"}
+          {/* <span>•</span> */}
+
+            {proj.Po || "PO "}
           </span>
 
-          <span>•</span>
 
-          <span
+          {/* <span
             onClick={(e) => {
-              e.stopPropagation();
-              navigate(`${archivesPath}/officer/${proj.originalFo}`);
+              // e.stopPropagation();
+              // navigate(`${archivesPath}/officer/${proj.originalFo}`);
             }}
             className="hover:text-blue-600 cursor-pointer"
           >
             {proj.fo}
-          </span>
+          </span> */}
         </p>
       </div>
     </div>

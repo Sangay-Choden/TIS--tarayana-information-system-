@@ -4,6 +4,7 @@ import { Calendar, FileText, Sparkles, FileCheck, ChevronLeft } from "lucide-rea
 import axios from 'axios';
 
 const GenerateReport = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
 
@@ -50,7 +51,7 @@ const GenerateReport = () => {
   const [openDzongkhags, setOpenDzongkhags] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/programmes")
+    fetch(`${API_URL}/api/programmes`)
       .then((res) => res.json())
       .then((data) => {
         setProgrammes(data.programmes || []);
@@ -64,7 +65,7 @@ const GenerateReport = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/users");
+        const res = await fetch(`${API_URL}/api/auth/users`);
         const data = await res.json();
         const allUsers = data.users || data.data || data || [];
         const filtered = allUsers.filter((u) => {
@@ -89,7 +90,7 @@ const GenerateReport = () => {
 
         if (selectedProgrammes.length === 0) {
      const res = await axios.get(
-  `http://localhost:5000/api/projects/programme-officer/${USER_ID}`,
+  `${API_URL}/api/projects/programme-officer/${USER_ID}`,
   {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -108,7 +109,7 @@ allProjects =
   [];
       } else{
           const requests = selectedProgrammes.map((id) =>
-            fetch(`http://localhost:5000/api/projects/programme/${id}`).then((res) => res.json())
+            fetch(`${API_URL}/api/projects/programme/${id}`).then((res) => res.json())
           );
           const results = await Promise.all(requests);
           allProjects = results.flatMap((res) => res.projects || res.data || res || []);
@@ -172,7 +173,7 @@ allProjects =
         format: format === "PDF Document" ? "pdf" : "excel",
       };
 
-      const res = await fetch("http://localhost:5000/api/report/generate", {
+      const res = await fetch(`${API_URL}/api/report/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -330,7 +331,7 @@ allProjects =
                           touched && !fromDate ? "border-red-400 bg-red-50/20 focus:border-red-500" : "border-gray-200 focus:border-blue-400"
                         }`}
                       />
-                      {touched && !fromDate && <p className="text-xs text-red-500 font-medium"> Start metric range target date required</p>}
+                      {touched && !fromDate && <p className="text-xs text-red-500 font-medium"> Start date required</p>}
                     </div>
 
                     {/* TO */}
@@ -345,7 +346,7 @@ allProjects =
                           touched && !toDate ? "border-red-400 bg-red-50/20 focus:border-red-500" : "border-gray-200 focus:border-blue-400"
                         }`}
                       />
-                      {touched && !toDate && <p className="text-xs text-red-500 font-medium"> Concluding audit evaluation deadline required</p>}
+                      {touched && !toDate && <p className="text-xs text-red-500 font-medium"> Concluding date required</p>}
                     </div>
                   </div>
                 </div>

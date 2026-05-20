@@ -7,6 +7,7 @@ import StatCard from '../../components/ui/StatCard';
 import ChartCard from '../../components/ui/ChartCard';
 
 const Dashboard = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [view, setView] = useState('projects'); 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ const Dashboard = () => {
         setLoading(true);
         // Using the same universal dashboard endpoint, but passing "FieldOfficer" role
         const response = await axios.get(
-          `http://localhost:5000/api/projects/dashboard-summary/${roleName}/${userId}`
+          `${API_URL}/api/projects/dashboard-summary/${roleName}/${userId}`
         );
         if (response.data.success) {
           setData(response.data);

@@ -53,6 +53,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 };
 
 const ProjectDetail = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
@@ -71,7 +72,7 @@ const ProjectDetail = () => {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/projects/summary/${id}`);
+        const response = await axios.get(`${API_URL}/api/projects/summary/${id}`);
         setData(response.data);
         console.log(response.data)
       } catch (error) {
@@ -109,6 +110,13 @@ const ProjectDetail = () => {
   // --- Logic for Beneficiary Table ---
   const totalBenPages = Math.ceil(beneficiaryList.length / itemsPerPage);
   const currentBens = beneficiaryList.slice((benPage - 1) * itemsPerPage, benPage * itemsPerPage);
+
+  // CHANGE HERE: Safely extract singular or plural officer structures
+const programmeOfficersList = project.programme?.flatMap(prog => {
+  // Try retrieving from the project scope first (since console shows it directly inside project)
+  const officers = project.programmeOfficer || prog.programmeOfficer || prog.programmeOfficers || [];
+  return Array.isArray(officers) ? officers : [officers];
+}).filter(Boolean) || [];
 
   return (
     <div className="space-y-8 pb-10">
@@ -177,6 +185,63 @@ const ProjectDetail = () => {
           <InfoCard icon={Calendar} label="Duration" value={getDuration(project.startDate, project.endDate)} />
           <InfoCard icon={Globe} label="Donor" value={project.donor?.length > 0 ? project.donor.map(d => d.name).join(', ') : "None"} />
           <InfoCard icon={Globe} label="Partner" value={project.partner?.length > 0 ? project.partner.map(p => p.name).join(', ') : "None"} />
+
+{/* Programme Officers Card */}
+<div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 shrink-0">
+    <Users size={24} />
+  </div>
+  <div className="flex-1 min-w-0">
+    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Programme Officers</p>
+    
+    {/* CHANGED HERE: Now checks the length of our flattened variable */}
+    {programmeOfficersList.length > 0 ? (
+      <div className="flex flex-wrap gap-1.5 max-h-[76px] overflow-y-auto pr-1 scrollbar-hide">
+        {/* CHANGED HERE: Maps over the clean list of extracted objects */}
+        {programmeOfficersList.map((po, idx) => (
+          <span 
+            key={idx} 
+            className="inline-flex items-center bg-gray-50 text-gray-700 text-[12px] font-bold px-2 py-1 rounded-lg border border-gray-100 tracking-tight"
+            title={po.email}
+          >
+            {po.email ? po.email.split("@")[0] : "Unknown"}
+          </span>
+        ))}
+      </div>
+    ) : (
+      <p className="text-xs font-semibold text-gray-400 italic">Not Assigned</p>
+    )}
+  </div>
+</div>
+
+            {/* REPLACE THE OLD FIELD OFFICERS INFOCARD WITH THIS INLINE VERSION */}
+                <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 shrink-0">
+                    <Users size={24} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Field Officers</p>
+                    
+                    {project.fieldOfficer && project.fieldOfficer.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5 max-h-[76px] overflow-y-auto pr-1 scrollbar-hide">
+                        {project.fieldOfficer.map((fo, idx) => (
+                          <span 
+                            key={idx} 
+                            className="inline-flex items-center bg-gray-50 text-gray-700 text-[12px] font-bold px-2 py-1 rounded-lg border border-gray-100 tracking-tight"
+                            title={fo.email}
+                          >
+                            {fo.email.split("@")[0]}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs font-semibold text-gray-400 italic">Not Assigned</p>
+                    )}
+                  </div>
+                </div>
+                {/* END OF REPLACEMENT */}
+
+
         </div>
       </div>
 
@@ -186,7 +251,7 @@ const ProjectDetail = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
            <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[1200px]">
-            <thead className="bg-gray-50/50">
+            <thead className="bg-gray-200/50">
               <tr>
                 <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase">Dzongkhag</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase">Gewog</th>
@@ -230,7 +295,7 @@ const ProjectDetail = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[1200px]">
-              <thead className="bg-gray-50/50">
+              <thead className="bg-gray-200/50">
                 <tr>
                   <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">CID</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Name</th>

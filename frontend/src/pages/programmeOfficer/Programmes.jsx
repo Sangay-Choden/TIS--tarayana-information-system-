@@ -10,6 +10,7 @@ import SuccessModal from '../../components/modals/SuccessModal';
 
 
 const Programmes = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -53,7 +54,7 @@ const [errorMessage, setErrorMessage] = useState("");
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:5000/api/projects/programme-officer/${PO_ID}`,
+        `${API_URL}/api/projects/programme-officer/${PO_ID}`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // ✅ Fixed: Using real token
@@ -85,7 +86,7 @@ const [errorMessage, setErrorMessage] = useState("");
       console.log("📤 Sending update data:", updatedData);
 
       const response = await axios.put(
-        `http://localhost:5000/api/projects/update/${selectedProject._id}`,
+        `${API_URL}/api/projects/update/${selectedProject._id}`,
         updatedData,
         {
           headers: {
@@ -115,7 +116,7 @@ const [errorMessage, setErrorMessage] = useState("");
   const handleDelete = async () => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/projects/${selectedProject._id}`,
+        `${API_URL}/api/projects/${selectedProject._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // ✅ Fixed: Using real token

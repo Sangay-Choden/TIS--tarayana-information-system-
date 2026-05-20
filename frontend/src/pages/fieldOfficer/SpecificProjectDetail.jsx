@@ -57,6 +57,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 };
 
 const SpecificProjectDetail = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
@@ -76,7 +77,7 @@ const backPath = location.state?.from || '/projects';
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/projects/summary/${id}`);
+        const response = await axios.get(`${API_URL}/api/projects/summary/${id}`);
         setData(response.data);
         console.log(response.data)
       } catch (error) {
@@ -191,7 +192,7 @@ const backPath = location.state?.from || '/projects';
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
            <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[1200px]">
-            <thead className="bg-gray-50/50">
+            <thead className="bg-gray-200/50">
               <tr>
                 <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase">Dzongkhag</th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase">Gewog</th>
@@ -235,7 +236,7 @@ const backPath = location.state?.from || '/projects';
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[1200px]">
-              <thead className="bg-gray-50/50">
+              <thead className="bg-gray-200/50">
                 <tr>
                   <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">CID</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Name</th>

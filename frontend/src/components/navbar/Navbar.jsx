@@ -23,6 +23,7 @@ const navigate = useNavigate();
   const { logout } = useAuth();
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const location = useLocation();
+  const API_URL = import.meta.env.VITE_API_URL;
 
 const dropdownRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -177,7 +178,7 @@ useEffect(() => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/auth/change-password/${userData.id}`, {
+      const res = await fetch(`${API_URL}/api/auth/change-password/${userData.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

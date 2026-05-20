@@ -3,8 +3,10 @@ import { Eye, EyeOff, Lock } from "lucide-react";
 import logo from "../../assets/logo.png";
 import hero from "../../assets/hero.png";
 import { useNavigate } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const ConfirmPassword = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +28,7 @@ const [errorMessage, setErrorMessage] = useState("");
     useEffect(() => {
       const fetchBanner = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/banner");
+        const res = await fetch(`${API_URL}/api/banner`);
         const data = await res.json();
     
         console.log("BANNER API RESPONSE:", data);
@@ -124,7 +126,7 @@ return;
     const otp = localStorage.getItem("resetOtp");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/reset-password", {
+      const response = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

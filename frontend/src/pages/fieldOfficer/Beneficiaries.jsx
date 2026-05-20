@@ -14,7 +14,7 @@ import SuccessModal from '../../components/modals/SuccessModal';
 
 const Beneficiaries = () => {
   const navigate = useNavigate();
-
+const API_URL = import.meta.env.VITE_API_URL;
   // 🔐 SESSION & AUTH
   const token = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
@@ -57,7 +57,7 @@ const rootPath = pathname.split('/')[1];
       
       // 1. Get PO Projects
       const projectRes = await axios.get(
-        `http://localhost:5000/api/projects/field-officer/${PO_ID}`, 
+        `${API_URL}/api/projects/field-officer/${PO_ID}`, 
         config
       );
       const projects = projectRes.data.data || [];
@@ -72,7 +72,7 @@ const rootPath = pathname.split('/')[1];
 
       // 2. Get Beneficiaries for these projects
       const beneficiaryPromises = projects.map(project => 
-        axios.get(`http://localhost:5000/api/beneficiaries/bene/${project._id}`, config)
+        axios.get(`${API_URL}/api/beneficiaries/bene/${project._id}`, config)
       );
 
       const results = await Promise.all(beneficiaryPromises);
@@ -110,7 +110,7 @@ const rootPath = pathname.split('/')[1];
   const handleDelete = async () => {
     
     try {
-      await axios.delete(`http://localhost:5000/api/beneficiaries/${selectedBeneficiary._id}`, {
+      await axios.delete(`${API_URL}/api/beneficiaries/${selectedBeneficiary._id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIsDeleteModalOpen(false);

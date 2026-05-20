@@ -8,6 +8,7 @@ import ChartCard from '../../components/ui/ChartCard';
 import BhutanMap from '../../components/BhutanMap';
 
 const Dashboard = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [view, setView] = useState('projects'); 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,7 @@ const Dashboard = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:5000/api/projects/dashboard-summary/${roleName}/${userId}`
+          `${API_URL}/api/projects/dashboard-summary/${roleName}/${userId}`
         );
         if (response.data.success) {
           setData(response.data);

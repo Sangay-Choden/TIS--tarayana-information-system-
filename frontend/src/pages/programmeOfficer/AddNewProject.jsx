@@ -7,6 +7,7 @@ import SuccessModal from '../../components/modals/SuccessModal';
 
 const AddNewProject = () => {
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // 🔐 1. REAL SESSION RETRIEVAL
   const token = localStorage.getItem("token");
@@ -62,9 +63,9 @@ const AddNewProject = () => {
       };
 
       const [donPartRes, progRes, userRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/donor-partner/summary', config),
-        axios.get('http://localhost:5000/api/programmes/', config),
-        axios.get('http://localhost:5000/api/auth/users', config)
+        axios.get(`${API_URL}/api/donor-partner/summary`, config),
+        axios.get(`${API_URL}/api/programmes/`, config),
+        axios.get(`${API_URL}/api/auth/users`, config)
       ]);
 
       setDonors(donPartRes.data.donors || []);
@@ -109,7 +110,7 @@ const AddNewProject = () => {
 
 const handleAddNewSubmit = async () => {
     try {
-      await axios.post('http://localhost:5000/api/donor-partner/register', 
+      await axios.post(`${API_URL}/api/donor-partner/register`, 
         { name: newName, roleName: addingType },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -124,7 +125,7 @@ const handleAddNewSubmit = async () => {
   const finalSubmit = async () => {
     try {
       // 🔐 Use REAL token here
-      await axios.post('http://localhost:5000/api/projects', formData, {
+      await axios.post(`${API_URL}/api/projects`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setShowConfirmProject(false);

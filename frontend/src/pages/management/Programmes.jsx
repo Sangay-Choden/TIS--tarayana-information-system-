@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FileText, Search, Loader2 } from "lucide-react";
 
 const ManagementProgrammes = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { pathname } = useLocation();
   
@@ -37,9 +38,9 @@ const ManagementProgrammes = () => {
 
       try {
         const [progRes, fieldOffRes, progOffRes] = await Promise.all([
-          fetch("http://localhost:5000/api/programmes/", fetchOptions),
-          fetch("http://localhost:5000/api/auth/feild-officers", fetchOptions),
-          fetch("http://localhost:5000/api/auth/programme-officers", fetchOptions)
+          fetch(`${API_URL}/api/programmes/`, fetchOptions),
+          fetch(`${API_URL}/api/auth/feild-officers`, fetchOptions),
+          fetch(`${API_URL}/api/auth/programme-officers`, fetchOptions)
         ]);
 
         // Check if any request returned 401 Unauthorized
@@ -57,9 +58,9 @@ const ManagementProgrammes = () => {
           const results = await Promise.all(
             (officers || []).map(async (off) => {
               const endpoint = type === "Field" 
-                ? `http://localhost:5000/api/projects/field-officer/${off._id}`
-                : `http://localhost:5000/api/projects/programme-officer/${off._id}`;
-              
+                ? `${API_URL}/api/projects/field-officer/${off._id}`
+                : `${API_URL}/api/projects/programme-officer/${off._id}`;
+
               const res = await fetch(endpoint, fetchOptions);
               const json = await res.json();
               return json.data || [];

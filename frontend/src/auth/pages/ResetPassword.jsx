@@ -5,6 +5,7 @@ import hero from "../../assets/hero.png";
 import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ const ResetPassword = () => {
   useEffect(() => {
     const fetchBanner = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/banner");
+      const res = await fetch(`${API_URL}/api/banner`);
       const data = await res.json();
   
       console.log("BANNER API RESPONSE:", data);
@@ -57,7 +58,7 @@ const ResetPassword = () => {
 
   try {
       setLoading(true);
-    const response = await fetch("http://localhost:5000/api/auth/forgot-password", {
+    const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { ArrowLeft, FileText, User2, Loader2, ChevronLeft } from "lucide-react";
 
 const ValidationProjects = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { programme } = useParams();
@@ -37,8 +38,8 @@ const ValidationProjects = () => {
       try {
         // 1. Fetch Officer lists
         const [fieldOffRes, progOffRes] = await Promise.all([
-          fetch("http://localhost:5000/api/auth/feild-officers", fetchOptions),
-          fetch("http://localhost:5000/api/auth/programme-officers", fetchOptions)
+          fetch(`${API_URL}/api/auth/feild-officers`, fetchOptions),
+          fetch(`${API_URL}/api/auth/programme-officers`, fetchOptions)
         ]);
 
         // Catch expired session
@@ -56,8 +57,8 @@ const ValidationProjects = () => {
           const results = await Promise.all(
             (officers || []).map(async (off) => {
               const endpoint = type === "Field" 
-                ? `http://localhost:5000/api/projects/field-officer/${off._id}`
-                : `http://localhost:5000/api/projects/programme-officer/${off._id}`;
+                ? `${API_URL}/api/projects/field-officer/${off._id}`
+                : `${API_URL}/api/projects/programme-officer/${off._id}`;
               
               const res = await fetch(endpoint, fetchOptions);
               const json = await res.json();
@@ -86,7 +87,7 @@ const ValidationProjects = () => {
         const mappedProjects = await Promise.all(
           uniqueFiltered.map(async (proj) => {
             try {
-              const summaryRes = await fetch(`http://localhost:5000/api/projects/summary/${proj._id}`, fetchOptions);
+              const summaryRes = await fetch(`${API_URL}/api/projects/summary/${proj._id}`, fetchOptions);
               const summaryData = await summaryRes.json();
               
               return {

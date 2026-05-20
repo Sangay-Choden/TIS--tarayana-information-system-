@@ -6,10 +6,11 @@ import OTP from '../auth/pages/OTP';
 import ForgotPassword from '../auth/pages/ForgotPassword';
 import ResetPassword from '../auth/pages/ResetPassword';
 import ConfirmPassword from '../auth/pages/ConfirmPassword';
-
+import ProtectedRoute from './ProtectedRoute';
 const AuthRoutes = () => {
   return (
     <Routes>
+  
       <Route path="login" element={<Login />} />
       <Route path="otp" element={<OTP />} />
       <Route path="forgot-password" element={<ResetPassword />} />

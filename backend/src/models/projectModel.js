@@ -39,10 +39,13 @@ const projectSchema = new mongoose.Schema({
   realQuantity: { type: Number, default: 0 },
   // Add this to your projectSchema in projectModel.js
   keyActivityVerification: [{
-    activityName: String,
-    realQuantity: { type: Number, default: 0 },
-    isConfirmed: { type: Boolean, default: false }
-  }]
+  activityName: String,
+  dzongkhag: String,
+  gewog: String,
+  village: String,
+  realQuantity: Number,
+  isConfirmed: Boolean
+}]
 }, { timestamps: true });
 
 module.exports = mongoose.model("Project", projectSchema);

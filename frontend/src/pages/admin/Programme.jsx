@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Search, Plus, FileText, X } from "lucide-react";
 import { useEffect } from "react";
 const Programme = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
    const { pathname } = useLocation();
    const rootPath = pathname.split('/')[1];
    
@@ -36,7 +37,7 @@ const [error, setError] = useState("");
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/api/programmes", {
+      const res = await fetch(`${API_URL}/api/programmes`, {
         headers: {
           Authorization: `Bearer ${token}`, // optional if protected
         },
@@ -68,7 +69,7 @@ const [error, setError] = useState("");
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/programmes", {
+    const res = await fetch(`${API_URL}/api/programmes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -13,6 +13,7 @@ import { Trash2 } from "lucide-react";
 import hero from "../../assets/hero.png";
 
 const Setting = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("banner");
   const [users, setUsers] = useState([]);
@@ -61,7 +62,7 @@ const formatRoleName = (name) => {
 useEffect(() => {
   const fetchBanner = async () => {
   try {
-    const res = await fetch("http://localhost:5000/api/banner");
+    const res = await fetch(`${API_URL}/api/banner`);
     const data = await res.json();
 
     console.log("BANNER API RESPONSE:", data);
@@ -83,7 +84,7 @@ const fetchUsers = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/auth/users", {
+    const res = await fetch(`${API_URL}/api/auth/users`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -103,7 +104,7 @@ const fetchRoles = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/roles/list", {
+    const res = await fetch(`${API_URL}/api/roles/list`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -131,7 +132,7 @@ const handleCreateRole = async () => {
 
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/roles/create", {
+    const res = await fetch(`${API_URL}/api/roles/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -185,7 +186,7 @@ const confirmDelete = async () => {
     const roleId = roles[deleteItem]._id;
 
     const res = await fetch(
-      `http://localhost:5000/api/roles/delete/${roleId}`,
+      `${API_URL}/api/roles/delete/${roleId}`,
       {
         method: "DELETE",
         headers: {
@@ -227,7 +228,7 @@ const handleSaveBanner = async () => {
     formData.append("image", selectedFile);
 
     const res = await fetch(
-      "http://localhost:5000/api/banner/upload",
+      `${API_URL}/api/banner/upload`,
       {
         method: "POST",
         body: formData,
@@ -302,7 +303,7 @@ const handleResetDefault = async () => {
       new File([blob], "hero.png", { type: blob.type })
     );
 
-    await fetch("http://localhost:5000/api/banner/upload", {
+    await fetch(`${API_URL}/api/banner/upload`, {
       method: "POST",
       body: formData,
     });

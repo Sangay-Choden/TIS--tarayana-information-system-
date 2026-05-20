@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 const UserManagement = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
       const { pathname } = useLocation();
@@ -111,7 +112,7 @@ const fetchUsers = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/auth/users", {
+    const res = await fetch(`${API_URL}/api/auth/users`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -137,7 +138,7 @@ const fetchUsers = async () => {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      "http://localhost:5000/api/donor-partner/summary",
+      `${API_URL}/api/donor-partner/summary`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -165,7 +166,7 @@ setPartners(data.partners);
     // USERS delete
     if (activeTab === "users") {
       const res = await fetch(
-        `http://localhost:5000/api/auth/user/${deleteItem}`,
+        `${API_URL}/api/auth/user/${deleteItem}`,
         {
           method: "DELETE",
           headers: {
@@ -183,7 +184,7 @@ setPartners(data.partners);
     // DONOR/PARTNER delete
     else {
       const res = await fetch(
-        `http://localhost:5000/api/donor-partner/delete/${deleteItem}`,
+        `${API_URL}/api/donor-partner/delete/${deleteItem}`,
         {
           method: "DELETE",
           headers: {
@@ -221,7 +222,7 @@ setTimeout(() => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "http://localhost:5000/api/donor-partner/register",
+        `${API_URL}/api/donor-partner/register`,
         {
           method: "POST",
           headers: {
@@ -266,7 +267,7 @@ setTimeout(() => {
   }
 
   if (activeTab === "roles") {
-  const res = await fetch("http://localhost:5000/api/roles/create", {
+  const res = await fetch(`${API_URL}/api/roles/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -309,7 +310,7 @@ const handleUpdate = async () => {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      `http://localhost:5000/api/donor-partner/update/${editItem._id}`,
+      `${API_URL}/api/donor-partner/update/${editItem._id}`,
       {
         method: "PUT",
         headers: {
@@ -352,7 +353,7 @@ const handleUpdateRole = async () => {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      `http://localhost:5000/api/roles/update/${editRole._id}`,
+      `${API_URL}/api/roles/update/${editRole._id}`,
       {
         method: "PUT",
         headers: {
@@ -399,7 +400,7 @@ const fetchRoles = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/roles/list", {
+    const res = await fetch(`${API_URL}/api/roles/list`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -425,7 +426,7 @@ const handleCreateRole = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/roles/create", {
+    const res = await fetch(`${API_URL}/api/roles/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -474,7 +475,7 @@ const confirmDeleterole = async () => {
     const roleId = [deleteroleItem];
 
     const res = await fetch(
-      `http://localhost:5000/api/roles/delete/${roleId}`,
+      `${API_URL}/api/roles/delete/${roleId}`,
       {
         method: "DELETE",
         headers: {

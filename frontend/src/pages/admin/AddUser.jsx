@@ -3,6 +3,7 @@ import { useNavigate , useLocation} from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 
 const AddUser = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
 
     const { pathname } = useLocation();
    const rootPath = pathname.split('/')[1];
@@ -28,7 +29,7 @@ useEffect(() => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/api/roles/list", {
+      const res = await fetch(`${API_URL}/api/roles/list`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -104,7 +105,7 @@ const filteredRoles = (data.roles || []).filter((r) =>
   try {
      setLoading(true);
 
-    const res = await fetch("http://localhost:5000/api/auth/register", {
+    const res = await fetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
