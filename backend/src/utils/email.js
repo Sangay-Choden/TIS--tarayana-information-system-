@@ -1,21 +1,13 @@
 const nodemailer = require("nodemailer");
 
-// Create transporter
+// Create a single transporter instance to reuse
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS
   },
-});
-
-// 👇 ADD THIS RIGHT HERE (after transporter creation)
-transporter.verify((error, success) => {
-  if (error) {
-    console.log("SMTP ERROR:", error);
-  } else {
-    console.log("SMTP READY");
-  }
 });
 
 /**
