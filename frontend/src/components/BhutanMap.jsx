@@ -43,115 +43,118 @@ console.log(activityData);
 
   ];
 
-  return (
-      <div className="relative w-full">
-    <div className="bg-white rounded-xl shadow p-5">
-      <h3 className="font-semibold text-gray-700 mb-9">
-Click on the District to find out Tarayana's Intervention Data</h3>
-      <div className="relative w-full flex justify-center overflow-hidden">
-        <svg 
-           viewBox="0 0 800 500"
+ return (
+    <div className="relative w-full">
+      <div className="bg-white rounded-xl shadow p-5">
+        <h3 className="font-semibold text-gray-700 mb-9">
+          Click on the District to find out Tarayana's Intervention Data
+        </h3>
+        <div className="relative w-full flex justify-center overflow-hidden">
+         <svg 
+  viewBox="0 0 800 500"
   preserveAspectRatio="xMidYMid meet"
   className="w-full h-auto min-w-full"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {dzongkhags.map((dzo) => (
-            <path
-              key={dzo.id}
-              d={dzo.d}
-onClick={(e) => {
-
-  setSelectedDzongkhag(
-    dzo.name.toLowerCase().trim()
-  );
-
-setPopupPosition({
-  x: e.clientX,
-  y: e.clientY
-});
-
-}}
-              className="fill-[#00477e] stroke-white stroke-[1.5px] transition-all duration-300 hover:fill-[#e96d1f] cursor-pointer"
-            >
-              <title>{dzo.name}</title>
-            </path>
-          ))}
-        </svg>
-        {selectedDzongkhag &&
- activityData?.[selectedDzongkhag] && (
-
-<div
-  className="fixed z-50 bg-white rounded-xl shadow-2xl w-[320px] p-5 border bg-gray-50 border border-gray-100"
-style={{
-  left:
-    popupPosition.x > window.innerWidth - 380
-      ? popupPosition.x - 340
-      : popupPosition.x + 10,
-
-  top:
-    popupPosition.y > window.innerHeight - 420
-      ? popupPosition.y - 150
-      : popupPosition.y + 10
-}}
+  xmlns="http://www.w3.org/2000/svg"
 >
+  {dzongkhags.map((dzo) => (
+    <path
+      key={dzo.id}
+      d={dzo.d}
+      onClick={(e) => {
+        setSelectedDzongkhag(dzo.name.toLowerCase().trim());
+        
+        // This calculates the click relative to the container box instead of the page window boundaries
+        const rect = e.currentTarget.ownerSVGElement.getBoundingClientRect();
+        setPopupPosition({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        });
+      }}
+      className="fill-[#00477e] stroke-white stroke-[1.5px] transition-all duration-300 hover:fill-[#e96d1f] cursor-pointer"
+    >
+      <title>{dzo.name}</title>
+    </path>
+  ))}
+</svg>
 
+         {selectedDzongkhag && activityData?.[selectedDzongkhag] && (
+  <div
+    className="absolute z-50 bg-white rounded-xl shadow-2xl border border-gray-100 p-4 max-sm:p-3.5
+               max-md:fixed max-md:bottom-4 max-md:left-1/2 max-md:-translate-x-1/2 max-md:top-auto max-md:w-[calc(100%-32px)] max-md:max-w-[280px]"
+    style={
+      window.innerWidth > 768
+        ? (() => {
+            // Get the width of the relative map wrapper container dynamically
+            const mapContainer = document.querySelector(".relative.w-full.flex.justify-center");
+            const containerWidth = mapContainer ? mapContainer.clientWidth : 800;
+            const containerHeight = mapContainer ? mapContainer.clientHeight : 500;
+
+            // If the click is on the eastern half (right side), slide the card to the left of the cursor
+            const shouldFlipLeft = popupPosition.x > containerWidth - 340;
+            // If the click is near the bottom edge, push the card upward
+            const shouldFlipUp = popupPosition.y > containerHeight - 260;
+
+            return {
+              width: "320px",
+              left: shouldFlipLeft 
+                ? popupPosition.x - 340 
+                : popupPosition.x + 15,
+              top: shouldFlipUp 
+                ? popupPosition.y - 180 
+                : popupPosition.y + 10,
+            };
+          })()
+        : {} // Empty style object allows Tailwind classes to format mobile views cleanly
+    }
+  >
     {/* HEADER */}
-    <div className="flex items-center justify-between mb-4">
-      <h2 className="text-lg font-bold capitalize text-gray-800">
+    <div className="flex items-center justify-between mb-2 max-sm:mb-1.5">
+      <h2 className="text-base max-sm:text-xs font-bold capitalize text-gray-800">
         {selectedDzongkhag}
       </h2>
 
       <button
         onClick={() => setSelectedDzongkhag(null)}
-        className="text-gray-400 hover:text-red-500"
+        className="text-gray-400 hover:text-red-500 p-1 text-sm"
       >
         ✕
       </button>
     </div>
 
     {/* TOTAL */}
-    <div className="mb-4">
-      <p className="text-sm text-gray-500">
+    <div className="mb-2 max-sm:mb-1.5">
+      <p className="text-xs text-gray-500">
         Total Activities
       </p>
-
-      <p className="text-xl font-black text-blue-600">
+      <p className="text-lg max-sm:text-sm font-black text-blue-600">
         {activityData[selectedDzongkhag].totalActivities}
       </p>
     </div>
 
     {/* ACTIVITY LIST */}
-    <div className="space-y-3 max-h-[300px] overflow-y-auto">
-
+    <div className="space-y-1.5 max-h-[220px] max-sm:max-h-[130px] overflow-y-auto pr-0.5">
       {Object.entries(
         activityData[selectedDzongkhag].activities
       ).map(([activity, count], idx) => (
-
         <div
           key={idx}
-          className="flex items-center justify-between  text-sm"
+          className="flex items-center justify-between text-xs max-sm:text-[11px] bg-gray-50/70 p-1.5 max-sm:p-1 rounded-md"
         >
           <span className="capitalize text-gray-700 font-medium">
             {activity}
           </span>
-
-          <span className="font-bold text-blue-600">
+          <span className="font-bold text-blue-600 bg-blue-50/80 px-1.5 py-0.5 rounded">
             {count}
           </span>
         </div>
-
       ))}
-
     </div>
-
   </div>
-
 )}
+        </div>
       </div>
     </div>
-    </div>
   );
- 
 
 };
 
