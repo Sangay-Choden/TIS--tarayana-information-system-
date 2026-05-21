@@ -235,7 +235,7 @@ const handleResend = async () => {
 
         {/* Back to Login */}
         <p
-          onClick={() => navigate("/auth/login")}
+          onClick={() => navigate("/")}
           className="text-gray-500 text-xs sm:text-sm mt-5 cursor-pointer"
         >
           Back to Login

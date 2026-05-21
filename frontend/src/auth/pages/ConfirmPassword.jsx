@@ -160,7 +160,7 @@ return;
 
 setTimeout(() => {
   setShowSuccess(false);
-  navigate("/auth/login");
+  navigate("/");
 }, 2000);
 
     } catch (err) {
@@ -284,7 +284,7 @@ setLoading(false);
         </form>
 
         <p
-          onClick={() => navigate("/auth/login")}
+          onClick={() => navigate("/")}
           className="text-center text-sm text-gray-500 mt-6 cursor-pointer"
         >
           Back to Login
