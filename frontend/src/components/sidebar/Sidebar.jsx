@@ -21,7 +21,7 @@ const handleSignOut = () => {
 
   sessionStorage.clear();
 
-  navigate("/", { replace: true });
+  navigate("/auth/login", { replace: true });
 
   // PREVENT BACK BUTTON ACCESS
   setTimeout(() => {

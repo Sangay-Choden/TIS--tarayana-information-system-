@@ -162,7 +162,7 @@ const ResetPassword = () => {
         </form>
 
         <p
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/auth/login")}
           className="text-center text-sm text-gray-500 mt-6 cursor-pointer"
         >
           Back to Login

@@ -225,7 +225,7 @@ const AppRoutes = () => {
             <h1 className="text-4xl font-bold text-gray-900 mb-4">403 - Unauthorized</h1>
             <p className="text-gray-600 mb-8">You do not have permission to access this page.</p>
             <button 
-              onClick={() => window.location.href = '/'}
+              onClick={() => window.location.href = '/auth/login'}
               className="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
             >
               Go Back Home
@@ -235,7 +235,7 @@ const AppRoutes = () => {
       } />
 
       {/* Fallback for unhandled routes */}
-     <Route path="*" element={<Navigate to="/" replace />} />
+     <Route path="*" element={<Navigate to="/auth/login" replace />} />
     </Routes>
   );
 };

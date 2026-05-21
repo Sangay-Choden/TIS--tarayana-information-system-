@@ -61,7 +61,7 @@ const ForgotPassword = () => {
           <Button 
             variant="secondary" 
             className="w-full py-4 rounded-2xl"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/auth/login')}
           >
             Back to Login
           </Button>
@@ -76,7 +76,7 @@ const ForgotPassword = () => {
     return (
       <div className="space-y-8">
         <button 
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/auth/login')}
           className="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors text-sm font-bold group"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
