@@ -419,10 +419,10 @@ const handleResetDefault = async () => {
   </div>
   <div>
     <h2 className="font-semibold text-lg text-gray-800">
-      Login Banner
+      Login Page Background
     </h2>
     <p className="text-xs text-gray-500">
-      Customize the login page background
+      Customize the login page background Image
     </p>
   </div>
 </div>

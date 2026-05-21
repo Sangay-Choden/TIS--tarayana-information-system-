@@ -3,16 +3,13 @@ const nodemailer = require("nodemailer");
 // Create a single transporter instance to reuse
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
+  port: 465,
   secure: true,
   family: 4,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
-  tls: {
-    rejectUnauthorized: false
-  }
 });
 
 /**
