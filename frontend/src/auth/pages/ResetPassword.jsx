@@ -150,10 +150,11 @@ const ResetPassword = () => {
           {/* <button className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg shadow-lg font-semibold transition">
             Send OTP
           </button> */}
+          <div className="flex justify-center w-full mt-6">
           <button
   disabled={loading}
   type="submit"
-  className={`w-full bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
+  className={`w-full sm:w-[150px] md:w-[150px] lg:w-[120px] bg-[#2EA1F2] bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
     loading
       ? "bg-gray-400 cursor-not-allowed"
       : "bg-[#2EA1F2] hover:bg-[#298CD2] text-white"
@@ -161,11 +162,12 @@ const ResetPassword = () => {
 >
   {loading ? (" Sending OTP...") : ("Send OTP")}
 </button>
+</div>
         </form>
 
         <p
           onClick={() => navigate("/auth/login")}
-          className="text-center text-sm text-gray-500 mt-6 cursor-pointer"
+          className="text-center text-sm text-blue-500 mt-6 cursor-pointer"
         >
           Back to Login
         </p>

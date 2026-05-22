@@ -227,7 +227,7 @@ setLoading(false);
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
 
@@ -261,7 +261,7 @@ setLoading(false);
               <button
                 type="button"
                 onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute right-4 top-1/2 -translate-y-1/2"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
               >
                 {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -273,22 +273,25 @@ setLoading(false);
             )}
           </div>
 
-                 <button
-  disabled={loading}
-  type="submit"
-  className={`w-full bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
-    loading
-      ? "bg-gray-400 cursor-not-allowed"
-      : "bg-[#2EA1F2] hover:bg-[#298CD2] text-white"
-  }`}
->
-  {loading ? (" Resetting Password...") : ("Reset Password")}
-</button>
+                {/* Wrap the button in this centering div */}
+<div className="flex justify-center w-full mt-6">
+  <button
+    disabled={loading}
+    type="submit"
+    className={`w-full sm:w-[170px] md:w-[170px] lg:w-[170px] bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
+      loading
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-[#2EA1F2] hover:bg-[#298CD2] text-white"
+    }`}
+  >
+    {loading ? "Resetting Password..." : "Reset Password"}
+  </button>
+</div>
         </form>
 
         <p
           onClick={() => navigate("/auth/login")}
-          className="text-center text-sm text-gray-500 mt-6 cursor-pointer"
+          className="text-center text-sm text-blue-500 mt-6 cursor-pointer"
         >
           Back to Login
         </p>

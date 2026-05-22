@@ -390,12 +390,12 @@ const handleSignOut = () => {
                 {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
               </div>
 
-              <button className="w-[90%] mx-auto block bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-3 rounded-lg font-semibold mb-3 transition">
+              <button className="w-[90%] sm:w-[150px] md:w-[150px] lg:w-[150px] mx-auto block bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-3 rounded-lg font-semibold mb-3 transition">
                 Update Password
               </button>
               <p 
         onClick={handleSignOut}
-        className="text-center text-sm text-gray-500 mt-5 cursor-pointer ">
+        className="text-center text-sm text-blue-500 mt-5 cursor-pointer ">
           Forgot your Password?
         </p>
             </form>

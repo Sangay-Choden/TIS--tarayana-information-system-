@@ -219,7 +219,7 @@ const handleResend = async () => {
                     <button
                     type="submit"
   disabled={loading}
-  className={`w-full bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
+  className={`w-full sm:w-[150px] md:w-[150px] lg:w-[120px] bg-[#2EA1F2] bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
     loading
       ? "bg-gray-400 cursor-not-allowed"
       : "bg-[#2EA1F2] hover:bg-[#298CD2] text-white"
@@ -233,7 +233,7 @@ const handleResend = async () => {
         {/* Back to Login */}
         <p
           onClick={() => navigate("/auth/login")}
-          className="text-gray-500 text-xs sm:text-sm mt-5 cursor-pointer"
+          className="text-blue-500 text-xs sm:text-sm mt-5 cursor-pointer"
         >
           Back to Login
         </p>

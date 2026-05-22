@@ -260,22 +260,20 @@ if (
     
 <button
   disabled={loading}
-  className={`w-full bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
+  className={`block mx-auto w-full sm:w-[150px] md:w-[150px] lg:w-[120px] bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
     loading
       ? "bg-gray-400 cursor-not-allowed"
       : "bg-[#2EA1F2] hover:bg-[#298CD2] text-white"
   }`}
 >
-  {loading ? (" Logging in...") : ("Login")}
+  {loading ? "Logging in..." : "Login"}
 </button>
-
-
         </form>
 
         {/* Forgot */}
         <p 
         onClick={() => navigate("/auth/forgot-password")}
-        className="text-center text-sm text-gray-500 mt-5 cursor-pointer ">
+        className="text-center text-sm text-blue-500 mt-5 cursor-pointer ">
           Forgot your Password?
         </p>
       </div>
