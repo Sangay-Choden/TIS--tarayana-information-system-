@@ -183,22 +183,22 @@ if (
       <div className="absolute inset-0 bg-white/25 backdrop-blur-sm"></div>
 
       {/* Card */}
-      <div className="relative z-10 w-full md:max-w-xl lg:max-w-3xl bg-white/80 backdrop-blur-xl rounded-xl shadow-2xl px-4 py-8 sm:px-6 sm:py-10">
+      <div className="relative z-10 w-full sm:w-[400px] md:w-[460px] lg:w-[570px] bg-white/80 backdrop-blur-xl rounded-xl shadow-2xl px-4 py-5 sm:px-6 sm:py-6">
         
         {/* Logo */}
-        <div className="flex justify-center mb-5">
-          <img src={logo} alt="logo" className="w-28 h-28" />
+        <div className="flex justify-center mb-1">
+        <img src={logo} alt="logo" className="w-20 h-18" />
         </div>
 
         {/* Title */}
-        <h2 className="text-xl sm:text-xl font-bold text-center text-gray-700">
+        <h2 className="text-md sm:text-md font-bold text-center text-gray-700">
           Tarayana Information System
         </h2>
-        <p className="text-center text-gray-500 text-sm mt-1 mb-6 font-semibold">
+        <p className="text-center text-gray-500 text-xs mt-1 mb-6 font-small">
           Login to your account to continue
         </p>
 
-       <form onSubmit={handleSubmit} noValidate className="max-w-xl mx-auto w-full">
+       <form onSubmit={handleSubmit} noValidate className="max-w-md mx-auto w-full">
 {errors.general && (
   <p className="text-red-500 text-center mb-4">{errors.general}</p>
 )}
@@ -252,18 +252,15 @@ if (
           <div className="flex items-center mb-6 text-sm text-gray-600">
             <input
               type="checkbox"
-              className="mr-2 w-5 h-5 accent-blue-500 cursor-pointer"
+              className="mr-2 w-4 h-4 accent-blue-500 cursor-pointer"
             />
             Remember me
           </div>
 
-          {/* Button (BOLD TEXT) */}
-          {/* <button className="w-full bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-3 rounded-lg shadow-lg font-semibold transition">
-            Login
-          </button> */}
+    
 <button
   disabled={loading}
-  className={`w-full bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-3 rounded-lg shadow-lg font-semibold transition ${
+  className={`w-full bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
     loading
       ? "bg-gray-400 cursor-not-allowed"
       : "bg-[#2EA1F2] hover:bg-[#298CD2] text-white"

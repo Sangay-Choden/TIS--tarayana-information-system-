@@ -186,21 +186,23 @@ setLoading(false);
 >
       <div className="absolute inset-0 bg-white/50 backdrop-blur-sm"></div>
 
-      <div className="relative z-10 w-full md:max-w-2xl lg:max-w-3xl bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl px-4 py-8 sm:px-6 sm:py-10 text-center">
-        
-        <div className="flex justify-center mb-5">
-          <img src={logo} alt="logo" className="w-24 h-24" />
-        </div>
-
-       <h2 className="text-xl sm:text-xl font-bold text-center text-gray-700">
-          Tarayana Information System
-        </h2>
-
-        <p className="text-center text-gray-500 text-sm mt-1 mb-6 font-semibold">
+       {/* Card */}
+         <div className="relative z-10 w-full sm:w-[400px] md:w-[460px] lg:w-[570px] bg-white/80 backdrop-blur-xl rounded-xl shadow-2xl px-4 py-5 sm:px-6 sm:py-6">
+           
+           {/* Logo */}
+           <div className="flex justify-center mb-1">
+           <img src={logo} alt="logo" className="w-20 h-18" />
+           </div>
+   
+           {/* Title */}
+           <h2 className="text-md sm:text-md font-bold text-center text-gray-700">
+             Tarayana Information System
+           </h2>
+           <p className="text-center text-gray-500 text-xs mt-1 mb-6 font-small">
           Set New Password
         </p>
 
-        <form onSubmit={handleSubmit} noValidate className="max-w-xl mx-auto w-full">
+        <form onSubmit={handleSubmit} noValidate className="max-w-md mx-auto w-full">
           
           {/* New Password */}
           <div className="mb-4">
@@ -215,7 +217,7 @@ setLoading(false);
                   setPassword(value);
                   validateField("password", value, value, confirmPassword);
                 }}
-                className={`w-full pl-11 pr-11 py-3 border rounded-lg bg-white/70 focus:outline-none focus:ring-1 ${
+                className={`w-full pl-11 pr-11 py-2.5 border rounded-lg bg-white/70 focus:outline-none focus:ring-1 ${
                   errors.password
                     ? "border-red-500 focus:ring-red-400"
                     : "focus:ring-blue-400"
@@ -249,7 +251,7 @@ setLoading(false);
                   setConfirmPassword(value);
                   validateField("confirmPassword", value, password, value);
                 }}
-                className={`w-full pl-11 pr-11 py-3 border rounded-lg bg-white/70 focus:outline-none focus:ring-1 ${
+                className={`w-full pl-11 pr-11 py-2.5 border rounded-lg bg-white/70 focus:outline-none focus:ring-1 ${
                   errors.confirmPassword
                     ? "border-red-500 focus:ring-red-400"
                     : "focus:ring-blue-400"
@@ -274,7 +276,7 @@ setLoading(false);
                  <button
   disabled={loading}
   type="submit"
-  className={`w-full bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-3 rounded-lg shadow-lg font-semibold transition ${
+  className={`w-full bg-[#2EA1F2] hover:bg-[#298CD2] text-white py-2.5 rounded-lg shadow-lg font-semibold transition ${
     loading
       ? "bg-gray-400 cursor-not-allowed"
       : "bg-[#2EA1F2] hover:bg-[#298CD2] text-white"
