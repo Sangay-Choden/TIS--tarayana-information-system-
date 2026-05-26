@@ -3,6 +3,15 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell 
 } from 'recharts';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+const COLORS=[
+ '#3498db',
+ '#2ecc71',
+ '#f1c40f',
+ '#e67e22',
+ '#2980b9',
+ '#9b59b6'
+];
+
 
 const ChartCard = ({ 
   title, 
@@ -16,7 +25,7 @@ const ChartCard = ({
   const [isOpen, setIsOpen] = useState(false);
   
   // Colors matching your image: Blue, Green, Yellow, Orange, etc.
-  const colors = ['#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#2980b9', '#9b59b6'];
+
 
   const currentFilterLabel = filterOptions?.find(opt => opt.id === activeFilterId)?.label || 'Select Filter';
 
@@ -66,24 +75,31 @@ const ChartCard = ({
         </div>
       </div>
 
-     <div className="h-64 w-full relative overflow-x-auto">
-        {/* Y Axis Label */}
-        {/* <div className="absolute -left-12 top-1/2 -rotate-90 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap"> */}
-      <div className="absolute -left-5 sm:-left-3 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">
-          {yAxisLabel}
-        </div>
+<div className="h-[300px] w-full relative overflow-x-auto overflow-y-hidden">
 
-     <div className="min-w-[500px] h-full">
-  <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 0, right: 10, left: 20, bottom: 0 }}>
+  {/* Y label */}
+<div className="absolute -left-5 sm:-left-3 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">
+    {yAxisLabel}
+  </div>
+
+  {/* Scrollable only on smaller screens */}
+<div className="min-w-[500px] h-full">
+    <ResponsiveContainer
+      width="99%"
+      height="100%"
+      debounce={300}
+    >
+       <BarChart
+   data={data}
+   margin={{
+      top:10,
+      right:20,
+      left:20,
+      bottom:20
+   }}
+>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-            <XAxis 
-              dataKey="name" 
-              axisLine={false} 
-              tickLine={false} 
-           tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 500 }}
-              dy={10}
-            />
+<XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 500 }} dy={10} />
             <YAxis 
               axisLine={false} 
               tickLine={false} 
@@ -95,7 +111,10 @@ const ChartCard = ({
             />
          <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={28}>
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+               <Cell
+   key={index}
+   fill={COLORS[index % COLORS.length]}
+/>
               ))}
             </Bar>
           </BarChart>
@@ -111,4 +130,4 @@ const ChartCard = ({
   );
 };
 
-export default ChartCard;
+export default React.memo(ChartCard);

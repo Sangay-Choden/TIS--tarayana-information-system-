@@ -102,17 +102,76 @@ exports.updateProgramme = async (req, res) => {
 };
 
 // DELETE
+// exports.deleteProgramme = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const programme = await Programme.findByIdAndDelete(id);
+//     if (!programme) {
+//       return res.status(404).json({ message: "Programme not found" });
+//     }
+
+//     res.json({ message: "Programme deleted successfully" });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
 exports.deleteProgramme = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Find projects under programme
+    const projects = await Project.find({ programme: id });
+
+    console.log("Projects found:", projects);
+
+    const projectIds = projects.map((p) => p._id);
+
+    console.log("Project IDs:", projectIds);
+
+    // Delete beneficiaries linked to projects
+    const beneficiaryDeleteResult = await Beneficiary.deleteMany({
+      projectId: { $in: projectIds },
+    });
+
+    console.log(
+      "Beneficiaries deleted:",
+      beneficiaryDeleteResult
+    );
+
+    // Delete projects
+    const projectDeleteResult = await Project.deleteMany({
+      programme: id,
+    });
+
+    console.log(
+      "Projects deleted:",
+      projectDeleteResult
+    );
+
+    // Delete programme
     const programme = await Programme.findByIdAndDelete(id);
+
     if (!programme) {
-      return res.status(404).json({ message: "Programme not found" });
+      return res.status(404).json({
+        message: "Programme not found",
+      });
     }
 
-    res.json({ message: "Programme deleted successfully" });
+    res.json({
+      message:
+        "Programme and related data deleted successfully",
+      deletedBeneficiaries:
+        beneficiaryDeleteResult.deletedCount,
+      deletedProjects:
+        projectDeleteResult.deletedCount,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+
+    res.status(500).json({
+      error: error.message,
+    });
   }
 };

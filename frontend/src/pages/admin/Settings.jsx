@@ -489,6 +489,7 @@ const handleResetDefault = async () => {
               {/* Preview */}
               <div className="relative">
                <img
+     
   src={preview || bgImage}
   alt="banner"
   className="rounded-xl w-full h-72 md:h-80 lg:h-96 object-cover"
@@ -525,7 +526,7 @@ const handleResetDefault = async () => {
               </div>
 
               {/* URL */}
-              <div>
+              {/* <div>
                 <p className="text-sm mb-2">Or Image URL</p>
                 <input
                   type="text"
@@ -537,7 +538,7 @@ const handleResetDefault = async () => {
                   placeholder="Enter image url link"
                   className="w-full border rounded-lg px-3 py-2"
                 />
-              </div>
+              </div> */}
 
               {/* ACTIONS */}
               {/* <div className="flex justify-end gap-3">
@@ -557,7 +558,7 @@ const handleResetDefault = async () => {
                 </button>
               </div> */}
 
-              <div className="flex justify-between items-center mt-4">
+              <div className="flex justify-between items-center mt-6">
 <button
   onClick={handleResetDefault}
   disabled={resetting}

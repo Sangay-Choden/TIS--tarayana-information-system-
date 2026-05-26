@@ -233,6 +233,10 @@ exports.getAllBeneficiariesbyDzongkhag = async (req, res) => {
  * @desc    Update an existing beneficiary (Aligned with Batch Create Architecture)
  * @route   PUT /api/beneficiaries/:id
  */
+/**
+ * @desc    Update an existing beneficiary (Aligned with Batch Create Architecture)
+ * @route   PUT /api/beneficiaries/:id
+ */
 exports.updateBeneficiary = async (req, res) => {
   try {
     const { id } = req.params;
@@ -312,8 +316,13 @@ exports.updateBeneficiary = async (req, res) => {
       ...(individualProfile.name && { name: individualProfile.name }),
       ...(individualProfile.cid && { cid: individualProfile.cid }),
       ...(individualProfile.gender && { gender: individualProfile.gender }),
-      ...(individualProfile.houseNo && { houseNo: individualProfile.houseNo }),
-      ...(individualProfile.thramNo && { thramNo: individualProfile.thramNo }),
+      ...(individualProfile.hasOwnProperty('houseNo') && {
+        houseNo: individualProfile.houseNo
+      }),
+
+      ...(individualProfile.hasOwnProperty('thramNo') && {
+        thramNo: individualProfile.thramNo
+      }),
       ...(individualProfile.indirectBeneficiaries && { indirectBeneficiaries: individualProfile.indirectBeneficiaries })
     };
 

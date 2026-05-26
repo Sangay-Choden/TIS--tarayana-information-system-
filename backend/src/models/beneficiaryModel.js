@@ -20,8 +20,12 @@ const beneficiarySchema = new mongoose.Schema({
   dzongkhag: { type: String, required: true, lowercase: true }, // Logic handled in controller
   gewog: { type: String, required: true, lowercase: true },
   village: { type: String, required: true, lowercase: true },
-  houseNo: { type: String, required: true },
-  thramNo: { type: String, required: true },
+houseNo: {
+  type: String,
+},
+thramNo: {
+  type: String
+},
   indirectBeneficiaries: {
     male: { type: Number, default: 0 },
     female: { type: Number, default: 0 }
@@ -54,5 +58,7 @@ const beneficiarySchema = new mongoose.Schema({
     }
   }]
 }, { timestamps: true });
+
+
 
 module.exports = mongoose.model("Beneficiary", beneficiarySchema);

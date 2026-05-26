@@ -264,10 +264,19 @@ const programmePieData = (charts?.beneficiaries?.programme || []).map(
     color: colors[index % colors.length],
   })
 );
+const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const handleResize = () => setIsMobile(window.innerWidth < 640);
+  handleResize();
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 
   return (
     
-<div className="w-full px-2 sm:px-2 lg:px-2 pb-6 space-y-6 overflow-x-hidden">
+<div className="w-full max-w-[1600px] mx-auto px-3 sm:px-4 lg:px-5 pb-6 space-y-6 overflow-x-hidden">
     {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -314,7 +323,7 @@ const programmePieData = (charts?.beneficiaries?.programme || []).map(
 {view === 'projects' ? (
         <>
 
-<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
 
   <StatCard 
               label="Total Projects" 
@@ -356,23 +365,26 @@ const programmePieData = (charts?.beneficiaries?.programme || []).map(
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             
           {/* Pie */}
-<div className="bg-white rounded-2xl shadow p-5">
+{/* Pie */}
+<div className="bg-white rounded-2xl shadow p-5 w-full">
   <h3 className="font-bold text-gray-700 text-xl mb-4">
     Programme Distribution
   </h3>
 
-  {/* Changed to flex-col (mobile default) and md:flex-row (tablets/desktop) */}
   <div className="flex flex-col md:flex-row items-center gap-6">
-    
-    {/* Chart Container - full width on mobile, flex-1 on desktop */}
+
+    {/* Chart */}
     <div className="w-full flex-1">
-      <ResponsiveContainer width="100%" height={260}>
+      <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 220 : 260}>
         <PieChart>
           <Pie
             data={programmePieData}
             dataKey="value"
-            innerRadius={60}
-            outerRadius={100}
+            // innerRadius={window.innerWidth < 640 ? 50 : 60}
+            // outerRadius={window.innerWidth < 640 ? 75 : 100}
+            height={isMobile ? 220 : 260}
+outerRadius={isMobile ? 75 : 100}
+innerRadius={isMobile ? 50 : 60}
           >
             {programmePieData.map((entry, index) => (
               <Cell key={index} fill={entry.color} />
@@ -383,12 +395,12 @@ const programmePieData = (charts?.beneficiaries?.programme || []).map(
       </ResponsiveContainer>
     </div>
 
-    {/* Data Labels - switches layout alignment automatically */}
+    {/* Legend */}
     <div className="w-full md:w-auto space-y-2 text-sm min-w-[140px] px-2 md:px-0">
       {programmePieData.map((p) => (
         <div key={p.name} className="flex items-center gap-2">
-          <span 
-            className="w-3 h-3 rounded-full shrink-0" 
+          <span
+            className="w-3 h-3 rounded-full shrink-0"
             style={{ backgroundColor: p.color }}
           />
           <p className="truncate">

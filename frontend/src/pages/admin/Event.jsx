@@ -1,8 +1,6 @@
 
 import React,{ useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-// import Sidebar from "../../components/Sidebar";
-// import Navbar from "../../components/Navbar";
 import { Plus, CalendarDays, Eye, Pencil, Trash2 ,ChevronLeft} from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -643,7 +641,14 @@ const validate = () => {
     const value = formData[f.fieldName];
 
     // ✅ REQUIRED
-    if (f.required && (!value || value === "")) {
+   if (
+  f.required &&
+  (
+    value === undefined ||
+    value === null ||
+    value.toString().trim() === ""
+  )
+){
       newErrors[f.fieldName] = "This field is required";
     }
 

@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Save, ChevronDown, ChevronLeft } from 'lucide-react';
@@ -7,7 +5,6 @@ import axios from 'axios';
 import SuccessModal from '../../components/modals/SuccessModal';
 
 const RegisterBeneficiary = () => {
-  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
@@ -47,7 +44,7 @@ const RegisterBeneficiary = () => {
   useEffect(() => {
     if (!token || !storedUser) {
       console.warn("Unauthorized access. Redirecting...");
-      navigate("/login", { replace: true });
+      navigate("/auth/login", { replace: true });
     }
   }, [token, storedUser, navigate]);
 
@@ -55,13 +52,13 @@ const RegisterBeneficiary = () => {
     const fetchProjects = async () => {
       if (!PO_ID || !token) return;
       try {
-        const res = await axios.get(`${API_URL}/api/projects/programme-officer/${PO_ID}`, {
+        const res = await axios.get(`http://localhost:5000/api/projects/programme-officer/${PO_ID}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProjects(res.data.data || []);
       } catch (err) {
         console.error("Fetch error", err);
-        if (err.response?.status === 401) navigate("/login");
+        if (err.response?.status === 401) navigate("/auth/login");
       }
     };
     fetchProjects();
@@ -83,13 +80,22 @@ const RegisterBeneficiary = () => {
       case 'village':
         if (/[0-9]/.test(value)) error = `${name.charAt(0).toUpperCase() + name.slice(1)} cannot contain numbers.`;
         break;
+      case 'thramNo':
+        if (value && !/^\d+$/.test(value)) {
+          error = "Thram No must contain numbers only.";
+        }
+    break;
       case 'dzongkhag':
         if (!regionalData.projectId) error = "Please select a Project first.";
         break;
       default:
         break;
     }
-    setFieldErrors(prev => ({ ...prev, [errorKey]: error }));
+    // setFieldErrors(prev => ({ ...prev, [errorKey]: error }));
+    setFieldErrors(prev => ({
+      ...prev,
+      [errorKey]: error
+    }));
   };
 
   const getTextColor = (value) => value ? "text-black" : "text-gray-400";
@@ -118,15 +124,37 @@ const RegisterBeneficiary = () => {
       const cleanVal = value.replace(/[^0-9]/g, '');
       updated[index][field] = cleanVal;
       setBeneficiaries(updated);
+      // validateField('cid', cleanVal, index);
       validateField('cid', cleanVal, index);
+
+      // Live duplicate CID detection
+      const duplicate = beneficiaries.some(
+        (b, i) => i !== index && b.cid === cleanVal
+      );
+
+      setFieldErrors(prev => ({
+        ...prev,
+        [`cid-${index}`]: duplicate
+          ? "Duplicate CID already entered."
+          : cleanVal.length !== 11 && cleanVal.length > 0
+          ? "CID must be exactly 11 digits."
+          : ""
+      }));
       return;
     }
     if (field === 'name' && /[0-9]/.test(value)) {
       return;
     }
+    
     updated[index][field] = value;
     setBeneficiaries(updated);
     if (field === 'name') validateField('name', value, index);
+    // if (field === 'thramNo') {
+    //   validateField('thramNo', value, index);
+    // }
+    if (field === 'thramNo') {
+      value = value.replace(/[^0-9]/g, '');
+    }
   };
 
   const addBeneficiaryRow = () => {
@@ -154,6 +182,35 @@ const RegisterBeneficiary = () => {
       }
     ]);
   };
+
+  // const handleActivityChange = (idx, field, value) => {
+  //   const newActs = [...keyActivities];
+  //   if (!newActs[idx].specifications) {
+  //     newActs[idx].specifications = [];
+  //   }
+  //   if (field === "totalQuantity") {
+  //     const qty = Math.max(0, parseInt(value) || 0);
+  //     newActs[idx].totalQuantity = qty;
+  //     const old = newActs[idx].specifications || [];
+  //     newActs[idx].specifications = Array.from({ length: qty }, (_, i) => old[i] || "");
+  //   } else if (field === "specifications") {
+  //     const { sIdx, val } = value;
+  //     newActs[idx].specifications[sIdx] = val.replace(/[^0-9.]/g, "");
+  //   } else if (field === "isTraining") {
+  //     newActs[idx].isTraining = value;
+  //     if (value) {
+  //       newActs[idx].totalQuantity = 1;
+  //       newActs[idx].unit = "";
+  //       newActs[idx].specifications = [];
+  //     }
+  //   } else if (field.includes(".")) {
+  //     const [p, c] = field.split(".");
+  //     newActs[idx][p] = { ...newActs[idx][p], [c]: value };
+  //   } else {
+  //     newActs[idx][field] = value;
+  //   }
+  //   setKeyActivities(newActs);
+  // };
 
 const handleActivityChange = (idx, field, value) => {
   const newActs = [...keyActivities];
@@ -192,6 +249,7 @@ const handleActivityChange = (idx, field, value) => {
 
   // Final Unified Batch Form Submit Execution 
   const handleSubmit = async () => {
+    setShowConfirm(false);
     const hasErrors = Object.values(fieldErrors).some(err => err !== "");
     if (hasErrors) {
       setErrorMessage("Please correct the validation errors in the form before proceeding.");
@@ -206,14 +264,39 @@ const handleActivityChange = (idx, field, value) => {
       return;
     }
 
-    for (let i = 0; i < beneficiaries.length; i++) {
-      const b = beneficiaries[i];
-      if (!b.name || b.cid.length !== 11 || !b.gender || !b.houseNo || !b.thramNo) {
-        setErrorMessage(`Please check Row ${i + 1}: Make sure fields are populated completely and CID is exactly 11 digits.`);
-        setShowErrorPopup(true);
-        return;
-      }
-    }
+    // for (let i = 0; i < beneficiaries.length; i++) {
+    //   const b = beneficiaries[i];
+    //   if (!b.name || b.cid.length !== 11 || !b.gender) {
+    //     setErrorMessage(`Please check Row ${i + 1}: Make sure fields are populated completely`);
+    //     setShowErrorPopup(true);
+    //     return;
+    //   }
+    // }
+    const cidTracker = new Set();
+
+for (let i = 0; i < beneficiaries.length; i++) {
+  const b = beneficiaries[i];
+
+  // Required field validation
+  if (!b.name || b.cid.length !== 11 || !b.gender) {
+    setErrorMessage(
+      `Please check Row ${i + 1}: Make sure fields are populated completely`
+    );
+    setShowErrorPopup(true);
+    return;
+  }
+
+  // Duplicate CID validation inside bulk form
+  if (cidTracker.has(b.cid)) {
+    setErrorMessage(
+      `Duplicate CID detected in Row ${i + 1}. CID '${b.cid}' already exists in this submission.`
+    );
+    setShowErrorPopup(true);
+    return;
+  }
+
+  cidTracker.add(b.cid);
+}
 
     for (let act of keyActivities) {
       if (!act.isTraining && (!act.unit || act.unit.trim() === "")) {
@@ -262,7 +345,7 @@ const handleActivityChange = (idx, field, value) => {
         beneficiaries: formattedBeneficiaries
       };
 
-      await axios.post(`${API_URL}/api/beneficiaries`, finalPayload, {
+      await axios.post("http://localhost:5000/api/beneficiaries", finalPayload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -293,7 +376,7 @@ const handleActivityChange = (idx, field, value) => {
               <h3 className="text-sm font-bold uppercase tracking-wider text-gray-600">1. Regional & Project Assignment</h3>
              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1 relative">
-                  <label className="text-sm font-bold text-gray-700">Project *</label>
+                  <label className="text-sm font-bold text-gray-700">Project <span className="text-red-500">*</span></label>
                   <select required className="w-full p-2.5 border text-sm rounded-lg outline-none appearance-none bg-white text-gray-700"
                     value={regionalData.projectId} onChange={e => {
                       setRegionalData({...regionalData, projectId: e.target.value, dzongkhag: ''});
@@ -305,13 +388,13 @@ const handleActivityChange = (idx, field, value) => {
                   <ChevronDown className="absolute right-3 top-[32px] text-gray-400 pointer-events-none" size={16} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-bold text-gray-700">Reporting Year *</label>
+                  <label className="text-sm font-bold text-gray-700">Reporting Year <span className="text-red-500">*</span></label>
                   <input required type="number" className={`w-full p-2.5 text-sm border rounded-lg outline-none ${fieldErrors.year ? 'border-red-400' : ''}`}
                     value={regionalData.year} onChange={e => handleRegionalChange('year', e.target.value)} />
                   {fieldErrors.year && <p className="text-[10px] text-red-500 mt-0.5">{fieldErrors.year}</p>}
                 </div>
                 <div className="space-y-1 relative">
-                  <label className="text-sm font-bold text-gray-700">Dzongkhag *</label>
+                  <label className="text-sm font-bold text-gray-700">Dzongkhag <span className="text-red-500">*</span></label>
                   <select required className={`w-full p-2.5 border text-sm rounded-lg outline-none appearance-none bg-white capitalize text-gray-700 ${fieldErrors.dzongkhag ? 'border-red-400' : ''}`} 
                     value={regionalData.dzongkhag} onChange={e => handleRegionalChange('dzongkhag', e.target.value)}
                     onClick={() => validateField('dzongkhag', regionalData.dzongkhag)}>
@@ -322,13 +405,13 @@ const handleActivityChange = (idx, field, value) => {
                   {fieldErrors.dzongkhag && <p className="text-[13px] text-red-500 mt-0.5">{fieldErrors.dzongkhag}</p>}
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-bold text-gray-700">Gewog *</label>
+                  <label className="text-sm font-bold text-gray-700">Gewog <span className="text-red-500">*</span></label>
                   <input required type="text" placeholder="Gewog Name" className={`w-full p-2.5 text-sm border rounded-lg outline-none ${fieldErrors.gewog ? 'border-red-400' : ''}`} 
                     value={regionalData.gewog} onChange={e => handleRegionalChange('gewog', e.target.value)} />
                   {fieldErrors.gewog && <p className="text-[13px] text-red-500 mt-0.5">{fieldErrors.gewog}</p>}
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-bold text-gray-700">Village *</label>
+                  <label className="text-sm font-bold text-gray-700">Village <span className="text-red-500">*</span></label>
                   <input required type="text" placeholder="Village Name" className={`w-full p-2.5 text-sm border rounded-lg outline-none ${fieldErrors.village ? 'border-red-400' : ''}`} 
                     value={regionalData.village} onChange={e => handleRegionalChange('village', e.target.value)} />
                   {fieldErrors.village && <p className="text-[13px] text-red-500 mt-0.5">{fieldErrors.village}</p>}
@@ -350,11 +433,11 @@ const handleActivityChange = (idx, field, value) => {
                   <thead>
                     <tr className="bg-gray-100 border-b border-gray-200">
                       <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[5%] text-center">Row</th>
-                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[18%]">Full Name *</th>
-                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[15%]">CID Number *</th>
-                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[12%]">Gender *</th>
-                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[10%]">House No *</th>
-                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[12%]">Thram No *</th>
+                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[18%]">Full Name <span className="text-red-500">*</span></th>
+                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[15%]">CID Number <span className="text-red-500">*</span></th>
+                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[12%]">Gender <span className="text-red-500">*</span></th>
+                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[10%]">House No </th>
+                      <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[12%]">Thram No</th>
                       <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[11%]">Ind. Male</th>
                       <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[11%]">Ind. Female</th>
                       <th className="p-3 text-xs font-bold uppercase text-gray-600 w-[6%] text-center">Action</th>
@@ -385,26 +468,31 @@ const handleActivityChange = (idx, field, value) => {
                           <ChevronDown className="absolute right-4 top-[18px] text-gray-400 pointer-events-none" size={12} />
                         </td>
                         <td className="p-2">
-                          <input required type="text" placeholder="House No." className="w-full p-2 text-sm border rounded-lg outline-none bg-white"
+                          <input type="text" placeholder="House No." className="w-full p-2 text-xs border rounded-lg outline-none bg-white"
                             value={b.houseNo} onChange={e => handleBeneficiaryChange(bIdx, 'houseNo', e.target.value)} />
                         </td>
                         <td className="p-2">
-                    <input
-  required
-  type="text"
-  inputMode="numeric"
-  placeholder="Thram No"
-  className="w-full p-2 text-sm border rounded-lg outline-none bg-white"
-  value={b.thramNo}
-  onChange={e =>
-    handleBeneficiaryChange(
-      bIdx,
-      'thramNo',
-      e.target.value.replace(/[^0-9]/g, '')
-    )
-  }
-/>
-                        </td>
+                        <input
+                          type="text"
+                          placeholder="Thram No."
+                          className={`w-full p-2 text-xs border rounded-lg outline-none bg-white ${
+                            fieldErrors[`thramNo-${bIdx}`]
+                              ? 'border-red-400 bg-red-50/30'
+                              : ''
+                          }`}
+                          value={b.thramNo}
+                          onChange={e =>
+                            handleBeneficiaryChange(bIdx, 'thramNo', e.target.value)
+                          }
+                        />
+
+                        {fieldErrors[`thramNo-${bIdx}`] && (
+                          <p className="text-[9px] text-red-500 mt-0.5 leading-tight">
+                            {fieldErrors[`thramNo-${bIdx}`]}
+                          </p>
+                        )}
+                      </td>
+
                         <td className="p-2">
                           <input type="number" min="0" placeholder="0" className="w-full p-2 text-sm border rounded-lg outline-none bg-white"
                             value={b.indirectMale === 0 ? '' : b.indirectMale} onChange={e => handleBeneficiaryChange(bIdx, 'indirectMale', Math.max(0, parseInt(e.target.value) || 0))} />
@@ -631,7 +719,7 @@ const handleActivityChange = (idx, field, value) => {
       <SuccessModal isOpen={isSuccess} onClose={() => setIsSuccess(false)} message={`Beneficiary Saved Successfully`} />
       
       {showErrorPopup && (        
-        <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
+        <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowErrorPopup(false)}></div>
           <div className="relative bg-white rounded-xl shadow-2xl px-8 py-8 text-center w-full max-w-md border border-gray-100">
             <div className="flex justify-center mb-4">
@@ -647,3 +735,7 @@ const handleActivityChange = (idx, field, value) => {
 };
 
 export default RegisterBeneficiary;
+
+
+
+

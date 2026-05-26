@@ -293,7 +293,7 @@ const [error, setError] = useState("");
 
    
     {/* MODAL */}
-      {showModal && (
+      {/* {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[100]  ">
           <div className="bg-white w-full max-w-2xl rounded-xl p-6 relative shadow-lg">
             <button
@@ -311,6 +311,7 @@ const [error, setError] = useState("");
             </p>
 
             <input
+            required
               type="text"
               placeholder="Programme Name"
               className="w-full border rounded-lg p-2 mb-3"
@@ -321,6 +322,7 @@ const [error, setError] = useState("");
             />
 
             <textarea
+            required
               placeholder="Brief description about the programme..."
               className="w-full border rounded-lg p-2 mb-4"
               value={formData.description}
@@ -345,7 +347,77 @@ const [error, setError] = useState("");
             </div>
           </div>
         </div>
-      )}
+      )} */}
+{/* MODAL */}
+{showModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[100]">
+    
+    <div className="bg-white w-full max-w-2xl rounded-xl p-6 relative shadow-lg">
+
+      <button
+        onClick={() => setShowModal(false)}
+        className="absolute right-4 top-4 text-gray-500"
+      >
+        <X />
+      </button>
+
+      <h2 className="text-lg font-bold">
+        Add New Programme
+      </h2>
+
+      <p className="text-sm font-sm mb-6 text-gray-400">
+        Define a custom role with specific module access permissions.
+      </p>
+
+      {/* FORM */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleCreate();
+        }}
+      >
+        <input
+          required
+          type="text"
+          placeholder="Programme Name"
+          className="w-full border rounded-lg p-2 mb-3"
+          value={formData.name}
+          onChange={(e) =>
+            setFormData({ ...formData, name: e.target.value })
+          }
+        />
+
+        <textarea
+          required
+          placeholder="Brief description about the programme..."
+          className="w-full border rounded-lg p-2 mb-4"
+          value={formData.description}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
+        />
+
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => setShowModal(false)}
+            className="px-4 py-2 border rounded-lg"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="bg-[#2EA1F2] text-white px-5 py-2 shadow font-bold text-md rounded-lg flex items-center gap-2 hover:bg-[#298CD2] transition-color"
+          >
+            + Create
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
       </>
   );
 };

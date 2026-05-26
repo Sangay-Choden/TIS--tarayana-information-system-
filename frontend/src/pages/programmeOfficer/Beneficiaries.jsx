@@ -1,13 +1,12 @@
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Search, Plus, Users2, Pencil, Trash2, 
-  Loader2, ChevronLeft, ChevronRight 
+  Loader2, ChevronLeft, ChevronRight , Filter
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import axios from 'axios';
-
+import { ChevronDown } from "lucide-react";
 // Modal Imports
 import UpdateBeneficiaryModal from '../../components/modals/UpdateBeneficiaryModal';
 import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal';
@@ -25,10 +24,16 @@ const API_URL = import.meta.env.VITE_API_URL;
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+const [selectedProject, setSelectedProject] = useState('');
+const [isInterventionDropdownOpen, setIsInterventionDropdownOpen] = useState(false);
+const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
 
+// 🔍 INTERVENTION FILTER DROPDOWN STATE
+  const [selectedIntervention, setSelectedIntervention] = useState("All");
+  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   // 🔢 PAGINATION STATE
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 7; // Fixed to 7 items as requested
+  const itemsPerPage = 10; // Fixed to 10 items as requested
 
   // Modal States
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -37,13 +42,15 @@ const API_URL = import.meta.env.VITE_API_URL;
   const [successMessage, setSuccessMessage] = useState('');
   const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
 
-    const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
 const [errorMessage, setErrorMessage] = useState("");
 
+const { pathname } = useLocation();
+const rootPath = pathname.split('/')[1];
   // 🛡️ AUTH GUARD
   useEffect(() => {
     if (!token || !storedUser) {
-      navigate("/login", { replace: true });
+      navigate(`/${rootPath}/login`, { replace: true });
     }
   }, [token, storedUser, navigate]);
 
@@ -85,19 +92,18 @@ const [errorMessage, setErrorMessage] = useState("");
       
       setBeneficiaries(allBeneficiaries);
       console.log(allBeneficiaries)
-    } catch (err) {
-      setErrorMessage(
-  err.response?.data?.message ||
-  "Failed to load beneficiaries"
-);
-
-setShowErrorPopup(true);
-
-setTimeout(() => {
-  setShowErrorPopup(false);
-}, 2000);
-
+    }
+     catch (err) {
       console.error("Fetch error:", err);
+      setErrorMessage(
+        err.response?.data?.message ||
+        "Failed to load beneficiaries"
+      );
+      setShowErrorPopup(true);
+      setTimeout(() => {
+        setShowErrorPopup(false);
+      }, 2000);
+      
       if (err.response?.status === 401) navigate("auth/login");
     } finally {
       setLoading(false);
@@ -108,6 +114,7 @@ setTimeout(() => {
 
   // 🗑️ DELETE LOGIC
   const handleDelete = async () => {
+    
     try {
       await axios.delete(`${API_URL}/api/beneficiaries/${selectedBeneficiary._id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -116,12 +123,6 @@ setTimeout(() => {
       setSuccessMessage('Beneficiary Deleted Successfully');
       setIsSuccessModalOpen(true);
       fetchBeneficiaries();
-
-       // auto close success popup
-    setTimeout(() => {
-      setIsSuccessModalOpen(false);
-    }, 2000);
-    
     } catch (err) {
 
   setErrorMessage(
@@ -136,20 +137,54 @@ setTimeout(() => {
   }, 2000);
 }
   };
+  const uniqueProjects = [
+  ...new Set(
+    beneficiaries.map((b) => b.projectName).filter(Boolean)
+  ),
+];
+
+
+  // 🧪 DYNAMICALLY EXTRACT UNIQUE INTERVENTIONS
+  const uniqueInterventions = useMemo(() => {
+    const interventionsSet = new Set();
+    beneficiaries.forEach((b) => {
+      b.keyActivities?.forEach((act) => {
+        if (act.activityName) {
+          interventionsSet.add(act.activityName.trim());
+        }
+      });
+    });
+    return Array.from(interventionsSet).sort();
+  }, [beneficiaries]);
+
 
   // 🔍 FILTER & PAGINATION CALCULATION
-  const filteredData = beneficiaries.filter(b => {
-    const search = searchTerm.toLowerCase();
-    return (
-      b.name?.toLowerCase().includes(search) ||
-      b.cid?.toString().includes(search) ||
-      b.dzongkhag?.toLowerCase().includes(search) ||
-      b.projectName?.toLowerCase().includes(search) ||
-     b.keyActivities?.some((activity) =>
-      activity.activityName?.toLowerCase().includes(search)
-    )
+ const filteredData = beneficiaries.filter((b) => {
+  const search = searchTerm.toLowerCase();
+
+  const matchesSearch =
+    b.name?.toLowerCase().includes(search) ||
+    b.cid?.toString().includes(search) ||
+    b.dzongkhag?.toLowerCase().includes(search) ||
+    b.projectName?.toLowerCase().includes(search);
+
+    
+
+  const matchesProject =
+    selectedProject === '' ||
+    b.projectName === selectedProject;
+
+      // 🛠️ Intervention Filter Match
+  const matchesIntervention =
+    selectedIntervention === "All" ||
+    b.keyActivities?.some(
+      (act) => act.activityName?.trim() === selectedIntervention
     );
-  });
+
+  return matchesSearch && matchesProject && matchesIntervention;
+});
+
+
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -161,52 +196,188 @@ setTimeout(() => {
 
   if (!token || !storedUser) return null;
 
+
   return (
     <>
- <div className="space-y-4 w-full overflow-hidden">
+    <div className="space-y-6">
       {/* Search and Action Bar */}
-   <div className="flex flex-col lg:flex-row gap-3 lg:items-center justify-between">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
-            placeholder="Search by Name, CID,Dzongkhag, Intervention or Project"
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#3498db] text-sm transition-all"
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+<div className="flex flex-col lg:flex-row gap-4 items-center justify-between">  
+     <div className="flex flex-col sm:flex-row gap-4 w-full flex-1">
+
+  {/* Search */}
+  <div className="relative flex-1">
+    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+
+    <input
+      type="text"
+      placeholder="Search by name, CID, or project..."
+      className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#3498db] text-sm transition-all"
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+  </div>
+
+    {/* UPGRADED INTERVENTION FILTER DROPDOWN */}
+            <div className="relative w-full sm:w-52">
+              <button
+                type="button"
+                onClick={() => setIsInterventionDropdownOpen(!isInterventionDropdownOpen)}
+                className={`w-full flex items-center justify-between pl-4 pr-3.5 py-2.5 bg-white border rounded-xl focus:outline-none text-sm font-medium transition-all cursor-pointer shadow-sm text-gray-700
+                  ${isInterventionDropdownOpen ? 'border-[#3498db] ring-2 ring-blue-50' : 'border-gray-200 hover:border-gray-300'}`}
+              >
+                <span className="truncate">
+                  {selectedIntervention === "All" ? "All Interventions" : selectedIntervention}
+                </span>
+                <Filter 
+                  size={14} 
+                  className={`ml-2 shrink-0 transition-colors ${isInterventionDropdownOpen ? 'text-[#3498db]' : 'text-gray-400'}`} 
+                />
+              </button>
+
+              {/* Dropdown Options Context Menu */}
+              <AnimatePresence>
+                {isInterventionDropdownOpen && (
+                  <>
+                    {/* Background overlay click catcher */}
+                    <div 
+                      className="fixed inset-0 z-40 cursor-default" 
+                      onClick={() => setIsInterventionDropdownOpen(false)} 
+                    />
+                    
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 mt-1.5 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1.5 z-50 max-h-64 overflow-y-auto"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedIntervention("All");
+                          setIsInterventionDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors font-medium truncate
+                          ${selectedIntervention === "All" 
+                            ? "bg-blue-50 text-[#3498db] font-semibold" 
+                            : "text-gray-600 hover:bg-gray-50"}`}
+                      >
+                        All Interventions
+                      </button>
+                      
+                      {uniqueInterventions.map((intervention, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => {
+                            setSelectedIntervention(intervention);
+                            setIsInterventionDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm transition-colors font-medium truncate
+                            ${selectedIntervention === intervention 
+                              ? "bg-blue-50 text-[#3498db] font-semibold" 
+                              : "text-gray-600 hover:bg-gray-50"}`}
+                        >
+                          {intervention}
+                        </button>
+                      ))}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+
+  {/* Project Filter */}
+ <div className="relative min-w-[220px]">
+  {/* Trigger */}
+  <button
+    type="button"
+    onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
+    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-left flex items-center justify-between hover:border-[#3498db] transition-all"
+  >
+    <span className="truncate">
+      {selectedProject || "All Projects"}
+    </span>
+
+    <ChevronDown
+      size={16}
+      className={`transition-transform ${
+        isProjectDropdownOpen ? "rotate-180" : ""
+      }`}
+    />
+  </button>
+
+  {/* Dropdown */}
+  {isProjectDropdownOpen && (
+    <div className="absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden">
+
+      {/* All Projects */}
+      <button
+        type="button"
+        onClick={() => {
+          setSelectedProject("");
+          setIsProjectDropdownOpen(false);
+        }}
+        className={`w-full text-left px-4 py-2 text-sm transition-colors font-medium truncate
+          ${selectedProject === ""
+            ? "bg-blue-50 text-[#3498db] font-semibold"
+            : "text-gray-600 hover:bg-gray-50"}`}
+      >
+        All Projects
+      </button>
+
+      {/* Project List */}
+      {uniqueProjects.map((project, index) => (
         <button
-          onClick={() => navigate('/po/beneficiaries/register')}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[#3498db] text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-100 transition-all hover:bg-[#2980b9] active:scale-95"
+          key={index}
+          type="button"
+          onClick={() => {
+            setSelectedProject(project);
+            setIsProjectDropdownOpen(false);
+          }}
+          className={`w-full text-left px-4 py-2 text-sm transition-colors font-medium truncate
+            ${selectedProject === project
+              ? "bg-blue-50 text-[#3498db] font-semibold"
+              : "text-gray-600 hover:bg-gray-50"}`}
         >
-          <Plus size={20} /> <span>New Beneficiary</span>
+          {project}
         </button>
+      ))}
+    </div>
+  )}
+</div>
+</div>
+
+<button
+  onClick={() => navigate(`/${rootPath}/beneficiaries/register`)}
+  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[#3498db] text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-100 transition-all hover:bg-[#2980b9] active:scale-95"
+>
+  <Plus size={20} /> <span>New Beneficiary</span>
+</button>
       </div>
 
       {/* Table Container */}
-      {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"> */}
-<div className="bg-white rounded-2xl shadow-sm border border-gray-100 w-full max-w-full">
-   <div className="w-full overflow-x-auto rounded-b-2xl">
-<table className="min-w-[1400px] w-full text-left border-collapse">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">CID</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Name</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Dzongkhag</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Project</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Gender</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">House No</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Thram No</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Village</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Gewog</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Year</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Indirect Beneficiary</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Intervention</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Nos</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Acres</th>
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Capacity</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">CID</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Dzongkhag</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Project</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Gender</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">House No</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Thram No</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Village</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Gewog</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Year</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Indirect Beneficiary</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Intervention</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Nos</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Acres</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Capacity</th>
 
-                <th className="px-4 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider text-center">Actions</th>
+                <th className="px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider text-center">Actions</th>
               </tr>
             </thead>
 
@@ -317,13 +488,12 @@ setTimeout(() => {
 
         {/* 🔢 PAGINATION FOOTER */}
         {!loading && filteredData.length > 0 && (
-         <div className="px-4 sm:px-6 py-4 bg-white border-t border-gray-100 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+          <div className="px-6 py-4 bg-white border-t border-gray-100 flex items-center justify-between">
             <div className="text-sm text-gray-500 font-medium">
               Page <span className="text-[#3498db] font-bold">{currentPage}</span> / {totalPages || 1}
             </div>
             
-            {/* <div className="flex items-center gap-2"> */}
-            <div className="flex items-center justify-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
@@ -364,50 +534,16 @@ setTimeout(() => {
           </div>
         )}
       </div>
-      </div>
 
+</div>
       {/* Modals */}
-      {/* <DeleteConfirmModal
+      <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDelete}
         title="Delete Beneficiary?"
-        description="Are you sure? This will permanently remove the record."
-      /> */}
-
-   {/* DELETE MODAL */}
-    {isDeleteModalOpen && (
-  <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[100]">
-    <div className="bg-white rounded-2xl p-6 w-full max-w-xl shadow">
-      <h2 className="text-lg font-semibold mb-2">
-        Delete Beneficiary?
-      </h2>
-
-      <p className="text-gray-500 text-sm mb-6">
-        Are you sure you want to delete this beneficiary?
-        This action is permanent and cannot be undone.
-      </p>
-
-      <div className="flex justify-end gap-4">
-        <button
-          onClick={() => setIsDeleteModalOpen(false)}
-          className="px-4 py-2 border rounded-lg"
-        >
-          Cancel
-        </button>
-
-        <button
-          onClick={handleDelete}
-          className="px-4 py-2 bg-[#AA3333] text-white rounded-lg"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
+        description=" Are you sure you want to delete this beneficiary? This action is permanent and cannot be undone."
+      />
 
       <SuccessModal
         isOpen={isSuccessModalOpen}
@@ -428,18 +564,19 @@ setTimeout(() => {
         />
       )}
 
-   {showErrorPopup && (
-  <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
+
+{showErrorPopup && (
+  <div className="fixed inset-0 flex items-center justify-center z-[100]">
 
     {/* Overlay */}
     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
 
     {/* Card */}
 <div className="relative bg-white rounded-xl shadow-2xl px-6 sm:px-10 py-8 sm:py-10 text-center w-full max-w-xl animate-popup">
-      {/* ICON */}
-      <div className="flex justify-center mb-6">
+      {/* Error Icon */}
+      <div className="flex items-center justify-center mb-6">
 
-        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center animate-pop">
 
           <div className="w-12 h-12 bg-[#AA3333] rounded-full flex items-center justify-center">
 
@@ -462,8 +599,8 @@ setTimeout(() => {
       </div>
 
       {/* TEXT */}
-      <h2 className="text-lg font-semibold text-gray-700">
-       Action Failed
+      <h2 className="text-xl font-semibold text-gray-700">
+        Action Failed
       </h2>
 
       <p className="text-gray-500 mt-2 text-sm">

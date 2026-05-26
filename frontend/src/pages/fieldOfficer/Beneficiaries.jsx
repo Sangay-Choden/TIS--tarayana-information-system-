@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Search, Plus, Users2, Pencil, Trash2, 
-  Loader2, ChevronLeft, ChevronRight 
+  Loader2, ChevronLeft, ChevronRight , Filter
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import axios from 'axios';
-
+import { ChevronDown } from "lucide-react";
 // Modal Imports
 import UpdateBeneficiaryModal from '../../components/modals/UpdateBeneficiaryModal';
 import DeleteConfirmModal from '../../components/modals/DeleteConfirmModal';
@@ -24,10 +24,17 @@ const API_URL = import.meta.env.VITE_API_URL;
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+const [selectedProject, setSelectedProject] = useState('');
+// 🔍 INTERVENTION FILTER DROPDOWN STATE
+  const [selectedIntervention, setSelectedIntervention] = useState("All");
+const [isInterventionDropdownOpen, setIsInterventionDropdownOpen] = useState(false);
+const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
+
+
 
   // 🔢 PAGINATION STATE
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 7; // Fixed to 7 items as requested
+  const itemsPerPage = 10; // Fixed to 10 items as requested
 
   // Modal States
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -131,17 +138,52 @@ const rootPath = pathname.split('/')[1];
   }, 2000);
 }
   };
+  const uniqueProjects = [
+  ...new Set(
+    beneficiaries.map((b) => b.projectName).filter(Boolean)
+  ),
+];
+
+// 🧪 DYNAMICALLY EXTRACT UNIQUE INTERVENTIONS
+  const uniqueInterventions = useMemo(() => {
+    const interventionsSet = new Set();
+    beneficiaries.forEach((b) => {
+      b.keyActivities?.forEach((act) => {
+        if (act.activityName) {
+          interventionsSet.add(act.activityName.trim());
+        }
+      });
+    });
+    return Array.from(interventionsSet).sort();
+  }, [beneficiaries]);
+
 
   // 🔍 FILTER & PAGINATION CALCULATION
-  const filteredData = beneficiaries.filter(b => {
-    const search = searchTerm.toLowerCase();
-    return (
-      b.name?.toLowerCase().includes(search) ||
-      b.cid?.toString().includes(search) ||
-      b.dzongkhag?.toLowerCase().includes(search) ||
-      b.projectName?.toLowerCase().includes(search)
+ const filteredData = beneficiaries.filter((b) => {
+  const search = searchTerm.toLowerCase();
+
+  const matchesSearch =
+    b.name?.toLowerCase().includes(search) ||
+    b.cid?.toString().includes(search) ||
+    b.dzongkhag?.toLowerCase().includes(search) ||
+    b.projectName?.toLowerCase().includes(search);
+
+    
+
+  const matchesProject =
+    selectedProject === '' ||
+    b.projectName === selectedProject;
+
+      // 🛠️ Intervention Filter Match
+  const matchesIntervention =
+    selectedIntervention === "All" ||
+    b.keyActivities?.some(
+      (act) => act.activityName?.trim() === selectedIntervention
     );
-  });
+
+  return matchesSearch && matchesProject && matchesIntervention;
+});
+
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -158,22 +200,158 @@ const rootPath = pathname.split('/')[1];
     <>
     <div className="space-y-6">
       {/* Search and Action Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
-            placeholder="Search by name, CID, or project..."
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#3498db] text-sm transition-all"
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+<div className="flex flex-col lg:flex-row gap-4 items-center justify-between">  
+     <div className="flex flex-col sm:flex-row gap-4 w-full flex-1">
+
+  {/* Search */}
+  <div className="relative flex-1">
+    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+
+    <input
+      type="text"
+      placeholder="Search by name, CID, or project..."
+      className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#3498db] text-sm transition-all"
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+  </div>
+
+   {/* UPGRADED INTERVENTION FILTER DROPDOWN */}
+            <div className="relative w-full sm:w-52">
+              <button
+                type="button"
+                onClick={() => setIsInterventionDropdownOpen(!isInterventionDropdownOpen)}
+                className={`w-full flex items-center justify-between pl-4 pr-3.5 py-2.5 bg-white border rounded-xl focus:outline-none text-sm font-medium transition-all cursor-pointer shadow-sm text-gray-700
+                  ${isInterventionDropdownOpen ? 'border-[#3498db] ring-2 ring-blue-50' : 'border-gray-200 hover:border-gray-300'}`}
+              >
+                <span className="truncate">
+                  {selectedIntervention === "All" ? "All Interventions" : selectedIntervention}
+                </span>
+                <Filter 
+                  size={14} 
+                  className={`ml-2 shrink-0 transition-colors ${isInterventionDropdownOpen ? 'text-[#3498db]' : 'text-gray-400'}`} 
+                />
+              </button>
+
+              {/* Dropdown Options Context Menu */}
+              <AnimatePresence>
+                {isInterventionDropdownOpen && (
+                  <>
+                    {/* Background overlay click catcher */}
+                    <div 
+                      className="fixed inset-0 z-40 cursor-default" 
+                      onClick={() => setIsInterventionDropdownOpen(false)} 
+                    />
+                    
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 mt-1.5 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1.5 z-50 max-h-64 overflow-y-auto"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedIntervention("All");
+                          setIsInterventionDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors font-medium truncate
+                          ${selectedIntervention === "All" 
+                            ? "bg-blue-50 text-[#3498db] font-semibold" 
+                            : "text-gray-600 hover:bg-gray-50"}`}
+                      >
+                        All Interventions
+                      </button>
+                      
+                      {uniqueInterventions.map((intervention, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => {
+                            setSelectedIntervention(intervention);
+                            setIsInterventionDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm transition-colors font-medium truncate
+                            ${selectedIntervention === intervention 
+                              ? "bg-blue-50 text-[#3498db] font-semibold" 
+                              : "text-gray-600 hover:bg-gray-50"}`}
+                        >
+                          {intervention}
+                        </button>
+                      ))}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+
+  {/* Project Filter */}
+ <div className="relative min-w-[220px]">
+  {/* Trigger */}
+  <button
+    type="button"
+    onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
+    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-left flex items-center justify-between hover:border-[#3498db] transition-all"
+  >
+    <span className="truncate">
+      {selectedProject || "All Projects"}
+    </span>
+
+    <ChevronDown
+      size={16}
+      className={`transition-transform ${
+        isProjectDropdownOpen ? "rotate-180" : ""
+      }`}
+    />
+  </button>
+
+  {/* Dropdown */}
+  {isProjectDropdownOpen && (
+    <div className="absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden">
+
+      {/* All Projects */}
+      <button
+        type="button"
+        onClick={() => {
+          setSelectedProject("");
+          setIsProjectDropdownOpen(false);
+        }}
+        className={`w-full text-left px-4 py-2 text-sm transition-colors font-medium truncate
+          ${selectedProject === ""
+            ? "bg-blue-50 text-[#3498db] font-semibold"
+            : "text-gray-600 hover:bg-gray-50"}`}
+      >
+        All Projects
+      </button>
+
+      {/* Project List */}
+      {uniqueProjects.map((project, index) => (
         <button
-          onClick={() => navigate(`/${rootPath}/beneficiaries/register`)}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[#3498db] text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-100 transition-all hover:bg-[#2980b9] active:scale-95"
+          key={index}
+          type="button"
+          onClick={() => {
+            setSelectedProject(project);
+            setIsProjectDropdownOpen(false);
+          }}
+          className={`w-full text-left px-4 py-2 text-sm transition-colors font-medium truncate
+            ${selectedProject === project
+              ? "bg-blue-50 text-[#3498db] font-semibold"
+              : "text-gray-600 hover:bg-gray-50"}`}
         >
-          <Plus size={20} /> <span>New Beneficiary</span>
+          {project}
         </button>
+      ))}
+    </div>
+  )}
+</div>
+</div>
+
+<button
+  onClick={() => navigate(`/${rootPath}/beneficiaries/register`)}
+  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[#3498db] text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-100 transition-all hover:bg-[#2980b9] active:scale-95"
+>
+  <Plus size={20} /> <span>New Beneficiary</span>
+</button>
       </div>
 
       {/* Table Container */}

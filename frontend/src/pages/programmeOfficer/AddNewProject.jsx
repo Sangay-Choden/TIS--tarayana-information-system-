@@ -324,6 +324,7 @@ const handleAddNewSubmit = async () => {
         </motion.div>
         </div>
 
+   </div>
         {/* Register New Modal */}
         <AnimatePresence>
           {showAddModal && (
@@ -344,9 +345,9 @@ const handleAddNewSubmit = async () => {
         {/* Review Modal */}
         <AnimatePresence>
           {showConfirmProject && (
-            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40">
               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-xl p-10 max-w-3xl w-full shadow-2xl overflow-y-auto max-h-[90vh]">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 ">Project Review</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6 ">Project Review</h2>
                 <div className="space-y-6 text-sm bg-gray-50 p-8 rounded-xl border border-gray-100 mb-8">
                   <div className="flex justify-between border-b pb-3"><span className="text-gray-500">Project:</span> <span className="font-bold text-gray-900">{formData.projectName}</span></div>
                   <div className="flex justify-between border-b pb-3"><span className="text-gray-500">Dzongkhags:</span> <span className="font-bold text-gray-900 text-right max-w-xs">{formData.dzongkhag.join(', ')}</span></div>
@@ -369,8 +370,8 @@ const handleAddNewSubmit = async () => {
                 </div>
                 <p className=" font-bold text-blue-500 mb-6">**Are you sure you want to add this project?</p>
                 <div className="flex gap-4 font-bold">
-                  <button onClick={() => setShowConfirmProject(false)} className="flex-1 py-4 text-gray-500 hover:bg-gray-100 border rounded-xl transition-all">Cancel</button>
-                  <button onClick={finalSubmit} className="flex-1 py-4 bg-[#2EA1F2] text-white rounded-xl hover:bg-[#298CD2]  transition-all">Yes, Add Project</button>
+                  <button onClick={() => setShowConfirmProject(false)} className="flex-1 py-4 text-gray-500 hover:bg-gray-100 border rounded-lg transition-all">Cancel</button>
+                  <button onClick={finalSubmit} className="flex-1 py-4 bg-[#2EA1F2] text-white rounded-lg hover:bg-[#298CD2]  transition-all">Yes, Add Project</button>
                 </div>
               </motion.div>
             </div>
@@ -378,7 +379,7 @@ const handleAddNewSubmit = async () => {
         </AnimatePresence>
 
         <SuccessModal isOpen={isSuccessModalOpen} onClose={() => setIsSuccessModalOpen(false)} message={successMsg} icon={Files} />
-      </div>
+   
     </>
   );
 };

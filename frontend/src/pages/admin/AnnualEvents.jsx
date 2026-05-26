@@ -3,8 +3,6 @@
 
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-// import Sidebar from "../../components/Sidebar";
-// import Navbar from "../../components/Navbar";
 import { Plus, CalendarDays, X , Trash2} from "lucide-react";
 import { useEffect } from "react";
 const AnnualEvents = () => {
@@ -29,18 +27,42 @@ const [errorMessage, setErrorMessage] = useState("");
   const [deleteEvent, setDeleteEvent] = useState(null);
 
   // ADD FIELD
-  const addField = () => {
-    if (!fieldName) return;
-   setFields([
-  ...fields,
-  {
-    fieldName: fieldName,
-    fieldType: fieldType.toLowerCase(),
-    required: false,
-  },
-]);
-    setFieldName("");
-  };
+//   const addField = () => {
+//     if (!fieldName) return;
+//    setFields([
+//   ...fields,
+//   {
+//     fieldName: fieldName,
+//     fieldType: fieldType.toLowerCase(),
+//     required: false,
+//   },
+// ]);
+//     setFieldName("");
+//   };
+const addField = () => {
+
+  if (!fieldName.trim()) {
+    setErrorMessage("Field name is required");
+    setShowErrorPopup(true);
+
+    setTimeout(() => {
+      setShowErrorPopup(false);
+    }, 2000);
+
+    return;
+  }
+
+  setFields([
+    ...fields,
+    {
+      fieldName: fieldName.trim(),
+      fieldType: fieldType.toLowerCase(),
+      required: true, // Set to true by default since we want to enforce field addition
+    },
+  ]);
+
+  setFieldName("");
+};
 
   const removeField = (index) => {
     setFields(fields.filter((_, i) => i !== index));
@@ -71,8 +93,122 @@ const fetchEvents = async () => {
 };
 
   // CREATE EVENT
+// const createEvent = async () => {
+//   if (!eventName || fields.length === 0) return;
+
+//   try {
+//     const token = localStorage.getItem("token");
+
+//     const res = await fetch(
+//       `${API_URL}/api/annual-event/main-event`,
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify({
+//           eventName,
+//           fields: fields.map((f) => ({
+//             fieldName: f.fieldName,
+//             fieldType: f.fieldType.toLowerCase(),
+//             required: f.required ?? false,
+//           })),
+//         }),
+//       }
+//     );
+
+//     const data = await res.json();
+
+//     if (!res.ok) {
+//       setErrorMessage(data.message || "Failed to create event");
+//       setShowErrorPopup(true);
+//       setTimeout(() => {
+//         setShowErrorPopup(false);
+//       }, 2000);
+//       return;
+//     }
+
+//     // update UI instantly
+//     setEvents((prev) => [...prev, data.data]);
+
+//     setShowCreate(false);
+//     setShowSuccess(true);
+
+//     setEventName("");
+//     setFields([]);
+
+//     setTimeout(() => setShowSuccess(false), 2000);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
+
+//   // DELETE EVENT
+// const confirmDelete = async () => {
+//   try {
+//     const token = localStorage.getItem("token");
+
+//     const res = await fetch(
+//       `${API_URL}/api/annual-event/main-event/${deleteEvent._id}`,
+//       {
+//         method: "DELETE",
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       }
+//     );
+
+//     const data = await res.json();
+
+//     if (!res.ok) return;
+
+//     setEvents(events.filter((e) => e._id !== deleteEvent._id));
+//     setDeleteEvent(null);
+
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
+
+
 const createEvent = async () => {
-  if (!eventName || fields.length === 0) return;
+
+  // Event name required
+  if (!eventName.trim()) {
+    setErrorMessage("Event name is required");
+    setShowErrorPopup(true);
+
+    setTimeout(() => {
+      setShowErrorPopup(false);
+    }, 2000);
+
+    return;
+  }
+
+  // User typed field but forgot to click +
+  if (fieldName.trim()) {
+    setErrorMessage("Please click + to add the field");
+    setShowErrorPopup(true);
+
+    setTimeout(() => {
+      setShowErrorPopup(false);
+    }, 2000);
+
+    return;
+  }
+
+  // At least one field required
+  if (fields.length === 0) {
+    setErrorMessage("Please add at least one field");
+    setShowErrorPopup(true);
+
+    setTimeout(() => {
+      setShowErrorPopup(false);
+    }, 2000);
+
+    return;
+  }
 
   try {
     const token = localStorage.getItem("token");
@@ -101,13 +237,14 @@ const createEvent = async () => {
     if (!res.ok) {
       setErrorMessage(data.message || "Failed to create event");
       setShowErrorPopup(true);
+
       setTimeout(() => {
         setShowErrorPopup(false);
       }, 2000);
+
       return;
     }
 
-    // update UI instantly
     setEvents((prev) => [...prev, data.data]);
 
     setShowCreate(false);
@@ -115,37 +252,19 @@ const createEvent = async () => {
 
     setEventName("");
     setFields([]);
+    setFieldName("");
 
     setTimeout(() => setShowSuccess(false), 2000);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-  // DELETE EVENT
-const confirmDelete = async () => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(
-      `${API_URL}/api/annual-event/main-event/${deleteEvent._id}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) return;
-
-    setEvents(events.filter((e) => e._id !== deleteEvent._id));
-    setDeleteEvent(null);
 
   } catch (error) {
     console.error(error);
+
+    setErrorMessage("Something went wrong");
+    setShowErrorPopup(true);
+
+    setTimeout(() => {
+      setShowErrorPopup(false);
+    }, 2000);
   }
 };
 
@@ -249,6 +368,7 @@ const confirmDelete = async () => {
 
       {/* EVENT NAME */}
       <input
+       required
         value={eventName}
         onChange={(e) => setEventName(e.target.value)}
         placeholder="Enter Event Name"
@@ -274,6 +394,7 @@ const confirmDelete = async () => {
         {/* ADD FIELD (RESPONSIVE FIX HERE) */}
         <div className="flex flex-col sm:flex-row gap-2">
           <input
+          required
             value={fieldName}
             onChange={(e) => setFieldName(e.target.value)}
             placeholder="Field Name"
