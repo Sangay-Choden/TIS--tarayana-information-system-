@@ -1,5 +1,6 @@
 const Programme = require("../models/programmeModel");
 const Project = require("../models/projectModel");
+const Beneficiary = require("../models/beneficiaryModel");
 // CREATE
 exports.createProgramme = async (req, res) => {
   try {

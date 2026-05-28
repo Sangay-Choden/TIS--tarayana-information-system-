@@ -6,7 +6,7 @@ const { isAdmin } = require("../middleware/isAdmin");
 router.post("/", isAdmin, programmeController.createProgramme);
 router.get("/", programmeController.getAllProgrammes);
 router.get("/:id", programmeController.getProgrammeById);
-router.put("/:id", isAdmin, programmeController.updateProgramme);
-router.delete("/:id", isAdmin, programmeController.deleteProgramme);
+router.put("/:id", programmeController.updateProgramme);
+router.delete("/:id", programmeController.deleteProgramme);
 
 module.exports = router;
