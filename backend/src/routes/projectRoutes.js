@@ -24,6 +24,8 @@ router.post("/:id/alert", protect, projectController.sendDataAlert);
 
 router.get('/dashboard-summary/:roleName/:userId', projectController.getDashboardSummary);
 
+router.get('/map', projectController.getActivitiesByDzongkhag);
+
 // Admin (get projects by programme)
 router.get("/programme/:programmeId", projectController.getProjectsByProgramme);
 router.get("/officer/programme/:officerId", projectController.getProjectsByProgrammeOfficer);

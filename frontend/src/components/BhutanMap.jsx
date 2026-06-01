@@ -3,22 +3,28 @@ import React, { useEffect, useState } from "react";
 const BhutanMap = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   
-const [activityData, setActivityData] = useState({});
+const [activityData, setActivityData] = useState([]);
 const [selectedDzongkhag, setSelectedDzongkhag] = useState(null);
 const [popupPosition, setPopupPosition] = useState({
   x: 0,
   y: 0
 });
+const [selectedActivity, setSelectedActivity] = useState(null);
+// const [selectedActivity, setSelectedActivity] = useState(null);
 useEffect(() => {
-  fetch(`${API_URL}/api/beneficiaries/dzongkhag`)
+  fetch(`${API_URL}/api/projects/map`)
     .then((res) => res.json())
     .then((data) => {
-      setActivityData(data.dzongkhagActivitySummary || {});
+      console.log("API Response:", data);
+
+      if (data.success) {
+        setActivityData(data.data || []);
+      }
     })
     .catch((err) => console.error(err));
 }, []);
 console.log(selectedDzongkhag);
-console.log(activityData);
+console.log("activityData:", activityData);
   const dzongkhags = [
     { id: "paro", name: "Paro", d: "m 113.72556,127.95095 2.5,2.54 -0.17,0.94 1.55,1.4 0.69,2.53 1.75,0.98 4.05,0.04 1.29,0.67 0.03,1.26 -1.32,0.43 -0.73,1.29 0.10,2.47 4.78,-1.06 0.28,-2.35 0.76,-0.13 4.63,2.37 3.39,0.28 1.30,-0.91 0.58,-2.27 3.30,-1.69 2.4,0.08 3.62,2.8 3.14,-2.91 6.5,-2.15 0.71,1.91 -0.02,3.76 -0.33,2.6 -1.29,1.46 1.20,2.69 -0.99,2.57 2.34,1.82 2.23,4.18 -1.66,2.42 -1.52,0.16 -2.4,1.56 -0.35,1.49 -1.10,0.83 0.97,1.56 1.43,0.49 1.64,-1.78 2.27,-0.39 0.62,1.89 6.26,5.16 2.89,3.86 2.84,1.09 -0.20,0.9 -1.39,1 1.84,2.73 0.67,2.66 1.28,1.91 3.15,1.16 1.36,1.7 -1.76,1.46 -0.98,-0.11 -0.58,1.39 -0.32,5.54 0.8,3.48 -1.67,4.24 0.13,4.61 -1.55,2.49 0.75,4.42 -1.15,5.65 1.56,2.26 3.18,-0.35 4.3,2.21 0.86,4.75 -2.64,3.80 0.04,2.56 1.17,1.37 2.36,0.56 5.18,3.86 -0.25,7.26 0,0 -1.26,4.09 -0.08,3.21 -2.83,3.33 -1.87,6.53 -1.59,3.01 -0.43,3.15 1.49,4.47 -2.12,2.61 -1.77,-0.71 -2.9,0.22 -6.37,-1.13 -1.89,-2.03 -4.59,-1.92 -3.7,-3.7 -0.85,0.20 -1.43,1.9 -3.58,1.07 -3.86,-0.7 -4.37,1.15 -3.79,-0.28 0,0 -2.29,-5.84 0.71,-3.09 -0.91,-3.33 -0.11,-4.43 1.79,-2.14 5.98,-1.96 1.38,-1.84 2.26,-1.33 1.28,-2.62 -1.92,-1.19 -0.49,-1.45 -2.29,-2.3 -0.22,-2.3 -1.22,-2.35 -1.58,-0.84 -3.48,-4.93 -1.33,-0.74 -3.09,-8.37 -2.76,-1.73 0.14,-1.19 -1.84,-1.06 -1.35,-2 -0.25,-1.12 0.98,-2.41 -0.85,-1.72 -1.74,-0.67 -3.64,-3.07 -2.35,-0.45 -0.10,-3.69 -1.19,-2.07 0.11,-3.46 -0.98,-0.53 -0.05,-4.10 -2.02,-2.28 -0.56,-6.07 -1.51,-2.96 -5.03,1.43 -5.2,-4.26 -6.530001,-0.27 -1.24,-1.63 -3.59,-0.85 -0.62,-3.45 -3.68,-1.31 -1.34,-1.63 0,0 1.92,-1.61 -0.39,-2.05 2.86,-1.45 -0.45,-2.93 0.76,-1.65 2.41,-1.49 0.91,-1.96 1.26,-0.04 0.24,0.82 1.610001,-0.23 1.57,-6.55 0.34,-0.66 3.18,-0.82 1.29,-4.98 3.56,-0.20 1.92,-1.45 1.33,-4.92 -1.57,-3.73 z" },
     { id: "chukha", name: "Chukha", d: "m 190.02556,247.40095 3.02,0.92 1.71,3.2 1.34,0.91 0.02,6.19 0.64,1 3.25,-0.78 2.72,1.65 5.02,0.2 1.46,1.3 0.22,2.05 -0.67,0.75 -1.67,0.21 -2.24,1.95 -3.57,1.16 -2.48,3.03 -0.48,4.92 -2.01,0.95 -0.98,1.6 2.86,0.59 2.1,4.55 3.48,2.8 0.85,1.69 2.92,1.47 3.33,-1.02 0,0 3.28,4.44 0.19,4.02 2.76,6.2 0.6,3.51 4.68,-0.41 1.52,1.17 0.34,3.05 -1.86,2.93 0.12,3.36 2.29,0.69 6.21,-2.29 5.89,0.76 2.22,5.23 2.34,2.7 0.48,3.42 0.83,0.98 -0.45,2.85 1.9,9.06 2.46,-0.21 2.24,1.24 0.39,1.31 -2.18,2.87 0.95,1.68 0.11,2.61 3.74,2.37 0.45,1.37 0.28,1.31 -0.95,1.43 -3.13,0.19 -4.46,-1.06 -0.87,0.59 0.65,4.79 -1.62,1.62 0.47,2.97 -1.42,0.43 0.78,3.46 -0.67,1.41 -1.74,0.87 -0.37,2.25 0.64,2.36 -0.7,0.03 -1.19,-1.53 -1.13,2.26 0.35,1.79 -2.61,-0.51 -3.44,4.96 -1.26,3.38 0.49,1.98 -0.69,3.3 0.52,1.44 3.48,1.65 0,0 -3.73,2.35 -3.11,0.52 -5.17,-3.39 -1.02,-0.27 -2.06,1.02 -4.01,-1.64 -1.12,3.02 -2.4,2.72 -0.99,0.2 -2.3,-1.29 -2.25,-0.34 -0.76,1.43 -1.31,0.24 -1.45,-3.51 1.49,-2.68 4.6,-2.4 0.81,-3.51 1.31,-1.85 -0.5,-2.05 -1.62,-0.55 -0.59,-0.96 -1.93,0.01 -2.32,1.4 -0.85,-2.05 -6.37,-1.58 -4.46,-1.93 -2.41,-4.52 -3.1,1.38 -4.25,-0.74 -3.84,0.3 -1.19,0.92 -5.43,1.47 -3.65,0.19 -3.21,-3.28 -0.77,-5.33 -4.79,-0.31 -4.26,-1.36 -4.32,0.05 -0.94,-4.49 -1.1,-0.89 -2.56,0.41 0.37,-1.75 0,0 0.55,-2.64 -1.12,-2.2 -1.08,-0.52 -2.68,0.54 -3.12,2.36 -2.29,0.17 -0.68,-1.38 1.3,-1.61 0.08,-1.38 -1.83,-1.79 0.84,-2.76 -2.51,-0.41 -0.89,-1.3 -2.15,0.57 -0.47,-1.06 -1.59,-0.36 -1.69,-2.23 -0.94,0.08 -0.82,1.51 -1.3,-0.01 -0.71,-2.4 -1.46,-1.03 0.68,-2.63 -1.31,-4.14 2.19,-1.23 1.88,-0.12 7.22,-6.99 1.76,-3.16 0.25,-1.97 0.64,-0.16 2.19,-4.68 -1.17,-3.44 -1.3,-0.75 0.94,-4.26 -0.09,-4.35 0,0 -1.24,-2.97 -0.02,-2.64 7.55,-4.73 -0.82,-2.76 0.67,-2.07 2.91,-3.8 3.77,-3.47 -0.78,-1.8 -3.48,-2.44 -1.81,-3.41 -0.05,-2.24 0,0 3.79,0.28 4.37,-1.15 3.86,0.7 3.58,-1.07 1.43,-1.9 0.85,-0.2 3.7,3.7 4.59,1.92 1.89,2.03 6.37,1.13 2.9,-0.22 1.77,0.71 2.12,-2.61 -1.49,-4.47 0.43,-3.15 1.59,-3.01 1.87,-6.53 2.83,-3.33 0.08,-3.21 z" },
@@ -42,10 +48,16 @@ console.log(activityData);
     { id: "tashiyangtse", name: "Tashi Yangtse", d:"m 684.68556,196.14095 3.21,-0.29 0.71,-1.91 1.85,-0.55 4.36,2.64 0.75,4.64 1.88,1.65 2.9,0.71 3.86,-1.87 4.15,-0.66 0.66,2.44 0,0 -1.92,5.17 -2.14,2.83 -3.68,0.43 -2.48,-0.93 -10.31,4.3 -3.65,0.17 -2.52,2.46 -2.5,1.19 -7.59,-0.12 -6.72,8.2 -5.49,1.15 -0.91,1.72 -2.37,0.26 -4.54,-2.61 -6.1,-1.05 -2,-1.51 -1.52,0.28 -6.17,-3.57 -6,-1.36 -2.27,0.52 0,0 2.9,-5.28 1.93,-1.05 0.62,-1.21 -1.51,-2.29 -0.61,-4.72 -1.81,-1.7 -1.07,-4.13 -1.48,-0.21 -1.71,-1.45 -3.12,-5.43 -5.82,-6.05 0.12,-2.63 -4.04,-2.27 -0.84,-4.69 -3.04,-2.37 -1.51,-2.76 0,0 1.19,-3.83 1.34,-1.23 1.08,-2.62 -1.67,-3.27 0.85,-5.59 -1.62,-6.33 2.16,-2.17 0.58,-2.2 -2.53,-5.35 -0.39,-3.27 2.13,-2.7 1.8,-4.27 0.36,-4.05 -1.28,-3.05 2.97,-6.65 -0.21,-4.56 -1.52,-5.35 1.6,-7.66 0.24,-7.64 -1.3,-1.91 0.16,-1.06 1.92,-4.19 2.58,0.16 1.12,-0.55 3.84,-4.09 3.84,-7.07 2.51,-1.26 4.75,1.41 3.49,-3.46 0,0 1.46,0.4 1.99,3.79 -1.34,5.09 1.25,1.7 3.61,0.76 2.93,2.64 2.43,1.22 4.02,0.76 0.83,3.67 1.35,2.17 3.18,-0.09 2.34,-2.08 3.35,-1.69 0.17,1.51 1.51,1.41 2.18,1.13 3.1,0.19 0.5,1.98 -0.34,2.45 -1,3.2 -1.53,1.72 -1.35,-0.6 -2.12,0.56 -3.91,-1.67 -2.69,2.8 -2.14,-1.13 -0.96,1.08 4.79,9.23 1.76,0.69 2.63,-1.6 3.44,-0.55 6.88,5.29 0.7,7.72 1.99,1.68 0.1,1.9 -2.44,2.9 0.49,5.19 -2.48,9.37 -5.34,2.9 -3.04,5.25 -2.41,1.88 -1.96,0.33 -2.13,5.01 -0.68,3.35 4.6,5.48 -3.53,5.09 1.41,3.01 2.68,2.25 -0.1,2.86 3.59,3.23 2.22,-0.86 1.43,0.41 0.17,2.26 1.58,3.2 6.89,5.13 0.78,3.76 1.37,0.46 z"},
 
   ];
+  const selectedData = activityData?.find(
+  (item) =>
+    item.dzongkhag?.toLowerCase().trim() ===
+    selectedDzongkhag?.toLowerCase().trim()
+);
 
  return (
     <div className="relative w-full">
       <div className="bg-white rounded-xl shadow p-5">
+      <h1 className="text-2xl font-bold text-gray-800 mb-3">Facts and Figures</h1>
         <h3 className="font-semibold text-gray-700 mb-9">
           Click on the District to find out Tarayana's Intervention Data
         </h3>
@@ -77,7 +89,7 @@ console.log(activityData);
   ))}
 </svg>
 
-         {selectedDzongkhag && activityData?.[selectedDzongkhag] && (
+       {selectedDzongkhag && selectedData && (
   <div
     className="absolute z-50 bg-white rounded-xl shadow-2xl border border-gray-100 p-4 max-sm:p-3.5
                max-md:fixed max-md:bottom-4 max-md:left-1/2 max-md:-translate-x-1/2 max-md:top-auto max-md:w-[calc(100%-32px)] max-md:max-w-[280px]"
@@ -127,28 +139,95 @@ console.log(activityData);
         Total Activities
       </p>
       <p className="text-lg max-sm:text-sm font-black text-blue-600">
-        {activityData[selectedDzongkhag].totalActivities}
+    {selectedData.totalActivities}
       </p>
     </div>
 
     {/* ACTIVITY LIST */}
-    <div className="space-y-1.5 max-h-[220px] max-sm:max-h-[130px] overflow-y-auto pr-0.5">
-      {Object.entries(
-        activityData[selectedDzongkhag].activities
-      ).map(([activity, count], idx) => (
-        <div
-          key={idx}
-          className="flex items-center justify-between text-xs max-sm:text-[11px] bg-gray-50/70 p-1.5 max-sm:p-1 rounded-md"
-        >
-          <span className="capitalize text-gray-700 font-medium">
-            {activity}
-          </span>
-          <span className="font-bold text-blue-600 bg-blue-50/80 px-1.5 py-0.5 rounded">
-            {count}
-          </span>
-        </div>
-      ))}
+  <div className="space-y-1.5 max-h-[220px] max-sm:max-h-[130px] overflow-y-auto pr-0.5">
+{selectedData.activities.map((activity, idx) => (
+  <div
+    key={idx}
+    className="bg-gray-50 rounded-lg overflow-hidden"
+  >
+    <div
+      onClick={() =>
+        setSelectedActivity(
+          selectedActivity === activity.activityName
+            ? null
+            : activity.activityName
+        )
+      }
+      className="flex items-center justify-between p-2 cursor-pointer hover:bg-gray-100"
+    >
+      <span className="font-medium text-gray-700">
+        {activity.activityName}
+      </span>
+
+      <div className="flex items-center gap-2">
+        <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs font-bold">
+          {activity.count}
+        </span>
+
+        <span>
+          {selectedActivity === activity.activityName ? "▲" : "▼"}
+        </span>
+      </div>
     </div>
+
+    {selectedActivity === activity.activityName && (
+      <div className="p-2 bg-white border-t">
+        {(() => {
+          const grouped = {};
+
+          activity.locations?.forEach((loc) => {
+            const gewog = loc.gewog || "Unknown";
+
+            if (!grouped[gewog]) {
+              grouped[gewog] = new Set();
+            }
+
+            grouped[gewog].add(loc.village);
+          });
+
+          return (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="text-left p-2 border">
+                      Gewog
+                    </th>
+                    <th className="text-left p-2 border">
+                      Villages
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {Object.entries(grouped).map(
+                    ([gewog, villages]) => (
+                      <tr key={gewog}>
+                        <td className="p-2 border font-medium capitalize">
+                          {gewog}
+                        </td>
+
+                        <td className="p-2 border capitalize">
+                          {[...villages].join(", ")}
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
+          );
+        })()}
+      </div>
+    )}
+  </div>
+))}
+</div>
   </div>
 )}
         </div>

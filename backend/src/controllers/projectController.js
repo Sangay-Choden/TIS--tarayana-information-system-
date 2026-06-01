@@ -766,6 +766,91 @@ exports.getDashboardSummary = async (req, res) => {
   }
 };
 
+exports.getActivitiesByDzongkhag = async (req, res) => {
+  try {
+    const beneficiaries = await Beneficiary.find();
+
+    const uniqueActivities = new Set();
+
+    beneficiaries.forEach((beneficiary) => {
+      const dzongkhag =
+        beneficiary.dzongkhag?.trim().toLowerCase() || "unknown";
+
+      const gewog =
+        beneficiary.gewog?.trim().toLowerCase() || "unknown";
+
+      const village =
+        beneficiary.village?.trim().toLowerCase() || "unknown";
+
+      beneficiary.keyActivities?.forEach((activity) => {
+        const activityName =
+          activity.activityName?.trim().toLowerCase() ||
+          activity.trainingDetails?.type?.trim().toLowerCase() ||
+          "unknown";
+
+        const uniqueKey =
+          `${dzongkhag}|${gewog}|${village}|${activityName}`;
+
+        uniqueActivities.add(uniqueKey);
+      });
+    });
+
+    const dzongkhagActivities = {};
+
+    uniqueActivities.forEach((entry) => {
+      const [dzongkhag, gewog, village, activityName] =
+        entry.split("|");
+
+      if (!dzongkhagActivities[dzongkhag]) {
+        dzongkhagActivities[dzongkhag] = {
+          dzongkhag:
+            dzongkhag.charAt(0).toUpperCase() +
+            dzongkhag.slice(1),
+          totalActivities: 0,
+          activities: {},
+        };
+      }
+
+      if (!dzongkhagActivities[dzongkhag].activities[activityName]) {
+        dzongkhagActivities[dzongkhag].activities[activityName] = {
+          activityName:
+            activityName.charAt(0).toUpperCase() +
+            activityName.slice(1),
+          count: 0,
+          locations: [],
+        };
+      }
+
+      dzongkhagActivities[dzongkhag].activities[activityName].count += 1;
+
+      dzongkhagActivities[dzongkhag].activities[activityName].locations.push({
+        gewog,
+        village,
+      });
+
+      dzongkhagActivities[dzongkhag].totalActivities += 1;
+    });
+
+    const result = Object.values(dzongkhagActivities).map((dz) => ({
+      dzongkhag: dz.dzongkhag,
+      totalActivities: dz.totalActivities,
+      activities: Object.values(dz.activities),
+    }));
+
+    return res.status(200).json({
+      success: true,
+      totalDzongkhags: result.length,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 exports.getProjectsByProgramme = async (req, res) => {
   try {
