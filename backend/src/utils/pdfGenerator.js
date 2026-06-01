@@ -199,7 +199,7 @@ stats.forEach((stat, i) => {
             .fillColor("#333")
             .fontSize(9)
             .font("Helvetica")
-            .text(`• ${act.name}: ${act.total} ${act.unit}`, 50);
+            .text(`• ${act.name}: ${act.total}`, 50);
         });
       } else {
         doc
@@ -255,7 +255,7 @@ stats.forEach((stat, i) => {
       doc.text("Gen", colX.gender, tableTop);
       doc.text("Dzongkhag", colX.dz, tableTop);
       doc.text("Village", colX.village, tableTop);
-      doc.text("Activities (Qty)", colX.activities, tableTop); // New Header
+      doc.text("Activities", colX.activities, tableTop); // New Header
       doc.text("Indir.", colX.indirect, tableTop);
 
       let rowY = tableTop + 18;
@@ -263,7 +263,7 @@ stats.forEach((stat, i) => {
       project.beneficiaries.forEach((b, index) => {
         // Prepare activity string for this specific beneficiary
         const activityStrings = (b.keyActivities || [])
-          .map(a => `${a.activityName} (${a.totalQuantity})`)
+          .map(a => `${a.activityName}`)
           .join(", ");
 
         // Calculate height needed for this row (in case activities wrap)

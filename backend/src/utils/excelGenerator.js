@@ -94,13 +94,13 @@ exports.generateExcel = async (
       // Project Activities
       if (project.projectActivities?.length > 0) {
         project.projectActivities.forEach(act => {
-          sheet.addRow([`• ${act.name}: ${act.total} ${act.unit}`]).font = { italic: true, size: 9 };
+          sheet.addRow([`• ${act.name}: ${act.total}`]).font = { italic: true, size: 9 };
         });
       }
 
       sheet.addRow(["Beneficiaries"]).font = { bold: true };
       
-      const headerRow = sheet.addRow(["CID", "Name", "Gen", "Dzongkhag", "Village", "Activities (Qty)", "Indir."]);
+      const headerRow = sheet.addRow(["CID", "Name", "Gen", "Dzongkhag", "Village", "Activities", "Indir."]);
       headerRow.eachCell(cell => {
         cell.font = { bold: true, color: { argb: "FFFFFFFF" }, size: 9 };
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D3436' } };
@@ -108,7 +108,7 @@ exports.generateExcel = async (
 
       (project.beneficiaries || []).forEach((b, idx) => {
         const activityStrings = (b.keyActivities || [])
-          .map(a => `${a.activityName} (${a.totalQuantity})`)
+          .map(a => `${a.activityName} `)
           .join(", ");
         const indirect = (b.indirectBeneficiaries?.male || 0) + (b.indirectBeneficiaries?.female || 0);
 

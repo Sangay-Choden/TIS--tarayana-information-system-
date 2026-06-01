@@ -198,7 +198,7 @@ doc.moveDown(1.5);
             .fillColor("#333")
             .fontSize(9)
             .font("Helvetica")
-            .text(`• ${act.name}: ${act.total} ${act.unit}`, 50);
+            .text(`• ${act.name}: ${act.total}`, 50);
         });
       } else {
         doc
@@ -254,7 +254,7 @@ doc.moveDown(1.5);
       doc.text("Gen", colX.gender, tableTop);
       doc.text("Dzongkhag", colX.dz, tableTop);
       doc.text("Village", colX.village, tableTop);
-      doc.text("Activities (Qty)", colX.activities, tableTop); // New Header
+      doc.text("Activities", colX.activities, tableTop); // New Header
       doc.text("Indir.", colX.indirect, tableTop);
 
       let rowY = tableTop + 18;
@@ -262,7 +262,7 @@ doc.moveDown(1.5);
       project.beneficiaries.forEach((b, index) => {
         // Prepare activity string for this specific beneficiary
         const activityStrings = (b.keyActivities || [])
-          .map(a => `${a.activityName} (${a.totalQuantity})`)
+          .map(a => `${a.activityName}`)
           .join(", ");
 
         // Calculate height needed for this row (in case activities wrap)

@@ -152,23 +152,40 @@ if (groupingMode === "officer") {
   const projBeneficiaries = beneficiaries.filter(b => b.projectId.toString() === p._id.toString());
   
   // Initialize the activity map for THIS specific project
-  const activityMap = {};
+const activityMap = {};
+const activityTracker = new Set();
 
-  projBeneficiaries.forEach(b => {
-    (b.keyActivities || []).forEach(act => {
-      // Create a unique key for the activity (case-insensitive)
-      const key = (act.activityName || "Unknown").toLowerCase().trim();
-      
-      if (!activityMap[key]) {
-        activityMap[key] = { 
-          name: act.activityName, 
-          total: 0, 
-          unit: act.unit || "Nos" 
-        };
-      }
-      activityMap[key].total += Number(act.totalQuantity) || 0;
-    });
+projBeneficiaries.forEach((b) => {
+  const dzongkhag = b.dzongkhag?.trim().toLowerCase() || "unknown";
+  const gewog = b.gewog?.trim().toLowerCase() || "unknown";
+  const village = b.village?.trim().toLowerCase() || "unknown";
+
+  (b.keyActivities || []).forEach((act) => {
+    const activityName =
+      (act.activityName || "Unknown").trim();
+
+    const activityKey =
+      activityName.toLowerCase().trim();
+
+    const uniqueLocationKey =
+      `${dzongkhag}|${gewog}|${village}|${activityKey}`;
+
+    if (!activityMap[activityKey]) {
+      activityMap[activityKey] = {
+        name: activityName,
+        total: 0,
+        unit: act.unit || "Nos",
+      };
+    }
+
+    // Count only once per unique location
+    if (!activityTracker.has(uniqueLocationKey)) {
+      activityTracker.add(uniqueLocationKey);
+
+      activityMap[activityKey].total += 1;
+    }
   });
+});
 
   // Now activityMap is defined and can be converted to an array safely
   groupsMap[groupKey].projects.push({
