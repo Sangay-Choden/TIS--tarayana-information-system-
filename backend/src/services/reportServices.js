@@ -111,20 +111,89 @@ if (groupingMode === "officer") {
   }
 }
   // --- DZONGKHAG GROUPING ---
-  else if (groupingMode === "dzongkhag") {
-    const projBeneficiariesInDz = beneficiaries.filter(b => b.projectId.toString() === p._id.toString());
-    
-    // If we are filtering by specific Dzongkhags, only group by those
-    const dzName = projBeneficiariesInDz.length > 0 ? projBeneficiariesInDz[0].dzongkhag : null;
+else if (groupingMode === "dzongkhag") {
 
-    if (dzName) {
-      groupKey = String(dzName).toLowerCase();
-      groupName = dzName;
-    } else {
-      groupKey = "unknown_dz";
-      groupName = "Multiple / Unknown Dzongkhags";
+  const projBeneficiariesInDz = beneficiaries.filter(
+    b => b.projectId.toString() === p._id.toString()
+  );
+
+  const uniqueDzongkhags = [
+    ...new Set(
+      projBeneficiariesInDz
+        .map(b => b.dzongkhag)
+        .filter(Boolean)
+    )
+  ];
+
+  if (uniqueDzongkhags.length === 0) {
+    uniqueDzongkhags.push("Unknown");
+  }
+
+  uniqueDzongkhags.forEach((dzName) => {
+
+    const dzGroupKey = dzName.toLowerCase();
+
+    if (!groupsMap[dzGroupKey]) {
+      groupsMap[dzGroupKey] = {
+        groupTitle: dzName,
+        projects: []
+      };
     }
-  } 
+
+    const dzBeneficiaries = projBeneficiariesInDz.filter(
+      b =>
+        String(b.dzongkhag).toLowerCase() ===
+        String(dzName).toLowerCase()
+    );
+
+    // Activity calculation only for THIS dzongkhag
+    const activityMap = {};
+    const activityTracker = new Set();
+
+    dzBeneficiaries.forEach((b) => {
+      const dzongkhag =
+        b.dzongkhag?.trim().toLowerCase() || "unknown";
+
+      const gewog =
+        b.gewog?.trim().toLowerCase() || "unknown";
+
+      const village =
+        b.village?.trim().toLowerCase() || "unknown";
+
+      (b.keyActivities || []).forEach((act) => {
+        const activityName =
+          (act.activityName || "Unknown").trim();
+
+        const activityKey =
+          activityName.toLowerCase().trim();
+
+        const uniqueLocationKey =
+          `${dzongkhag}|${gewog}|${village}|${activityKey}`;
+
+        if (!activityMap[activityKey]) {
+          activityMap[activityKey] = {
+            name: activityName,
+            total: 0,
+            unit: act.unit || "Nos"
+          };
+        }
+
+        if (!activityTracker.has(uniqueLocationKey)) {
+          activityTracker.add(uniqueLocationKey);
+          activityMap[activityKey].total += 1;
+        }
+      });
+    });
+
+    groupsMap[dzGroupKey].projects.push({
+      ...p.toObject(),
+      beneficiaries: dzBeneficiaries,
+      projectActivities: Object.values(activityMap)
+    });
+  });
+
+  return; // IMPORTANT
+}
   // --- PROGRAMME GROUPING (Default) ---
   else {
     if (p.programme) {
