@@ -431,6 +431,7 @@ import { X, ChevronDown, Plus, Trash2, Save } from 'lucide-react';
 import axios from 'axios';
 
 const UpdateBeneficiaryModal = ({ isOpen, onClose, onUpdate, beneficiary }) => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [projects, setProjects] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -462,7 +463,7 @@ const UpdateBeneficiaryModal = ({ isOpen, onClose, onUpdate, beneficiary }) => {
       if (!token) return;
 
       try {
-        const res = await axios.get('http://localhost:5000/api/projects', {
+        const res = await axios.get(`${API_URL}/api/projects`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProjects(res.data.data || []);
@@ -676,7 +677,7 @@ const UpdateBeneficiaryModal = ({ isOpen, onClose, onUpdate, beneficiary }) => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/beneficiaries/${beneficiary._id}`, 
+        `${API_URL}/api/beneficiaries/${beneficiary._id}`, 
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
