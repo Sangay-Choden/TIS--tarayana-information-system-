@@ -266,20 +266,37 @@ projBeneficiaries.forEach((b) => {
   // 5. METADATA & SUMMARY
   const finalGroups = Object.values(groupsMap);
   const displayedBeneficiaries = finalGroups.flatMap(g => g.projects.flatMap(proj => proj.beneficiaries));
-  const allDisplayedProjects = finalGroups.flatMap(group => group.projects);
+ const allDisplayedProjects = finalGroups.flatMap(
+  group => group.projects
+);
 
-  const summary = displayedBeneficiaries.reduce((acc, b) => {
-    acc.totalBeneficiaries++;
-    if (b.gender === 'M') acc.male++;
-    if (b.gender === 'F') acc.female++;
-    return acc;
-  }, { 
-    totalProjects: allDisplayedProjects.length, 
-    totalBeneficiaries: 0, 
-    male: 0, 
-    female: 0,
-    totalDzongkhags: [...new Set(displayedBeneficiaries.map(b => String(b.dzongkhag || "").toLowerCase()))].filter(Boolean).length
-  });
+// Remove duplicate project IDs
+const uniqueProjectIds = [
+  ...new Set(
+    allDisplayedProjects.map(p => p._id.toString())
+  )
+];
+
+const summary = displayedBeneficiaries.reduce((acc, b) => {
+  acc.totalBeneficiaries++;
+
+  if (b.gender === "M") acc.male++;
+  if (b.gender === "F") acc.female++;
+
+  return acc;
+}, {
+  totalProjects: uniqueProjectIds.length,
+  totalBeneficiaries: 0,
+  male: 0,
+  female: 0,
+  totalDzongkhags: [
+    ...new Set(
+      displayedBeneficiaries.map(b =>
+        String(b.dzongkhag || "").toLowerCase()
+      )
+    )
+  ].filter(Boolean).length
+});
 
   return { 
     summary, 
