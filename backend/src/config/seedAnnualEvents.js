@@ -2,46 +2,178 @@ const mongoose = require("mongoose");
 const AnnualEvent = require("../models/annualEventModel");
 
 const defaultEvents = [
-  {
-    eventName: "Tarayana Fair",
-    fields: [
-     { fieldName: "Title", fieldType: "text", required: true },
-      { fieldName: "Event Date", fieldType: "date", required: true },
+{
+  eventName: "Tarayana Fair",
+  fields: [
+    { fieldName: "Title", fieldType: "text", required: true },
+    { fieldName: "Start Date", fieldType: "date", required: true },
+    { fieldName: "End Date", fieldType: "date", required: true },
+    { fieldName: "Theme", fieldType: "text", required: true },
+    { fieldName: "Venue", fieldType: "text", required: true },
 
-      { fieldName: "Total Income Earned By Community Members", fieldType: "number", required: false },
-      { fieldName: "Theme", fieldType: "text", required: true },
-
-      { fieldName: "Number Of Products", fieldType: "number", required: false },
-      { fieldName: "Number Of Districts", fieldType: "number", required: false },
-      { fieldName: "Number Of Community Members", fieldType: "number", required: false },
-
-      { fieldName: "Number Of Community Stalls", fieldType: "number", required: false },
-      { fieldName: "Number Of GameStalls", fieldType: "number", required: false },
-
+    {
+      fieldName: "Districts",
+      fieldType: "array",
+      required: false,
+      itemFields: [
         {
-  fieldName: "Sponsors",
-  fieldType: "array",
-  required: false,
-  itemFields: [
-    { fieldName: "Name", fieldType: "text" },
-    { fieldName: "Amount", fieldType: "number" }
+          fieldName: "District Name",
+          fieldType: "text"
+        },
+        {
+          fieldName: "Communities",
+          fieldType: "array",
+          itemFields: [
+            {
+              fieldName: "Community Name",
+              fieldType: "text"
+            },
+            {
+              fieldName: "Community Members",
+              fieldType: "array",
+              itemFields: [
+                 {
+                  fieldName: "CID",
+                  fieldType: "text"
+                },
+                {
+                  fieldName: "Name",
+                  fieldType: "text"
+                }
+              
+              ]
+            },
+            {
+              fieldName: "Products",
+              fieldType: "array",
+              itemFields: [
+                {
+                  fieldName: "Product Name",
+                  fieldType: "text"
+                }
+              ]
+            },
+            {
+              fieldName: "Income",
+              fieldType: "number"
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      fieldName: "Game Stalls",
+      fieldType: "array",
+      required: false,
+      itemFields: [
+        {
+          fieldName: "Game Name",
+          fieldType: "text"
+        },
+        {
+          fieldName: "Total Income Earned",
+          fieldType: "number"
+        }
+      ]
+    },
+
+    {
+      fieldName: "Sponsors",
+      fieldType: "array",
+      required: false,
+      itemFields: [
+        { fieldName: "Name", fieldType: "text" },
+        { fieldName: "Amount", fieldType: "number" }
+      ]
+    }
   ]
-}
-    ]
-  },
-  {
-    eventName: "Annual Green Tech Challenge",
-    fields: [
-      { fieldName: "Event Date", fieldType: "date", required: true },
-      { fieldName: "Theme", fieldType: "text", required: true },
+},
+{
+  eventName: "Annual Green Tech Challenge",
+  fields: [
+    {
+      fieldName: "Event Date",
+      fieldKey: "eventDate",
+      fieldType: "date",
+      required: true
+    },
+    {
+      fieldName: "Theme",
+      fieldKey: "theme",
+      fieldType: "text",
+      required: true
+    },
+    {
+      fieldName: "Venue",
+      fieldKey: "venue",
+      fieldType: "text",
+      required: true
+    },
 
-      { fieldName: "Number Of Students Participated", fieldType: "number", required: false },
-      { fieldName: "Top Teams", fieldType: "text", required: false },
+    {
+      fieldName: "Teams",
+      fieldKey: "teams",
+      fieldType: "array",
+      required: false,
+      itemFields: [
+        {
+          fieldName: "Team Name",
+          fieldKey: "teamName",
+          fieldType: "text"
+        },
+        {
+          fieldName: "Position",
+          fieldKey: "position",
+          fieldType: "text"
+        }
+      ]
+    },
 
-      { fieldName: "Venue", fieldType: "text", required: true },
-      { fieldName: "Cash PrizeAmount", fieldType: "number", required: false }
-    ]
-  },
+    {
+      fieldName: "Students Participated",
+      fieldKey: "students",
+      fieldType: "array",
+      required: false,
+      itemFields: [
+        {
+          fieldName: "Name",
+          fieldKey: "name",
+          fieldType: "text"
+        },
+        {
+          fieldName: "Student ID",
+          fieldKey: "studentId",
+          fieldType: "text"
+        },
+        {
+          fieldName: "Team Name",
+          fieldKey: "teamName",
+          fieldType: "text"
+        }
+      ]
+    },
+
+    {
+      fieldName: "Cash Prizes",
+      fieldKey: "cashPrizes",
+      fieldType: "array",
+      required: false,
+      itemFields: [
+        {
+          fieldName: "Position",
+          fieldKey: "position",
+          fieldType: "text"
+        },
+        {
+          fieldName: "Amount",
+          fieldKey: "amount",
+          fieldType: "number"
+        }
+      ]
+    }
+  ]
+},
   {
     eventName: "Annual Pilgrimage",
     fields: [

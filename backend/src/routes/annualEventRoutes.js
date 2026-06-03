@@ -7,6 +7,7 @@ router.post("/main-event", annualEventController.createAnnualEvent);
 router.post("/event", annualEventController.createEvent);
 router.get("/",annualEventController.getAllAnnualEvents);
 router.get("/main-event/:id", annualEventController.getEventById);
+router.get("/event/:id", annualEventController.getsEventById);
 router.put("/main-event/:id", annualEventController.updateAnnualEvent);
 router.delete("/main-event/:id", annualEventController.deleteAnnualEvent);
 

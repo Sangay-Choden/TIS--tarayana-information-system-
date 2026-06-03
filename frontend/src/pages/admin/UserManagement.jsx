@@ -1094,7 +1094,7 @@ className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 py-2 text-sm shadow fon
           <div className="bg-white rounded-xl p-6 w-full max-w-xl shadow">
             <h2 className="text-lg font-semibold mb-2">Delete Item?</h2>
             <p className="text-gray-500 text-sm mb-6">
-             Are you sure you want to delete this item? This action is permanent and cannot be undone. Once deleted, this will be permanently removed along with all related data and permissions.
+             This action cannot be undone. Once deleted, this will be permanently removed with all related data and permissions.
             </p>
 
             <div className="flex justify-end gap-4">
@@ -1362,7 +1362,7 @@ className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 py-2 text-sm shadow fon
     <div className="bg-white rounded-xl p-6 w-full max-w-xl shadow">
       <h2 className="text-lg font-semibold mb-2">Delete Role?</h2>
       <p className="text-gray-500 text-sm mb-6">
-        Are you sure you want to delete this role? This action cannot be undone. Once deleted, this role will be permanently removed along with all related data and permissions.
+        This action cannot be undone. Once deleted, this role will be permanently removed with all related data and permissions.
       </p>
 
       <div className="flex justify-end gap-4">

@@ -413,7 +413,7 @@ className="text-[9px] sm:text-[10px] font-bold bg-gray-50 text-gray-400 px-2 py-
       </h2>
 
       <p className="text-gray-500 text-sm mb-6">
-        Are you sure you want to delete this project?
+        
         This action is permanent and cannot be undone.
       </p>
 

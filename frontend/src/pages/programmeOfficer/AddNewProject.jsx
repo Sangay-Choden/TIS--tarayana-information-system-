@@ -328,12 +328,12 @@ const handleAddNewSubmit = async () => {
         {/* Register New Modal */}
         <AnimatePresence>
           {showAddModal && (
-            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 ">
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-xl p-8 max-w-sm w-full shadow-xl text-center">
                 <h2 className="text-xl font-bold text-gray-900 mb-2">Register {addingType}</h2>
                 <p className="text-sm text-gray-500 mb-6 font-medium">Add this new {addingType.toLowerCase()} to the system?</p>
                 <input type="text" placeholder={`${addingType} Name`} className="w-full px-4 py-3 border border-gray-200 rounded-xl mb-6 outline-none text-black font-medium" value={newName} onChange={(e) => setNewName(e.target.value)} />
-                <div className="flex gap-3 font-bold">
+                <div className="flex justify-end gap-3 font-semibold">
                   <button onClick={() => setShowAddModal(false)} className="px-4 py-2 border rounded-lg">Cancel</button>
                   <button onClick={handleAddNewSubmit} className="bg-[#2EA1F2] text-white px-5 py-2 shadow font-bold text-md rounded-lg flex items-center gap-2 hover:bg-[#298CD2] transition-color">+ Register</button>
                 </div>
@@ -347,7 +347,7 @@ const handleAddNewSubmit = async () => {
           {showConfirmProject && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40">
               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-xl p-10 max-w-3xl w-full shadow-2xl overflow-y-auto max-h-[90vh]">
-                <h2 className="text-xl font-bold text-gray-900 mb-6 ">Project Review</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6 ">Project Preview</h2>
                 <div className="space-y-6 text-sm bg-gray-50 p-8 rounded-xl border border-gray-100 mb-8">
                   <div className="flex justify-between border-b pb-3"><span className="text-gray-500">Project:</span> <span className="font-bold text-gray-900">{formData.projectName}</span></div>
                   <div className="flex justify-between border-b pb-3"><span className="text-gray-500">Dzongkhags:</span> <span className="font-bold text-gray-900 text-right max-w-xs">{formData.dzongkhag.join(', ')}</span></div>

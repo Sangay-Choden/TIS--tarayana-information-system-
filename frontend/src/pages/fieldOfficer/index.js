@@ -7,3 +7,4 @@ export { default as Reports } from './Reports';
 export { default as GenerateReport } from './GenerateReport';
 export { default as ProjectDetail } from './ProjectDetail';
 export { default as SpecificProjectDetail } from './SpecificProjectDetail';
+export { default as newRegister } from './newRegister';

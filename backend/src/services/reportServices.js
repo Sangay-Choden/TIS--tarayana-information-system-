@@ -1,6 +1,14 @@
 const Project = require("../models/projectModel");
 const Beneficiary = require("../models/beneficiaryModel");
 const mongoose = require("mongoose");
+const normalizeOfficer = (off) => {
+  if (!off) return null;
+
+  // already populated object
+  if (typeof off === "object" && off._id) return off;
+
+  return null;
+};
 
 exports.buildReportData = async ({
   dateFilter,
@@ -34,7 +42,7 @@ exports.buildReportData = async ({
   // 2. FETCH PROJECTS
   // Note: Only populate fields that exist in your Schema to avoid StrictPopulateError
   const projectList = await Project.find(query)
-    .populate("programme fieldOfficer") 
+    .populate("programme fieldOfficer programmeOfficer") 
     .sort({ createdAt: -1 });
 
   if (projectList.length === 0) {
@@ -74,19 +82,12 @@ if (groupingMode === "officer") {
     Array.isArray(officers) && officers.length > 0;
 
   // Handle both single object and array properly
-  const potentialOfficers = [
-    ...(Array.isArray(p.fieldOfficer)
-      ? p.fieldOfficer
-      : p.fieldOfficer
-      ? [p.fieldOfficer]
-      : []),
-
-    ...(Array.isArray(p.programmeOfficer)
-      ? p.programmeOfficer
-      : p.programmeOfficer
-      ? [p.programmeOfficer]
-      : [])
-  ].filter(off => off && off._id);
+ const potentialOfficers = [
+  ...(Array.isArray(p.fieldOfficer) ? p.fieldOfficer : p.fieldOfficer ? [p.fieldOfficer] : []),
+  ...(Array.isArray(p.programmeOfficer) ? p.programmeOfficer : p.programmeOfficer ? [p.programmeOfficer] : [])
+]
+  .map(normalizeOfficer)
+  .filter(Boolean);
 
   let activeOfficer;
 
@@ -105,9 +106,9 @@ if (groupingMode === "officer") {
   } else {
     groupKey = activeOfficer._id.toString();
     groupName =
-      activeOfficer.name ||
-      activeOfficer.email ||
-      "Unnamed Officer";
+  activeOfficer?.name ??
+  activeOfficer?.email ??
+  "Unnamed Officer";
   }
 }
   // --- DZONGKHAG GROUPING ---

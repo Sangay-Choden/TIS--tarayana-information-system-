@@ -41,6 +41,7 @@ export const menuConfigs = {
   'Management': [
     { name: "Dashboard", path: "/mgmt/dashboard", icon: <LayoutGrid size={20} /> },
     { name: "Programmes", path: "/mgmt/programmes", icon: <FileText size={20} /> },
+     { name: "Annual Events", path: "/mgmt/annual-events", icon: <Calendar size={20} /> },
     { name: "Reports", path: "/mgmt/reports", icon: <BarChart3 size={20} /> },
   ],
   'CD Officer': [

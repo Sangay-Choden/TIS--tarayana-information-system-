@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, FileText, Calendar, Globe, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, FileText, Calendar, Globe, Users, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -118,16 +118,39 @@ const backPath = location.state?.from || '/projects';
 
   return (
     <div className="space-y-8 pb-10">
-      <button onClick={() => navigate(`/${rootPath}/projects`)}
-              className="flex items-center text-gray-400 mb-6 text-sm hover:text-blue-500 transition-colors">
-     <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-         <span>{backLabel}</span>
-      </button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <button 
+          onClick={() => navigate(`/${rootPath}/projects`)} 
+          className="flex items-center text-gray-400 text-sm hover:text-blue-500 transition-colors group"
+        >
+          <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span>{backLabel}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() =>
+            navigate("/fo/beneficiaries/newRegister", {
+              state: {
+                projectId: id,
+                projectName: project?.projectName || "",
+                geographicBreakdown: geographicBreakdown || [],
+                from: location.pathname,
+                label: "Back to Project Detail"
+              }
+            })
+          }
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[#3498db] text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-100 transition-all hover:bg-[#2980b9] active:scale-95"
+        >
+          <Plus size={20} /> 
+          <span>New Beneficiary</span>
+        </button>
+      </div>
 
       {/* Project Header */}
       <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-2">
         <h1 className="text-2xl font-bold text-gray-900">{project.projectName}</h1>
-        <p className="text-sm text-gray-500 max-w-3xl leading-relaxed">{project.description}</p>
+        <p className="text-sm text-gray-500 max-w-6xl leading-relaxed">{project.description}</p>
         <div className="pt-2">
             <span
   className={`

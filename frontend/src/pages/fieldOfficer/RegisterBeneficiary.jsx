@@ -1283,10 +1283,17 @@ for (let i = 0; i < beneficiaries.length; i++) {
               ))}
             </div>
 
-            <button type="submit" className="w-full bg-[#2EA1F2] text-white p-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#298CD2] transition-color shadow-lg">
+            {/* <button type="submit" className="w-full bg-[#2EA1F2] text-white p-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#298CD2] transition-color shadow-lg">
               <Save size={20}/> Review and Save 
-               {/* ({beneficiaries.length}) */}
-            </button>
+            </button> */}
+                        <div className="flex justify-end w-full">
+              <button 
+                type="submit" 
+                className="bg-[#2EA1F2] text-white p-4 px-8 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-[#298CD2] transition-colors shadow-lg"
+              >
+                <Save size={20}/> Preview and Save 
+              </button>
+            </div>
           </form>
         </div>
       </div>

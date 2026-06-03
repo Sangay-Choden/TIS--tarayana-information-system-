@@ -59,8 +59,8 @@ const handleSignOut = () => {
           {!collapsed && (
             <div className="leading-tight">
               <h1 className="text-[20px] font-bold">Tarayana</h1>
-              <p className="text-[15px] text-gray-400">
-                Information System
+              <p className="text-[13px] text-gray-400">
+                Information Management System
               </p>
             </div>
           )}

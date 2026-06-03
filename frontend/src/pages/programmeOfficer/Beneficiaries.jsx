@@ -542,7 +542,7 @@ const rootPath = pathname.split('/')[1];
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDelete}
         title="Delete Beneficiary?"
-        description=" Are you sure you want to delete this beneficiary? This action is permanent and cannot be undone."
+        description="  This action is permanent and cannot be undone."
       />
 
       <SuccessModal

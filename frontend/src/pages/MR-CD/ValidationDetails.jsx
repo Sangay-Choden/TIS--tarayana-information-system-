@@ -271,8 +271,8 @@ const handleSaveQuantities = async () => {
                   <th className="px-4 pb-4">Location</th>
                   <th className="px-4 pb-4">Activity Name</th>
                   <th className="px-4 pb-4">Specifications</th>
-                  <th className="px-4 pb-4 text-center">Actual Value</th>
-                  <th className="px-4 pb-4 text-center">Actual Total(After Validation)</th>
+                  <th className="px-4 pb-4 text-center">Total Record</th>
+                  <th className="px-4 pb-4 text-center">Total Record (After Validation)</th>
                 </tr>
               </thead>
               <tbody className="text-sm font-medium">

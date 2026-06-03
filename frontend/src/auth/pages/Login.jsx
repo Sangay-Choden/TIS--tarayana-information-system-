@@ -142,7 +142,7 @@ if (
 // ) {
 //   navigate("/mr/dashboard");
 } else if (
-  userRole === "C&DOfficer" ||
+  userRole === "C&D Officer" ||
   userRole === "CD Officer" ||
   userRole === "M&ROfficer" ||
   userRole === "M&R Officer" ||

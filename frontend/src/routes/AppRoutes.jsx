@@ -14,7 +14,9 @@ import {
   Reports, 
   GenerateReport, 
   ProjectDetail,
-  SpecificProjectDetail
+  SpecificProjectDetail,
+  newRegister as FOnewRegister
+
 } from '../pages/fieldOfficer';
 
 import {
@@ -26,6 +28,7 @@ import {
   AddNewProject as POAddNewProject,
   RegisterBeneficiary as PORegisterBeneficiary,
   GenerateReport as POGenerateReport,
+  newRegister as POnewRegister
 } from '../pages/programmeOfficer';
 import POSpecificProjectDetail from '../pages/programmeOfficer/SpecificProjectDetail';
 
@@ -58,6 +61,9 @@ import ManagementProgrammeDetail from '../pages/management/ProgrammeDetail';
 import ManagementProjectDetail from '../pages/management/ProjectDetail';
 import ManagementReports from '../pages/management/Reports';
 import ManagementGenerateReport from '../pages/management/GenerateReport';
+import ManagementAnnualEvents from '../pages/management/AnnualEvents';
+import ManagementEvent from '../pages/management/Event';
+import ManagementDetailEvent from '../pages/management/DetailEvent';
 
 // MR-CD Pages
 import CdDashboard from '../pages/MR-CD/CdDashboard';
@@ -103,6 +109,7 @@ const AppRoutes = () => {
         <Route path="projects/detail/:id" element={<SpecificProjectDetail />} />
         <Route path="beneficiaries" element={<Beneficiaries />} />
         <Route path="beneficiaries/register" element={<RegisterBeneficiary />} />
+        <Route path="beneficiaries/newRegister" element={<FOnewRegister />} />
         <Route path="reports" element={<Reports />} />
         <Route path="reports/generate" element={<GenerateReport />} />
         
@@ -119,7 +126,7 @@ const AppRoutes = () => {
         <Route path="programmes" element={<POProgrammes />} />
         <Route path="beneficiaries" element={<POBeneficiaries />} />
         <Route path="beneficiaries/register" element={<PORegisterBeneficiary />} />
-
+        <Route path="beneficiaries/newRegister" element={<POnewRegister />} />
         <Route path="reports" element={<POReports />} />
         <Route path="reports/generate" element={< POGenerateReport />} />
         <Route path="programmes/add" element={<POAddNewProject />} />
@@ -169,7 +176,9 @@ const AppRoutes = () => {
         <Route path="programmes/projects/:id" element={<ManagementProjectDetail />} />
         <Route path="reports" element={<ManagementReports />} />
         <Route path="reports/generate" element={<ManagementGenerateReport />} />
-        <Route path="annual-events" element={<AdminAnnualEvents />} />
+        <Route path="annual-events" element={<ManagementAnnualEvents />} />
+        <Route path="annual-events/:id" element={<ManagementEvent />} />
+        <Route path="annual-events/:id/detail" element={<ManagementDetailEvent />} />
       </Route>
 
       {/* CD Officer Routes */}

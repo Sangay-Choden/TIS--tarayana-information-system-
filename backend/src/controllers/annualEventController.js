@@ -1,4 +1,3 @@
-
 const Event = require("../models/eventModel");
 const AnnualEvent = require("../models/annualEventModel");
 
@@ -31,6 +30,24 @@ exports.getEventById = async (req, res) => {
     const { id } = req.params;
 
     const event = await AnnualEvent.findById(id);
+
+    if (!event) {
+      return res.status(404).json({ message: "Annual Event not found" });
+    }
+
+    res.json({
+      data: event
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.getsEventById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const event = await Event.findById(id);
 
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
@@ -234,4 +251,3 @@ exports.deleteEvent = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
