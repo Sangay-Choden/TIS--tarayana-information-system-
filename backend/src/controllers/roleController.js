@@ -1,19 +1,28 @@
 const Role = require("../models/roleModel");
 
 exports.createRole = async (req, res) => {
-
   try {
-
     const { roleName, roleDescription } = req.body;
 
-    const existing = await Role.findOne({ roleName });
+    const normalizedInput = roleName
+      .trim()
+      .replace(/\s+/g, "")
+      .toLowerCase();
+
+    const roles = await Role.find({}, "roleName");
+
+    const existing = roles.find(role =>
+      role.roleName.replace(/\s+/g, "").toLowerCase() === normalizedInput
+    );
 
     if (existing) {
-      return res.status(400).json({ message: "Role already exists" });
+      return res.status(400).json({
+        message: "Role already exists"
+      });
     }
 
     const role = await Role.create({
-      roleName,
+      roleName: roleName.trim(),
       roleDescription
     });
 
@@ -25,8 +34,8 @@ exports.createRole = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-
 };
+
 
 exports.updateRole = async (req, res) => {
   try {

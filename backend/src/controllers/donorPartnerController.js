@@ -11,7 +11,7 @@ exports.registerDonorPartner = async (req, res) => {
     }
 
     // Validate name
-    if (!name) {
+    if (!name?.trim()) {
       return res.status(400).json({ message: "Name is required" });
     }
 
@@ -21,9 +21,21 @@ exports.registerDonorPartner = async (req, res) => {
       return res.status(404).json({ message: "Role not found" });
     }
 
+    // Check if already exists
+    const existing = await donorPartner.findOne({
+      roleId: role._id,
+      name: { $regex: `^${name.trim()}$`, $options: "i" }
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        message: `${roleName} already exists`
+      });
+    }
+
     // Create Donor/Partner
     const record = await donorPartner.create({
-      name,
+      name: name.trim(),
       roleId: role._id
     });
 

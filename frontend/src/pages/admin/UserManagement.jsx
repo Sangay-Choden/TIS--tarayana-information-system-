@@ -238,7 +238,13 @@ setTimeout(() => {
 
       const data = await res.json();
 
-      if (!res.ok) return alert(data.message);
+   if (!res.ok) {
+  setErrorMessage(data.message || "Failed to create record");
+  setShowErrorPopup(true);
+
+  setTimeout(() => setShowErrorPopup(false), 2000);
+  return;
+}
 
       // ✅ Update UI after success
       if (activeTab === "donors") {
@@ -420,8 +426,74 @@ useEffect(() => {
   fetchUsers();
 }, []);
 
+// const handleCreateRole = async () => {
+//   if (!roleName.trim()) return;
+
+//   try {
+//     const token = localStorage.getItem("token");
+
+//     const res = await fetch(`${API_URL}/api/roles/create`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: JSON.stringify({
+//         roleName,
+//         roleDescription: roleDesc,
+//       }),
+//     });
+
+//     const data = await res.json();
+
+//   if (!res.ok) {
+
+//   setErrorMessage(data.message || "Failed to create role.");
+//   setShowErrorPopup(true);
+
+//   setTimeout(() => {
+//     setShowErrorPopup(false);
+//   }, 2000);
+
+//   return;
+// }
+
+//     // refresh roles from backend
+//     fetchRoles();
+
+//     setShowroleModal(false);
+//     setRoleName("");
+//     setRoleDesc("");
+
+//     setSuccessType("role");
+//     setShowroleSuccess(true);
+//     setTimeout(() => setShowroleSuccess(false), 2000);
+
+//   } catch (err) {
+//     console.error(err);
+//   }
+// };
+
 const handleCreateRole = async () => {
   if (!roleName.trim()) return;
+
+  // Check duplicate role (case-insensitive)
+  const roleExists = roles.some(
+    (role) =>
+      role.roleName.trim().toLowerCase() ===
+      roleName.trim().toLowerCase()
+  );
+
+  if (roleExists) {
+    setErrorMessage("Role already exists.");
+    setShowErrorPopup(true);
+
+    setTimeout(() => {
+      setShowErrorPopup(false);
+    }, 2000);
+
+    return;
+  }
 
   try {
     const token = localStorage.getItem("token");
@@ -439,20 +511,19 @@ const handleCreateRole = async () => {
     });
 
     const data = await res.json();
+    console.log("Create Role Response:", data);
 
-  if (!res.ok) {
+    if (!res.ok) {
+      setErrorMessage(data.message || "Failed to create role.");
+      setShowErrorPopup(true);
 
-  setErrorMessage(data.message || "Failed to create role.");
-  setShowErrorPopup(true);
+      setTimeout(() => {
+        setShowErrorPopup(false);
+      }, 2000);
 
-  setTimeout(() => {
-    setShowErrorPopup(false);
-  }, 2000);
+      return;
+    }
 
-  return;
-}
-
-    // refresh roles from backend
     fetchRoles();
 
     setShowroleModal(false);
@@ -461,12 +532,18 @@ const handleCreateRole = async () => {
 
     setSuccessType("role");
     setShowroleSuccess(true);
-    setTimeout(() => setShowroleSuccess(false), 2000);
+
+    setTimeout(() => {
+      setShowroleSuccess(false);
+    }, 2000);
 
   } catch (err) {
     console.error(err);
   }
 };
+
+
+
 
 const confirmDeleterole = async () => {
   try {

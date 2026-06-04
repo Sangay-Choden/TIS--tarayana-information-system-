@@ -107,9 +107,10 @@ const AppRoutes = () => {
         <Route path="projects" element={<Projects />} />
         <Route path="projects/:type/:id" element={<ProjectDetail />} />
         <Route path="projects/detail/:id" element={<SpecificProjectDetail />} />
+        <Route path="projects/detail/:id/newRegister" element={<FOnewRegister />} />
         <Route path="beneficiaries" element={<Beneficiaries />} />
         <Route path="beneficiaries/register" element={<RegisterBeneficiary />} />
-        <Route path="beneficiaries/newRegister" element={<FOnewRegister />} />
+        {/* <Route path="beneficiaries/newRegister" element={<FOnewRegister />} /> */}
         <Route path="reports" element={<Reports />} />
         <Route path="reports/generate" element={<GenerateReport />} />
         
@@ -126,13 +127,13 @@ const AppRoutes = () => {
         <Route path="programmes" element={<POProgrammes />} />
         <Route path="beneficiaries" element={<POBeneficiaries />} />
         <Route path="beneficiaries/register" element={<PORegisterBeneficiary />} />
-        <Route path="beneficiaries/newRegister" element={<POnewRegister />} />
+        {/* <Route path="beneficiaries/newRegister" element={<POnewRegister />} /> */}
         <Route path="reports" element={<POReports />} />
         <Route path="reports/generate" element={< POGenerateReport />} />
         <Route path="programmes/add" element={<POAddNewProject />} />
         <Route path="programmes/:type/:id" element={<ProjectDetail />} />
         <Route path="programmes/detail/:id" element={<POSpecificProjectDetail />} />
-        
+        <Route path="programmes/detail/:id/newRegister" element={<POnewRegister />} />
       </Route>
 
       {/* Admin Routes */}

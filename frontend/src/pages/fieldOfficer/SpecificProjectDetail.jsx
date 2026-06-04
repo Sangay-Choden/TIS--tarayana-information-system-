@@ -127,7 +127,7 @@ const backPath = location.state?.from || '/projects';
           <span>{backLabel}</span>
         </button>
 
-        <button
+        {/* <button
           type="button"
           onClick={() =>
             navigate("/fo/beneficiaries/newRegister", {
@@ -144,7 +144,7 @@ const backPath = location.state?.from || '/projects';
         >
           <Plus size={20} /> 
           <span>New Beneficiary</span>
-        </button>
+        </button> */}
       </div>
 
       {/* Project Header */}
@@ -255,7 +255,28 @@ const backPath = location.state?.from || '/projects';
 
       {/* Registered Beneficiaries Table */}
       <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+
         <h3 className="text-lg font-bold text-gray-900">Registered Beneficiaries</h3>
+             <button
+          type="button"
+          onClick={() =>
+            navigate(`/fo/projects/detail/${id}/newRegister`, {
+              state: {
+                projectId: id,
+                projectName: project?.projectName || "",
+                geographicBreakdown: geographicBreakdown || [],
+                from: location.pathname,
+                label: "Back to Project Detail"
+              }
+            })
+          }
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[#3498db] text-white rounded-lg font-bold text-sm shadow-lg shadow-blue-100 transition-all hover:bg-[#2980b9] active:scale-95"
+        >
+          <Plus size={20} /> 
+          <span>New Beneficiary</span>
+        </button>
+</div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[1200px]">

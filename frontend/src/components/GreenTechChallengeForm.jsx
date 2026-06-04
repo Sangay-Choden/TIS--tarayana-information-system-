@@ -72,17 +72,23 @@ const GreenTechChallengeForm = ({
 
           <div className="grid md:grid-cols-3 gap-4">
 
-            <input
-              type="date"
-              value={formData.eventDate || ""}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  eventDate: e.target.value,
-                })
-              }
-              className="border rounded-lg p-3"
-            />
+           <div className="relative">
+  <label className="absolute -top-2 left-2 bg-white px-1 text-xs text-gray-500">
+    Event Date
+  </label>
+
+  <input
+    type="date"
+    value={formData.eventDate || ""}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        eventDate: e.target.value,
+      })
+    }
+    className="border rounded-lg p-3 w-full"
+  />
+</div>
 
             <input
               placeholder="Theme"

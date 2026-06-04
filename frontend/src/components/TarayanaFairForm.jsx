@@ -227,29 +227,31 @@ const handleSave = () => {
               />
 
 
-              <input
-                type="date"
-                className="border rounded-lg px-3 py-3"
-                value={formData.startDate || ""}
-                onChange={(e) =>
-                  updateField(
-                    "startDate",
-                    e.target.value
-                  )
-                }
-              />
+            <div className="relative">
+  <label className="absolute -top-2 left-2 bg-white px-1 text-xs text-gray-500">
+    Start Date
+  </label>
 
-              <input
-                type="date"
-                className="border rounded-lg px-3 py-3"
-                value={formData.endDate || ""}
-                onChange={(e) =>
-                  updateField(
-                    "endDate",
-                    e.target.value
-                  )
-                }
-              />
+  <input
+    type="date"
+    className="border rounded-lg px-3 py-3 w-full"
+    value={formData.startDate || ""}
+    onChange={(e) => updateField("startDate", e.target.value)}
+  />
+</div>
+
+             <div className="relative">
+  <label className="absolute -top-2 left-2 bg-white px-1 text-xs text-gray-500">
+    End Date
+  </label>
+
+  <input
+    type="date"
+    className="border rounded-lg px-3 py-3 w-full"
+    value={formData.endDate || ""}
+    onChange={(e) => updateField("endDate", e.target.value)}
+  />
+</div>
 
               <input
                 className="border rounded-lg px-3 py-3"

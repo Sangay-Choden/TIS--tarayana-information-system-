@@ -693,10 +693,10 @@ const NewRegister = () => {
 
             {/* Form Actions Footer Bar */}
             <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
-              <button type="button" onClick={() => navigate(-1)} className="px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-50 rounded-xl transition-all">
+              <button type="button" onClick={() => navigate(-1)} className=" border px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-50 rounded-lg transition-all">
                 Cancel
               </button>
-              <button type="submit" className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-xl inline-flex items-center gap-2 shadow-sm transition-all">
+              <button type="submit" className="px-6 py-2.5 bg-[#3498db] hover:bg-[#2980b9] text-white font-medium text-sm rounded-lg inline-flex items-center gap-2 shadow-sm transition-all">
                 <Save size={16} /> Save Register Registration
               </button>
             </div>
@@ -707,13 +707,13 @@ const NewRegister = () => {
 
       {/* Confirmation Prompt Popup Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl border space-y-4">
+        <div className="fixed inset-0 z-[100] bg-black/40  flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 max-w-xl w-full shadow-xl border space-y-4">
             <h4 className="text-base font-bold text-gray-800">Confirm Beneficiary Submission</h4>
             <p className="text-sm text-gray-500 leading-relaxed">Are you sure you want to write these records into the operational ledger program matrices?</p>
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => setShowConfirm(false)} className="px-4 py-2 border text-xs font-medium rounded-lg text-gray-500 hover:bg-gray-50">Cancel Check</button>
-              <button type="button" onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-xs font-medium rounded-lg text-white hover:bg-blue-700">Commit Save</button>
+              <button type="button" onClick={() => setShowConfirm(false)} className="px-4 py-2 border text-sm font-medium rounded-lg text-gray-500 hover:bg-gray-50">Cancel Check</button>
+              <button type="button" onClick={handleSubmit} className="px-4 py-2 bg-[#3498db] text-sm font-medium rounded-lg text-white hover:bg-[#2980b9]">Commit Save</button>
             </div>
           </div>
         </div>
