@@ -34,7 +34,7 @@ const defaultEvents = [
               itemFields: [
                 {
                   fieldName: "CID",
-                  fieldType: "Number"
+                  fieldType: "number"
                 },
                  {
                   fieldName: "Name",
@@ -143,7 +143,7 @@ const defaultEvents = [
         {
           fieldName: "Student ID",
           fieldKey: "studentId",
-          fieldType: "text"
+          fieldType: "number"
         },
         {
           fieldName: "Team Name",
@@ -197,7 +197,7 @@ const defaultEvents = [
     },
     {
       fieldName: "Focal Contact Number",
-      fieldType: "text",
+      fieldType: "number",
       required: true
     },
     {
@@ -226,7 +226,7 @@ const defaultEvents = [
       fieldType: "array",
       required: false,
       itemFields: [
-        { fieldName: "cid", fieldType: "text" },
+        { fieldName: "cid", fieldType: "number" },
         { fieldName: "name", fieldType: "text" }
       ]
     },

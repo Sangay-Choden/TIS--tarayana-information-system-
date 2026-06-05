@@ -179,7 +179,16 @@ const API_URL = import.meta.env.VITE_API_URL;
                     {/* Project Name */}
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-gray-900">Project Name <span className="text-red-500">*</span></label>
-                      <input required value={formData.projectName} onChange={(e) => setFormData({...formData, projectName: e.target.value})}
+                      <input required value={formData.projectName}
+                      onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
+                       onChange={(e) => setFormData({...formData, projectName: e.target.value})}
                         className="w-full px-4 py-2.5 border border-gray-100 bg-gray-50/50 rounded-2xl outline-none text-black font-medium" />
                     </div>
 
@@ -230,13 +239,24 @@ const API_URL = import.meta.env.VITE_API_URL;
                     </div>
 
                     {/* Donors */}
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-900">Donors</label>
-                      <div className="flex gap-2">
-                        <select className={`flex-1 px-4 py-2.5 border border-gray-100 bg-gray-50/50 rounded-2xl outline-none appearance-none font-medium ${tempSelections.donor ? 'text-black' : 'text-gray-400'}`} 
+                <div className="space-y-2 min-w-0">
+  <label className="text-xs font-bold text-gray-900">Donors</label>
+
+  <div className="flex gap-2 min-w-0">
+    <select
+      className={`flex-1 min-w-0 px-4 py-2.5 border border-gray-100 bg-gray-50/50 rounded-2xl outline-none appearance-none font-medium ${
+        tempSelections.donor ? "text-black" : "text-gray-400"
+      }`}
+    
                           value={tempSelections.donor} onChange={(e) => setTempSelections({...tempSelections, donor: e.target.value})}>
                           <option value="" className="text-gray-400">Select Donor</option>
-                          {options.donors.map(d => <option key={d._id} value={d._id} className="text-black">{d.name}</option>)}
+                        {options.donors.map(d => (
+  <option key={d._id} value={d._id} className="text-black">
+    {d.name.length > 50
+      ? `${d.name.substring(0, 50)}...`
+      : d.name}
+  </option>
+))}
                         </select>
                         <button type="button" onClick={() => confirmAddition('donor')} className="p-2.5 bg-blue-50 text-blue-600 rounded-2xl"><Plus size={20}/></button>
                       </div>

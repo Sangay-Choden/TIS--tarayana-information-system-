@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 // import Sidebar from "../../components/Sidebar";
@@ -677,7 +676,7 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
 
   // 1. Array of the 20 Dzongkhags of Bhutan
   const bhutanDzongkhags = [
-    "Select Dzongkhag",
+
     "Bumthang",
     "Chukha",
     "Dagana",
@@ -761,7 +760,6 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 items-start">
           {fields.map((f) => {
-            // (Keep existing conditional block for "No of Senior Citizen Participated")
             if (f.fieldName === "No of Senior Citizen Participated") {
               const count = parseInt(formData[f.fieldName]) || 0;
               return (
@@ -771,6 +769,15 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
                     <input
                       type="number"
                       value={formData[f.fieldName] || ""}
+                      onKeyDown={(e) => {
+                        // Numeric field: Block non-numeric types, but allow controls and decimals
+                        if (
+                          !/[0-9.]/.test(e.key) &&
+                          !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
                       onChange={(e) => {
                         const value = e.target.value;
                         setFormData({ ...formData, [f.fieldName]: value });
@@ -798,6 +805,15 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
                           placeholder="CID"
                           className={`border rounded-md px-3 py-2 h-11 outline-none ${errors[`cid_${idx}`] ? "border-red-500" : "border-gray-300"}`}
                           value={formData["citizen_details"]?.[idx]?.cid || ""}
+                          onKeyDown={(e) => {
+                            // CID field (pure number): Block text and decimals
+                            if (
+                              !/[0-9]/.test(e.key) &&
+                              !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
                           onChange={(e) => {
                             const value = e.target.value;
                             updateNestedData("citizen_details", idx, "cid", value);
@@ -817,6 +833,15 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
                           placeholder="Name"
                           className="border border-gray-300 rounded-md px-3 py-2 h-11 outline-none"
                           value={formData["citizen_details"]?.[idx]?.name || ""}
+                          onKeyDown={(e) => {
+                            // Text Field: Block numeric keys
+                            if (
+                              /[0-9]/.test(e.key) &&
+                              !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
                           onChange={(e) => updateNestedData("citizen_details", idx, "name", e.target.value)}
                         />
                       </div>
@@ -826,7 +851,6 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
               );
             }
 
-            // (Keep existing conditional block for "sponsors")
             if (f.fieldName.toLowerCase() === "sponsors") {
               const sponsorList = formData["sponsor_list"] || [{ name: "", amount: "" }];
               return (
@@ -840,6 +864,15 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
                             placeholder="Enter name"
                             className="flex-1 px-3 py-2 outline-none border-r border-gray-300"
                             value={s.name}
+                            onKeyDown={(e) => {
+                              // Name field: Block numeric keys
+                              if (
+                                /[0-9]/.test(e.key) &&
+                                !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                             onChange={(e) => updateNestedData("sponsor_list", idx, "name", e.target.value)}
                           />
                           <div className="bg-white flex items-center px-2 text-gray-400 text-sm italic">Nu.</div>
@@ -848,6 +881,15 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
                             placeholder="0.00"
                             className={`w-24 px-2 py-2 outline-none ${errors[`sponsor_amount_${idx}`] ? "border-red-500" : ""}`}
                             value={s.amount}
+                            onKeyDown={(e) => {
+                              // Amount field: Block text keys
+                              if (
+                                !/[0-9.]/.test(e.key) &&
+                                !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                             onChange={(e) => {
                               const value = e.target.value;
                               updateNestedData("sponsor_list", idx, "amount", value);
@@ -872,7 +914,6 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
               );
             }
 
-            // 2. NEW LOGIC: Check if the field is for Dzongkhag
             const isDzongkhagField = f.fieldName.toLowerCase() === "dzongkha" || f.fieldName.toLowerCase() === "dzongkhag";
 
             return (
@@ -880,7 +921,6 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
                 <label className="text-sm font-bold text-gray-700">{f.fieldName}</label>
                 
                 {isDzongkhagField ? (
-                  /* Render Dropdown Select Element */
                   <select
                     value={formData[f.fieldName] || ""}
                     onChange={(e) => {
@@ -897,7 +937,7 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
                     className={`border rounded-md px-3 py-2 h-11 bg-white outline-none focus:ring-2
                       ${errors[f.fieldName] ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-500"}`}
                   >
-                    <select option="" disabled value="">-- Select Dzongkhag --</select>
+                    <option value="" disabled>-- Select Dzongkhag --</option>
                     {bhutanDzongkhags.map((dzongkhag) => (
                       <option key={dzongkhag} value={dzongkhag}>
                         {dzongkhag}
@@ -905,10 +945,29 @@ const Modal = ({ title, onClose, onSave, fields, formData, setFormData }) => {
                     ))}
                   </select>
                 ) : (
-                  /* Fallback to Standard Inputs */
                   <input
                     type={f.fieldType === "date" ? "date" : f.fieldType === "number" ? "number" : "text"}
                     value={formData[f.fieldName] || ""}
+                    onKeyDown={(e) => {
+                      // Dynamically validate depending on the backend field configuration context
+                      if (f.fieldType === "number" || f.fieldName.toLowerCase().includes("cid")) {
+                        const allowedChars = f.fieldType === "number" ? /[0-9.]/ : /[0-9]/;
+                        if (
+                          !allowedChars.test(e.key) &&
+                          !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)
+                        ) {
+                          e.preventDefault();
+                        }
+                      } else if (f.fieldType === "text" || !f.fieldType) {
+                        // Prevent digits from being inputted inside structural descriptive text fields
+                        if (
+                          /[0-9]/.test(e.key) &&
+                          !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+                        ) {
+                          e.preventDefault();
+                        }
+                      }
+                    }}
                     onChange={(e) => {
                       const value = e.target.value;
                       setFormData({ ...formData, [f.fieldName]: value });

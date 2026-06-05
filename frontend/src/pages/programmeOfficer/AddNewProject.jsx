@@ -195,7 +195,16 @@ const handleAddNewSubmit = async () => {
                 <label className="text-sm font-bold text-gray-900">Project Name <span className="text-red-500">*</span></label>
                 <input type="text" placeholder="Enter project name" 
                   className={`w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:border-blue-500 font-medium ${formData.projectName ? 'text-black' : 'text-gray-400'}`} 
-                  value={formData.projectName} onChange={(e) => setFormData({...formData, projectName: e.target.value})} required />
+                  value={formData.projectName} 
+                  onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
+                  onChange={(e) => setFormData({...formData, projectName: e.target.value})} required />
               </div>
 
               <div className="space-y-2">
@@ -238,7 +247,18 @@ const handleAddNewSubmit = async () => {
                     <select className={`w-full px-4 py-3 border border-gray-200 rounded-xl outline-none appearance-none font-medium ${tempSelections.donor ? 'text-black' : 'text-gray-400'}`} 
                       value={tempSelections.donor} onChange={(e) => handleSelectChange('donor', e.target.value)}>
                       <option value="" className="text-gray-400">Select Donor</option>
-                      {donors.map(d => <option key={d._id} value={d._id} className="text-black">{d.name}</option>)}
+                    {donors.map(d => (
+  <option
+    key={d._id}
+    value={d._id}
+    className="text-black"
+    title={d.name}
+  >
+    {d.name.length > 60
+      ? `${d.name.substring(0, 60)}...`
+      : d.name}
+  </option>
+))}
                       <option value="ADD_NEW_TRIGGER" className="text-blue-600 font-bold">+ Register New Donor</option>
                     </select>
                     <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={18} />
@@ -332,7 +352,16 @@ const handleAddNewSubmit = async () => {
               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-xl p-8 max-w-sm w-full shadow-xl text-center">
                 <h2 className="text-xl font-bold text-gray-900 mb-2">Register {addingType}</h2>
                 <p className="text-sm text-gray-500 mb-6 font-medium">Add this new {addingType.toLowerCase()} to the system?</p>
-                <input type="text" placeholder={`${addingType} Name`} className="w-full px-4 py-3 border border-gray-200 rounded-xl mb-6 outline-none text-black font-medium" value={newName} onChange={(e) => setNewName(e.target.value)} />
+                <input type="text" placeholder={`${addingType} Name`} className="w-full px-4 py-3 border border-gray-200 rounded-xl mb-6 outline-none text-black font-medium" value={newName} 
+                onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
+                onChange={(e) => setNewName(e.target.value)} />
                 <div className="flex justify-end gap-3 font-semibold">
                   <button onClick={() => setShowAddModal(false)} className="px-4 py-2 border rounded-lg">Cancel</button>
                   <button onClick={handleAddNewSubmit} className="bg-[#2EA1F2] text-white px-5 py-2 shadow font-bold text-md rounded-lg flex items-center gap-2 hover:bg-[#298CD2] transition-color">+ Register</button>

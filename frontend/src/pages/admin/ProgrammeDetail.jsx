@@ -522,6 +522,14 @@ setEditProgrammeDescription(programme?.programmeDescription || "");
         <input
           type="text"
           value={editProgrammeName}
+          onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
           onChange={(e) => setEditProgrammeName(e.target.value)}
           className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#2EA1F2]"
           placeholder="Enter programme name"
@@ -537,6 +545,14 @@ setEditProgrammeDescription(programme?.programmeDescription || "");
         <textarea
           rows={4}
           value={editProgrammeDescription}
+          onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
           onChange={(e) => setEditProgrammeDescription(e.target.value)}
           className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none resize-none focus:ring-2 focus:ring-[#2EA1F2]"
           placeholder="Enter programme description"

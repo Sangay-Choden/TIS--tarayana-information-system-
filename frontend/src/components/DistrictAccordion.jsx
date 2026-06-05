@@ -79,7 +79,7 @@ const DistrictAccordion = ({
 
       <div
         onClick={() => setOpen(!open)}
-        className="bg-gray-200  px-5 py-4 flex justify-between items-center cursor-pointer"
+        className="bg-gray-200 text-gray-800 px-5 py-4 flex justify-between items-center cursor-pointer"
       >
         <div className="flex items-center gap-2">
 
@@ -101,9 +101,9 @@ const DistrictAccordion = ({
             e.stopPropagation();
             onDelete();
           }}
-          className="hover:text-red-600"
+          className="hover:text-red-200"
         >
-          <Trash2 className="text-red-500" size={18} />
+          <Trash2 size={18} />
         </button>
       </div>
 
@@ -122,6 +122,14 @@ const DistrictAccordion = ({
             <input
               type="text"
               value={district.districtName}
+              onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
               onChange={(e) =>
                 updateDistrictName(e.target.value)
               }

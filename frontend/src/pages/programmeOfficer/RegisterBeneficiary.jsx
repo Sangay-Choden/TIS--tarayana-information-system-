@@ -450,7 +450,16 @@ for (let i = 0; i < beneficiaries.length; i++) {
                         <td className="p-3 text-xs font-bold text-gray-400 text-center bg-gray-50/30">{bIdx + 1}</td>
                         <td className="p-2">
                           <input required type="text" placeholder="Name" className={`w-full p-2 text-sm border rounded-lg outline-none bg-white ${fieldErrors[`name-${bIdx}`] ? 'border-red-400 bg-red-50/30' : ''}`}
-                            value={b.name} onChange={e => handleBeneficiaryChange(bIdx, 'name', e.target.value)} />
+                            value={b.name} 
+                            onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
+                            onChange={e => handleBeneficiaryChange(bIdx, 'name', e.target.value)} />
                           {fieldErrors[`name-${bIdx}`] && <p className="text-[13px] text-red-500 mt-0.5 leading-tight">{fieldErrors[`name-${bIdx}`]}</p>}
                         </td>
                         <td className="p-2">
@@ -474,7 +483,7 @@ for (let i = 0; i < beneficiaries.length; i++) {
                         </td>
                         <td className="p-2">
                         <input
-                          type="text"
+                          type="number"
                           placeholder="Thram No."
                           className={`w-full p-2 text-xs border rounded-lg outline-none bg-white ${
                             fieldErrors[`thramNo-${bIdx}`]

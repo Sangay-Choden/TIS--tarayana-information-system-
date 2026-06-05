@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-// import Sidebar from "../../components/Sidebar";
-// import Navbar from "../../components/Navbar";
 import {
   Plus,
   Trash2,
@@ -1080,6 +1078,14 @@ className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 py-2 text-sm shadow fon
 
         <input
           value={inputValue}
+            onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
           onChange={(e) => setInputValue(e.target.value)}
           className="w-full border px-3 py-2 rounded-lg mb-4"
           placeholder="Enter name"
@@ -1135,6 +1141,14 @@ className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 py-2 text-sm shadow fon
 
         <input
           value={inputValue}
+          onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
           onChange={(e) => setInputValue(e.target.value)}
           className="w-full border px-3 py-2 rounded-lg mb-4"
           required   // ✅ now validation works
@@ -1275,6 +1289,14 @@ className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 py-2 text-sm shadow fon
         <input
           placeholder="Role Name"
           value={roleName}
+            onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
           onChange={(e) => setRoleName(e.target.value)}
           className="w-full border px-3 py-2 rounded-lg mb-4"
           required
@@ -1283,6 +1305,14 @@ className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 py-2 text-sm shadow fon
         <textarea
           placeholder="Role Description"
           value={roleDesc}
+            onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
           onChange={(e) => setRoleDesc(e.target.value)}
           className="w-full border px-3 py-2 rounded-lg mb-4"
           required
@@ -1344,6 +1374,14 @@ className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 py-2 text-sm shadow fon
         <input
           placeholder="Role Name"
           value={editRoleName}
+          onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
           onChange={(e) => setEditRoleName(e.target.value)}
           className="w-full border px-3 py-2 rounded-lg mb-4"
           required   // ✅ now enforced
@@ -1352,6 +1390,14 @@ className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 py-2 text-sm shadow fon
         <textarea
           placeholder="Role Description"
           value={editRoleDesc}
+          onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
           onChange={(e) => setEditRoleDesc(e.target.value)}
           className="w-full border px-3 py-2 rounded-lg mb-4"
           required   // ✅ now enforced

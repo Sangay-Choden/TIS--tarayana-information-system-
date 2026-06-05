@@ -394,7 +394,7 @@ const [error, setError] = useState("");
           handleCreate();
         }}
       >
-        <input
+        {/* <input
           required
           type="text"
           placeholder="Programme Name"
@@ -403,13 +403,40 @@ const [error, setError] = useState("");
           onChange={(e) =>
             setFormData({ ...formData, name: e.target.value })
           }
-        />
+        /> */}
+        <input
+  required
+  type="text"
+  placeholder="Programme Name"
+  className="w-full border rounded-lg p-2 mb-3"
+  value={formData.name}
+  onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
+  onChange={(e) => {
+    const value = e.target.value.replace(/[^A-Za-z\s]/g, "");
+    setFormData({ ...formData, name: value });
+  }}
+/>
 
         <textarea
           required
           placeholder="Brief description about the programme..."
           className="w-full border rounded-lg p-2 mb-4"
           value={formData.description}
+            onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }

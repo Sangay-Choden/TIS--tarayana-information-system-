@@ -23,7 +23,7 @@ const [errorMessage, setErrorMessage] = useState("");
   const [fields, setFields] = useState([]);
   const [fieldName, setFieldName] = useState("");
   const [fieldType, setFieldType] = useState("Text");
-
+const [fieldError, setFieldError] = useState("");
   const [deleteEvent, setDeleteEvent] = useState(null);
 
   // ADD FIELD
@@ -370,6 +370,14 @@ const createEvent = async () => {
       <input
        required
         value={eventName}
+          onKeyDown={(e) => {
+    if (
+      /[0-9]/.test(e.key) &&
+      !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+    ) {
+      e.preventDefault();
+    }
+  }}
         onChange={(e) => setEventName(e.target.value)}
         placeholder="Enter Event Name"
         className="w-full border p-2.5 sm:p-3 rounded-lg text-sm sm:text-base"
@@ -393,13 +401,42 @@ const createEvent = async () => {
 
         {/* ADD FIELD (RESPONSIVE FIX HERE) */}
         <div className="flex flex-col sm:flex-row gap-2">
-          <input
-          required
-            value={fieldName}
-            onChange={(e) => setFieldName(e.target.value)}
-            placeholder="Field Name"
-            className="w-full sm:flex-1 border p-2 rounded text-sm"
-          />
+      <div className="w-full sm:flex-1">
+  <input
+    required
+    value={fieldName}
+    onKeyDown={(e) => {
+      if (
+        /[0-9]/.test(e.key) &&
+        !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"].includes(e.key)
+      ) {
+        e.preventDefault();
+      }
+    }}
+    onChange={(e) => {
+      const value = e.target.value;
+      setFieldName(value);
+
+      const exists = fields.some(
+        (field) =>
+          field.fieldName?.toLowerCase().trim() ===
+          value.toLowerCase().trim()
+      );
+
+      setFieldError(exists ? "Field name already exists" : "");
+    }}
+    placeholder="Field Name"
+    className={`w-full border p-2 rounded text-sm ${
+      fieldError ? "border-red-500" : ""
+    }`}
+  />
+
+  {fieldError && (
+    <p className="text-red-500 text-xs mt-1">
+      {fieldError}
+    </p>
+  )}
+</div>
 
           <select
             value={fieldType}
