@@ -65,7 +65,7 @@ const DetailEvent = () => {
     }
     return String(value);
   };
-  console.log(innerData)
+
   // 1. Separate flat key-value pairs dynamically (Theme, Date, Member counts, etc.)
   const simpleFields = Object.entries(innerData).filter(
     ([key, value]) => !systemKeys.includes(key) && typeof value !== "object" && !Array.isArray(value)
@@ -78,7 +78,7 @@ const DetailEvent = () => {
 
   return (
     <div className="w-full px-4 pb-6 flex justify-center">
-      <div className="w-full space-y-8">
+      <div className="w-full max-w-5xl space-y-8">
 
         {/* BACK BUTTON */}
         <button
@@ -129,7 +129,12 @@ const DetailEvent = () => {
                       </div>
                       {arrayData.map((district, dIndex) => {
                         const totalEarned = Array.isArray(district.communities)
-                          ? district.communities.reduce((sum, c) => sum + Number(c.income || 0), 0)
+                          ? district.communities.reduce((commSum, c) => {
+                              const productSum = Array.isArray(c.products)
+                                ? c.products.reduce((pSum, p) => pSum + Number(p.income || 0), 0)
+                                : 0;
+                              return commSum + productSum;
+                            }, 0)
                           : 0;
                         return (
                           <div key={dIndex} className="grid grid-cols-2 py-1 text-sm text-gray-600 italic capitalize">
@@ -141,41 +146,63 @@ const DetailEvent = () => {
                     </div>
                   </div>
 
-                  {/* Deeply Nested Products and Members Breakdown under Districts */}
+                  {/* Deeply Nested Breakdown: District Details */}
                   {arrayData.map((district, dIndex) => (
-                    <div key={`nested-district-${dIndex}`} className="bg-gray-50/50 border rounded-xl p-4 ml-[280px] space-y-4 text-sm">
-                      <div className="font-bold text-blue-600 uppercase tracking-wider text-xs">
+                    <div key={`nested-district-${dIndex}`} className="bg-gray-50/50 border rounded-xl p-4 ml-[280px] space-y-6 text-sm">
+                      <div className="font-bold text-blue-600 uppercase tracking-wider text-xs border-b pb-1">
                         {district.districtName || "District"} Details
                       </div>
 
-                      {/* Nested Products Block */}
-                      {district.communities?.some(c => c.products?.length > 0) && (
-                        <div className="pl-3 border-l-2 border-gray-300">
-                          <div className="text-xs font-bold text-gray-500 uppercase mb-1">Products Offered</div>
-                          <ul className="list-disc list-inside text-gray-600 italic">
-                            {district.communities.flatMap(c => c.products || []).map((p, pIdx) => (
-                              <li key={pIdx} className="capitalize">{p.productName || "-"}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {/* Nested Community Members Subtable */}
-                      {district.communities?.some(c => c.members?.length > 0) && (
-                        <div className="pl-3 border-l-2 border-gray-300 space-y-1">
-                          <div className="text-xs font-bold text-gray-500 uppercase mb-2">Community Members</div>
-                          <div className="grid grid-cols-2 font-bold text-gray-800 text-xs">
-                            <span className="underline">CID</span>
-                            <span className="underline">Name</span>
+                      {/* Communities Loop */}
+                      {district.communities?.map((community, cIndex) => (
+                        <div key={cIndex} className="space-y-4 bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+                          
+                          {/* 1. Community Title Name */}
+                          <div className="text-sm font-bold text-gray-800 flex items-center gap-1">
+                            <span className="text-gray-400 font-normal">Community:</span> 
+                            <span className="capitalize">{community.communityName || `Unnamed Community ${cIndex + 1}`}</span>
                           </div>
-                          {district.communities.flatMap(c => c.members || []).map((m, mIdx) => (
-                            <div key={mIdx} className="grid grid-cols-2 text-gray-600 italic">
-                              <span>{m.cid || "-"}</span>
-                              <span className="capitalize">{m.name || "-"}</span>
+
+                          {/* 2. Nested Products Block */}
+                          {community.products?.length > 0 ? (
+                            <div className="pl-4 border-l-2 border-blue-400 space-y-1">
+                              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Products Offered</div>
+                              <div className="grid grid-cols-2 font-semibold text-gray-700 text-xs mb-1 bg-gray-50 p-1.5 rounded">
+                                <span>Product Name</span>
+                                <span>Income (Nu)</span>
+                              </div>
+                              {community.products.map((p, pIdx) => (
+                                <div key={pIdx} className="grid grid-cols-2 text-sm text-gray-600 italic pl-1.5 py-0.5">
+                                  <span className="capitalize">{p.productName || "-"}</span>
+                                  <span>{p.income != null ? p.income : "-"}</span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          ) : (
+                            <div className="pl-4 border-l-2 border-gray-200 text-xs italic text-gray-400">No products listed</div>
+                          )}
+
+                          {/* 3. Nested Community Members Block */}
+                          {community.members?.length > 0 ? (
+                            <div className="pl-4 border-l-2 border-emerald-400 space-y-1">
+                              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Community Members</div>
+                              <div className="grid grid-cols-2 font-semibold text-gray-700 text-xs mb-1 bg-gray-50 p-1.5 rounded">
+                                <span>CID</span>
+                                <span>Name</span>
+                              </div>
+                              {community.members.map((m, mIdx) => (
+                                <div key={mIdx} className="grid grid-cols-2 text-sm text-gray-600 italic pl-1.5 py-0.5">
+                                  <span>{m.cid || "-"}</span>
+                                  <span className="capitalize">{m.name || "-"}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="pl-4 border-l-2 border-gray-200 text-xs italic text-gray-400">No members registered</div>
+                          )}
+
                         </div>
-                      )}
+                      ))}
                     </div>
                   ))}
                 </div>
@@ -183,7 +210,6 @@ const DetailEvent = () => {
             }
 
             // --- B. GENERIC FALLBACK FOR FLAT OBJECT ARRAYS (Game Stalls, Sponsors, or Anything New) ---
-            // Automatically infers column names dynamically based on keys found within array items
             const sampleItem = arrayData[0] || {};
             const itemKeys = Object.keys(sampleItem).filter(k => k !== "_id");
 
@@ -195,11 +221,17 @@ const DetailEvent = () => {
                   </h3>
                 </div>
                 <div className="p-4">
-                  {/* Auto-generated Table Header layout using inferred keys */}
+                  {/* Dynamic layout headers displaying (Nu) if field matches monetary targets */}
                   <div className={`grid grid-cols-${itemKeys.length || 1} border-b pb-2 text-sm font-bold text-gray-800 mb-2 capitalize`}>
-                    {itemKeys.map((itemKey) => (
-                      <span key={itemKey}>{itemKey.replace(/([A-Z])/g, " $1").trim()}</span>
-                    ))}
+                    {itemKeys.map((itemKey) => {
+                      const isIncomeKey = itemKey.toLowerCase().includes("income") || itemKey.toLowerCase().includes("amount");
+                      return (
+                        <span key={itemKey}>
+                          {itemKey.replace(/([A-Z])/g, " $1").trim()}
+                          {isIncomeKey && " (Nu)"}
+                        </span>
+                      );
+                    })}
                   </div>
                   {/* Rows */}
                   <div className="divide-y">

@@ -32,15 +32,14 @@ const defaultEvents = [
               fieldName: "Community Members",
               fieldType: "array",
               itemFields: [
-                 {
-                  fieldName: "CID",
-                  fieldType: "text"
-                },
                 {
+                  fieldName: "CID",
+                  fieldType: "Number"
+                },
+                 {
                   fieldName: "Name",
                   fieldType: "text"
                 }
-              
               ]
             },
             {
@@ -50,13 +49,13 @@ const defaultEvents = [
                 {
                   fieldName: "Product Name",
                   fieldType: "text"
-                }
-              ]
-            },
-            {
+                }, {
               fieldName: "Income",
               fieldType: "number"
             }
+              ]
+            }
+        
           ]
         }
       ]
@@ -171,6 +170,45 @@ const defaultEvents = [
           fieldType: "number"
         }
       ]
+    }
+  ]
+},{
+  eventName: "Tarayana Club",
+  fields: [
+    {
+      fieldName: "School Name",
+      fieldType: "text",
+      required: true
+    },
+    {
+      fieldName: "Dzongkhag",
+      fieldType: "text",
+      required: true
+    },
+    {
+      fieldName: "Year of Establishment",
+      fieldType: "number",
+      required: true
+    },
+    {
+      fieldName: "Focal Person",
+      fieldType: "text",
+      required: true
+    },
+    {
+      fieldName: "Focal Contact Number",
+      fieldType: "text",
+      required: true
+    },
+    {
+      fieldName: "Male Members",
+      fieldType: "number",
+      required: true
+    },
+    {
+      fieldName: "Female Members",
+      fieldType: "number",
+      required: true
     }
   ]
 },

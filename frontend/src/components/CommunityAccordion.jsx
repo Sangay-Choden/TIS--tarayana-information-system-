@@ -72,7 +72,8 @@ const CommunityAccordion = ({
     districts[districtIndex].communities[
       communityIndex
     ].products.push({
-      productName: ""
+      productName: "",
+      income: "" // Initialized income inside product object
     });
 
     setFormData({
@@ -101,7 +102,7 @@ const CommunityAccordion = ({
 
       <div
         onClick={() => setOpen(!open)}
-        className="bg-gray-200 px-4 py-3 flex items-center justify-between cursor-pointer"
+        className="text-[#2EA1F2] px-4 py-3 flex items-center justify-between cursor-pointer"
       >
         <div className="flex items-center gap-2">
           {open ? (
@@ -122,7 +123,7 @@ const CommunityAccordion = ({
             e.stopPropagation();
             onDelete();
           }}
-          className="cursor-pointer hover:text-red-600 text-red-500"
+          className="cursor-pointer hover:text-red-200"
         />
       </div>
 
@@ -131,8 +132,7 @@ const CommunityAccordion = ({
 
           {/* COMMUNITY INFO */}
 
-          <div className="grid md:grid-cols-2 gap-4">
-
+          <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">
                 Community Name
@@ -144,24 +144,6 @@ const CommunityAccordion = ({
                 onChange={(e) =>
                   updateCommunity(
                     "communityName",
-                    e.target.value
-                  )
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Income
-              </label>
-
-              <input
-                type="number"
-                className="w-full border rounded-lg px-3 py-2"
-                value={community.income}
-                onChange={(e) =>
-                  updateCommunity(
-                    "income",
                     e.target.value
                   )
                 }
@@ -282,16 +264,16 @@ const CommunityAccordion = ({
               </button>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
 
               {community.products.map(
                 (product, productIndex) => (
                   <div
                     key={productIndex}
-                    className="flex gap-2"
+                    className="grid md:grid-cols-2 gap-3 border rounded-lg p-3"
                   >
                     <input
-                      className="flex-1 border rounded-lg px-3 py-2"
+                      className="border rounded-lg px-3 py-2"
                       placeholder="Product Name"
                       value={product.productName}
                       onChange={(e) => {
@@ -315,15 +297,43 @@ const CommunityAccordion = ({
                       }}
                     />
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        removeProduct(productIndex)
-                      }
-                      className="text-red-500"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        placeholder="Income"
+                        className="flex-1 border rounded-lg px-3 py-2"
+                        value={product.income || ""}
+                        onChange={(e) => {
+                          const districts = [
+                            ...formData.districts
+                          ];
+
+                          districts[districtIndex]
+                            .communities[
+                              communityIndex
+                            ]
+                            .products[
+                              productIndex
+                            ].income =
+                            e.target.value;
+
+                          setFormData({
+                            ...formData,
+                            districts
+                          });
+                        }}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeProduct(productIndex)
+                        }
+                        className="text-red-500"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 )
               )}
