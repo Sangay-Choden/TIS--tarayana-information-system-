@@ -86,7 +86,13 @@ const [error, setError] = useState("");
     if (!res.ok) {
       setErrorMessage(data.message);
       setShowErrorPopup(true);
-      return;
+       setShowModal(false);
+     
+        setTimeout(() => {
+    setShowErrorPopup(false);
+  }, 2000);
+
+  return;
     }
 
     // ✅ Add new programme to UI instantly
@@ -102,6 +108,12 @@ const [error, setError] = useState("");
   } catch (error) {
     setErrorMessage("Server error");
     setShowErrorPopup(true);
+      setShowModal(false);
+        setTimeout(() => {
+    setShowErrorPopup(false);
+  }, 2000);
+
+  return;
   }
 };
 
@@ -158,7 +170,13 @@ const [error, setError] = useState("");
 
   {/* BUTTON */}
   <button
-    onClick={() => setShowModal(true)}
+   onClick={() => {
+  setFormData({
+    name: "",
+    description: "",
+  });
+  setShowModal(true);
+}}
     className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 h-10 text-sm shadow font-bold rounded-lg flex justify-center items-center gap-2 hover:bg-[#298CD2] transition-colors"
   >
     <Plus size={18} /> New Programme
