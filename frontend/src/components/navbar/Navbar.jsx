@@ -332,7 +332,7 @@ const handleSignOut = () => {
           <div className="relative bg-white rounded-xl shadow-2xl w-full md:max-w-3xl px-6 py-8 text-center">
             <img src={logo} className="w-20 mx-auto mb-3" alt="Logo" />
                <h2 className="text-xl sm:text-xl font-bold text-center text-gray-700">
-          Tarayana Information System
+          Tarayana Information Management System
         </h2>
              <p className="text-center text-gray-500 text-sm mt-1 mb-6 font-semibold">Change Password</p>
             

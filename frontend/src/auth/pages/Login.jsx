@@ -192,7 +192,7 @@ if (
 
         {/* Title */}
         <h2 className="text-md sm:text-md font-bold text-center text-gray-700">
-          Tarayana Information System
+          Tarayana Information Management System
         </h2>
         <p className="text-center text-gray-500 text-xs mt-1 mb-6 font-small">
           Login to your account to continue

@@ -895,18 +895,21 @@ className="w-full sm:w-auto bg-[#2EA1F2] text-white px-4 py-2 text-sm shadow fon
               {role.roleDescription}
             </td>
 
-            <td className="p-4 text-left flex gap-3">
-               <Pencil
-          size={16}
-          className="cursor-pointer"
-          onClick={() => handleEditRole(role)}
-        />
-              <Trash2
-                size={16}
-                className="text-[#AA3333] cursor-pointer"
-                onClick={() => setDeleteroleItem(role._id)}
-              />
-            </td>
+          <td className="p-4 text-left flex gap-3">
+  <Pencil
+    size={16}
+    className="cursor-pointer"
+    onClick={() => handleEditRole(role)}
+  />
+
+  {role.roleName !== "Admin" && (
+    <Trash2
+      size={16}
+      className="text-[#AA3333] cursor-pointer"
+      onClick={() => setDeleteroleItem(role._id)}
+    />
+  )}
+</td>
           </tr>
         ))}
       </tbody>

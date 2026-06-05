@@ -434,7 +434,7 @@ const NewRegister = () => {
       });
 
       setIsSuccess(true);
-      setTimeout(() => navigate("/po/programmes"), 2000);
+      setTimeout(() => navigate(`/po/programmes/detail/${regionalData.projectId}`), 2000);
     } catch (err) {
       setErrorMessage(err.response?.data?.message || "Beneficiary registration process failed.");
       setShowErrorPopup(true);

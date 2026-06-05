@@ -113,7 +113,7 @@ const ResetPassword = () => {
 
         {/* Title */}
         <h2 className="text-md sm:text-md font-bold text-center text-gray-700">
-          Tarayana Information System
+          Tarayana Information ManagementSystem
         </h2>
         <p className="text-center text-gray-500 text-xs mt-1 mb-6 font-small">
           Reset your password
